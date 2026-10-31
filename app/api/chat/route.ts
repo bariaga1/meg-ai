@@ -3,14 +3,22 @@ import {
   openSessionStream,
   startOrContinueSession,
 } from "@/lib/agentClient";
+import { enforceChatGuards } from "@/lib/chatGuard";
+import {
+  isGatewayConfigured,
+  megGatewayNdjsonStream,
+  normalizeHistory,
+} from "@/lib/megGatewayChat";
 import { checkUserMessage } from "@/lib/guardrails";
 import { localMegNdjsonStream, shouldUseLocalFallback } from "@/lib/localMeg";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 type Body = {
   message?: unknown;
+  history?: unknown;
   sessionId?: unknown;
   continuationToken?: unknown;
   startIndex?: unknown;
@@ -26,6 +34,14 @@ function ndjsonResponse(stream: ReadableStream<Uint8Array>) {
 }
 
 export async function POST(req: Request) {
+  const guard = await enforceChatGuards(req);
+  if (!guard.ok) {
+    return Response.json(
+      { ok: false, error: guard.error, message: guard.message },
+      { status: guard.status },
+    );
+  }
+
   let body: Body;
   try {
     body = (await req.json()) as Body;
@@ -40,6 +56,8 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
+
+  const history = normalizeHistory(body.history);
 
   const sessionId =
     typeof body.sessionId === "string" && body.sessionId ? body.sessionId : undefined;
@@ -59,15 +77,29 @@ export async function POST(req: Request) {
     );
   }
 
-  // A previous local lookup is not an agent session. Start a real thread.
-  const fromLocal =
-    sessionId?.startsWith("local_") || continuationToken?.startsWith("local:");
-  const agentSessionId = fromLocal ? undefined : sessionId;
-  const agentToken = fromLocal ? undefined : continuationToken;
-  const agentStart = fromLocal ? 0 : startIndex;
+  const fromLocalOrGw =
+    sessionId?.startsWith("local_") ||
+    sessionId?.startsWith("gw_") ||
+    continuationToken?.startsWith("local:") ||
+    continuationToken?.startsWith("gw:");
+  const agentSessionId = fromLocalOrGw ? undefined : sessionId;
+  const agentToken = fromLocalOrGw ? undefined : continuationToken;
+  const agentStart = fromLocalOrGw ? 0 : startIndex;
 
-  // Lexical lookup only when the Cursor agent is not configured.
-  if (shouldUseLocalFallback() || !isAgentConfigured()) {
+  if (shouldUseLocalFallback()) {
+    return ndjsonResponse(localMegNdjsonStream(checked.text));
+  }
+
+  // Prefer AI Gateway when no Cursor agent URL is configured.
+  if (!isAgentConfigured() && isGatewayConfigured()) {
+    try {
+      return ndjsonResponse(megGatewayNdjsonStream(checked.text, history));
+    } catch {
+      return ndjsonResponse(localMegNdjsonStream(checked.text));
+    }
+  }
+
+  if (!isAgentConfigured()) {
     return ndjsonResponse(localMegNdjsonStream(checked.text));
   }
 

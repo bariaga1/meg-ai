@@ -34,11 +34,17 @@ npm run dev
 
 Open [http://127.0.0.1:3000](http://127.0.0.1:3000).
 
-**Without** `AGENT_BASE_URL`, chat uses a local lexical Meg fallback (BM25 over
-`content/chunks.json`) so the UI is demoable before Cursor deploy. Set
-`AGENT_BASE_URL` (and start `npm run dev:agent`, or point at hosted Meg) for
-full model turns. Model turns need a Cursor credential (`agent-sdk login`, or
-`CURSOR_API_KEY` / `CURSOR_SERVICE_ACCOUNT_KEY`).
+**Chat backends (first match wins):**
+
+1. `MEG_FORCE_LOCAL=1` — lexical BM25 excerpts only  
+2. `AGENT_BASE_URL` — Cursor Agent SDK HTTP  
+3. AI Gateway on Vercel (OIDC) or `AI_GATEWAY_API_KEY` locally — organic model
+   replies grounded by BM25 retrieve  
+4. Otherwise lexical fallback  
+
+Public deploy uses Gateway + BotID + rate limits (see `/api/chat`). Set
+`AI_GATEWAY_MODEL` (default `google/gemini-2.5-flash-lite`) and a Gateway
+budget in the Vercel dashboard.
 
 ### Useful checks (no model key required)
 

@@ -6,13 +6,13 @@ import { STARTERS, useMegChat } from "./useMegChat";
 
 function LoadingState() {
   return (
-    <div className="meg-loading" role="status" aria-label="Meg is thinking">
+    <div className="meg-loading mx-auto" role="status" aria-label="Meg is thinking">
       <div className="space-y-2">
         <div className="meg-shimmer-bar w-[78%]" />
         <div className="meg-shimmer-bar w-[54%] [animation-delay:120ms]" />
         <div className="meg-shimmer-bar w-[36%] [animation-delay:240ms]" />
       </div>
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center justify-center gap-2.5">
         <span className="meg-dots" aria-hidden>
           <span />
           <span />
@@ -128,33 +128,35 @@ export function MegChat() {
     <div ref={rootRef} className="meg-atmosphere relative flex min-h-[100dvh] flex-col">
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
         <div className="meg-blob-layer absolute inset-0">
-          <div className="meg-blob absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[rgba(142,197,216,0.42)] blur-3xl" />
+          <div className="meg-blob absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[rgba(110,168,186,0.34)] blur-3xl" />
         </div>
         <div className="meg-blob-b absolute -right-16 top-28">
-          <div className="meg-blob h-80 w-80 rounded-full bg-[rgba(47,143,157,0.24)] blur-3xl [animation-delay:-6s]" />
+          <div className="meg-blob h-80 w-80 rounded-full bg-[rgba(36,118,132,0.22)] blur-3xl [animation-delay:-6s]" />
         </div>
         <div className="meg-blob-c absolute bottom-0 left-1/3">
-          <div className="meg-blob h-64 w-64 rounded-full bg-[rgba(217,120,92,0.14)] blur-3xl [animation-delay:-11s]" />
+          <div className="meg-blob h-64 w-64 rounded-full bg-[rgba(180,96,72,0.12)] blur-3xl [animation-delay:-11s]" />
         </div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.35),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,255,255,0.16),transparent_55%)]" />
       </div>
 
-      <div className="absolute left-4 top-4 z-20 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--meg-lagoon)] sm:left-6 sm:top-5">
+      <div className="absolute left-1/2 top-4 z-20 flex -translate-x-1/2 items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--meg-lagoon)] sm:top-5">
         <span className="meg-online-dot" aria-hidden />
         Meg online
       </div>
 
       <main
-        className={`relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col px-5 pb-8 pt-10 sm:pt-14 ${showUi ? "meg-rise" : "opacity-0"}`}
+        className={`relative z-10 mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-5 pb-8 pt-12 sm:pt-16 ${showUi ? "meg-rise" : "opacity-0"} ${hasThread ? "" : "justify-center"}`}
       >
-        <header className={`flex flex-col items-start ${hasThread ? "mb-6" : "mb-8 sm:mb-12"}`}>
-          <MegCharacter powered={powered} mood={mood} className="mb-3" />
-          <p className="font-[family-name:var(--font-meg-display)] text-5xl font-semibold tracking-tight text-[var(--meg-ink)] sm:text-6xl md:text-7xl">
+        <header
+          className={`flex w-full flex-col items-center text-center ${hasThread ? "mb-5" : "mb-7"}`}
+        >
+          <MegCharacter powered={powered} mood={mood} className="mb-4" />
+          <p className="font-[family-name:var(--font-meg-display)] text-5xl font-semibold tracking-tight text-[var(--meg-ink)] sm:text-6xl">
             Meg
           </p>
           {!hasThread && (
-            <p className="meg-rise-delay mt-3 max-w-md text-base leading-relaxed text-[var(--meg-ink-soft)] sm:text-lg">
-              Ask about Omega Bariagaber’s work — roles, skills, and projects from the resume.
+            <p className="meg-rise-delay mt-3 max-w-sm text-[15px] leading-relaxed text-[var(--meg-ink-soft)]">
+              Ask about Omega’s work — roles, skills, or projects.
             </p>
           )}
         </header>
@@ -162,7 +164,7 @@ export function MegChat() {
         {hasThread && (
           <div
             ref={listRef}
-            className="meg-rise mb-6 flex-1 space-y-4 overflow-y-auto pr-1"
+            className="meg-rise mb-6 w-full flex-1 space-y-4 overflow-y-auto pr-1 text-left"
             aria-live="polite"
           >
             {messages.map((m) => {
@@ -171,7 +173,7 @@ export function MegChat() {
                 return (
                   <div
                     key={m.id}
-                    className="ml-8 rounded-2xl bg-[var(--meg-lagoon)] px-4 py-3 text-sm text-white shadow-[0_8px_24px_rgba(47,143,157,0.22)] sm:ml-16"
+                    className="ml-auto max-w-[85%] rounded-2xl bg-[var(--meg-lagoon)] px-4 py-3 text-sm text-white shadow-[0_8px_24px_rgba(47,143,157,0.22)]"
                   >
                     {m.text}
                   </div>
@@ -181,7 +183,7 @@ export function MegChat() {
               return (
                 <div
                   key={m.id}
-                  className="mr-4 whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--meg-ink)] sm:mr-10"
+                  className="mr-auto max-w-[92%] whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--meg-ink)]"
                 >
                   {!m.text && busy ? (
                     <LoadingState />
@@ -198,16 +200,16 @@ export function MegChat() {
           </div>
         )}
 
-        <div className={`meg-rise-delay-2 mt-auto ${hasThread ? "" : "flex-1"}`}>
+        <div className={`meg-rise-delay-2 w-full ${hasThread ? "" : ""}`}>
           {!hasThread && (
-            <div className="mb-5 flex flex-wrap gap-2">
+            <div className="mb-5 flex flex-wrap items-center justify-center gap-2">
               {STARTERS.map((s) => (
                 <button
                   key={s}
                   type="button"
                   disabled={busy}
                   onClick={() => void send(s)}
-                  className="meg-glass rounded-full px-3.5 py-2 text-left text-sm text-[var(--meg-ink-soft)] transition hover:border-[rgba(47,143,157,0.35)] hover:text-[var(--meg-ink)] disabled:opacity-50"
+                  className="meg-glass rounded-full px-3.5 py-2 text-center text-sm text-[var(--meg-ink-soft)] transition hover:border-[rgba(47,143,157,0.35)] hover:text-[var(--meg-ink)] disabled:opacity-50"
                 >
                   {s}
                 </button>
@@ -249,7 +251,7 @@ export function MegChat() {
           </form>
 
           {error && (
-            <p className="mt-3 text-sm text-[var(--meg-coral)]" role="alert">
+            <p className="mt-3 text-center text-sm text-[var(--meg-coral)]" role="alert">
               {error}
             </p>
           )}

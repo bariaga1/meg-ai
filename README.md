@@ -1,6 +1,6 @@
 # Meg.ai
 
-Employer-facing resume chat agent for **Omega Bariagaber**. Brand: **Meg**.
+Interactive way to ask chat about **Omega Bariagaber** resume. Brand: **Meg**.
 
 Meg answers only from Omega’s resume (lexical RAG over section chunks). Model
 turns run on the **Cursor Agent SDK** — no OpenAI/Anthropic API keys.

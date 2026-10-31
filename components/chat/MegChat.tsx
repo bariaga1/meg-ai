@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { MegCharacter, type MegMood } from "./MegCharacter";
 import { STARTERS, useMegChat } from "./useMegChat";
 
 function LoadingState() {
@@ -41,10 +42,36 @@ export function MegChat() {
   } = useMegChat();
 
   const rootRef = useRef<HTMLDivElement>(null);
+  const [powered, setPowered] = useState(false);
+  const [booting, setBooting] = useState(false);
+  const [showUi, setShowUi] = useState(false);
+
+  const powerOn = useCallback(() => {
+    if (powered || booting) return;
+    setBooting(true);
+    window.setTimeout(() => {
+      setPowered(true);
+      setBooting(false);
+      window.setTimeout(() => setShowUi(true), 220);
+    }, 100);
+  }, [powered, booting]);
+
+  useEffect(() => {
+    if (powered) return;
+    const onFirst = () => powerOn();
+    window.addEventListener("pointermove", onFirst, { once: true, passive: true });
+    window.addEventListener("pointerdown", onFirst, { once: true });
+    window.addEventListener("keydown", onFirst, { once: true });
+    return () => {
+      window.removeEventListener("pointermove", onFirst);
+      window.removeEventListener("pointerdown", onFirst);
+      window.removeEventListener("keydown", onFirst);
+    };
+  }, [powered, powerOn]);
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
+    if (!root || !powered) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) return;
@@ -67,10 +94,38 @@ export function MegChat() {
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("pointerleave", onLeave);
     };
-  }, []);
+  }, [powered]);
+
+  const mood: MegMood = busy ? "thinking" : streamingId ? "speaking" : "idle";
+
+  if (!powered) {
+    return (
+      <div
+        className="meg-atmosphere meg-atmosphere--sleeping relative flex min-h-[100dvh] cursor-pointer flex-col items-center justify-center px-6"
+        onClick={powerOn}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            powerOn();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Move or tap to meet Meg"
+      >
+        <div className="meg-sleepy-eyes mb-16" aria-hidden>
+          <span className="meg-sleepy-eye" />
+          <span className="meg-sleepy-eye" />
+        </div>
+        <p className="absolute bottom-10 text-center text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--meg-ink-soft)]">
+          Move or tap to meet Meg
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div ref={rootRef} className="relative flex min-h-[100dvh] flex-col">
+    <div ref={rootRef} className="meg-atmosphere relative flex min-h-[100dvh] flex-col">
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
         <div className="meg-blob-layer absolute inset-0">
           <div className="meg-blob absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[rgba(142,197,216,0.42)] blur-3xl" />
@@ -84,8 +139,16 @@ export function MegChat() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.35),transparent_55%)]" />
       </div>
 
-      <main className="relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col px-5 pb-8 pt-10 sm:pt-16">
-        <header className={`meg-rise ${hasThread ? "mb-6" : "mb-10 sm:mb-14"}`}>
+      <div className="absolute left-4 top-4 z-20 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--meg-lagoon)] sm:left-6 sm:top-5">
+        <span className="meg-online-dot" aria-hidden />
+        Meg online
+      </div>
+
+      <main
+        className={`relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col px-5 pb-8 pt-10 sm:pt-14 ${showUi ? "meg-rise" : "opacity-0"}`}
+      >
+        <header className={`flex flex-col items-start ${hasThread ? "mb-6" : "mb-8 sm:mb-12"}`}>
+          <MegCharacter powered={powered} mood={mood} className="mb-3" />
           <p className="font-[family-name:var(--font-meg-display)] text-5xl font-semibold tracking-tight text-[var(--meg-ink)] sm:text-6xl md:text-7xl">
             Meg
           </p>

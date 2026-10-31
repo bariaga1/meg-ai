@@ -4,6 +4,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { MegCharacter, type MegMood } from "./MegCharacter";
 import { STARTERS, useMegChat } from "./useMegChat";
 
+/** The model sometimes writes markdown. The thread is plain text. */
+function toPlainSpeech(text: string): string {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/__([^_]+)__/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "");
+}
+
 function LoadingState() {
   return (
     <div className="meg-loading mx-auto" role="status" aria-label="Meg is thinking">
@@ -191,7 +200,7 @@ export function MegChat() {
                     <LoadingState />
                   ) : (
                     <span className={isStreaming ? "meg-stream-text" : undefined}>
-                      {m.text}
+                      {toPlainSpeech(m.text)}
                       {isStreaming ? <span className="meg-caret" aria-hidden /> : null}
                     </span>
                   )}

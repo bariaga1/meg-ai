@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { Bm25Index, type ResumeChunk } from "../bot/lib/bm25";
+import { Bm25Index, type RankedChunk, type ResumeChunk } from "../bot/lib/bm25";
 
 type ChunksFile = { version: number; chunks: ResumeChunk[] };
 
@@ -20,40 +20,50 @@ const CONTACT_HINT =
 const OFF_TOPIC =
   /\b(write\s+(me\s+)?(a\s+)?(poem|essay|homework)|leetcode|crypto\s+signal)\b/i;
 
+function excerpt(chunk: RankedChunk, maxLines = 5): string {
+  const titleNorm = chunk.title.replace(/\s+/g, " ").trim().toLowerCase();
+  const lines = chunk.text
+    .replace(/^#+\s+/gm, "")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean)
+    // Drop the heading line when it duplicates the title
+    .filter((l) => l.replace(/\s+/g, " ").trim().toLowerCase() !== titleNorm);
+
+  return lines.slice(0, maxLines).join("\n");
+}
+
+function pickHits(message: string): RankedChunk[] {
+  const wantContact = CONTACT_HINT.test(message);
+  const hits = getIndex()
+    .search(message, 6)
+    .filter((h) => (wantContact ? true : h.id !== "header"));
+  return hits.slice(0, 3);
+}
+
 /** Deterministic resume-grounded reply when the Cursor agent is unavailable. */
 export function localMegReply(message: string): string {
   if (OFF_TOPIC.test(message)) {
     return "I stay on Omega’s resume and projects. Ask about roles, skills, or something like Can I Park Here?";
   }
 
-  const hits = getIndex().search(message, 3);
+  if (CONTACT_HINT.test(message)) {
+    return [
+      "You can reach Omega at omegabariagaber@gmail.com.",
+      "LinkedIn is listed on the resume; phone isn’t shared here.",
+    ].join("\n");
+  }
+
+  const hits = pickHits(message);
   if (hits.length === 0) {
     return "I don’t see that on Omega’s resume. Try asking about Medallia, Marathon, Nasdaq/Calypso, skills, or the independent projects.";
   }
 
-  const lines: string[] = [];
-  if (CONTACT_HINT.test(message)) {
-    lines.push(
-      "You can reach Omega at omegabariagaber@gmail.com (LinkedIn is listed on the resume header). Phone isn’t shared here.",
-      "",
-    );
-  }
-
-  lines.push("Here’s what the resume says that’s most relevant:");
+  const lines: string[] = ["Here’s what stands out from the resume:"];
   for (const h of hits) {
-    const excerpt = h.text
-      .replace(/^#+\s+/gm, "")
-      .split("\n")
-      .map((l) => l.trim())
-      .filter(Boolean)
-      .slice(0, 6)
-      .join("\n");
-    lines.push("", `**${h.title}**`, excerpt);
+    const body = excerpt(h);
+    lines.push("", h.title, body);
   }
-  lines.push(
-    "",
-    "_Local resume lookup (lexical RAG). Full Meg replies via the Cursor agent when deployed._",
-  );
   return lines.join("\n");
 }
 
@@ -72,11 +82,11 @@ export function localMegNdjsonStream(message: string): ReadableStream<Uint8Array
             type: "session",
             sessionId,
             continuationToken,
+            mode: "local",
           })}\n`,
         ),
       );
-      // Emit as a few deltas so the UI feels alive
-      const parts = text.match(/[\s\S]{1,80}/g) ?? [text];
+      const parts = text.match(/[\s\S]{1,100}/g) ?? [text];
       let index = 0;
       for (const delta of parts) {
         controller.enqueue(

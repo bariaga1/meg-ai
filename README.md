@@ -34,9 +34,11 @@ npm run dev
 
 Open [http://127.0.0.1:3000](http://127.0.0.1:3000).
 
-Model turns need a Cursor credential (`npx @grok/agent-sdk login`, or
-`CURSOR_API_KEY` / `CURSOR_SERVICE_ACCOUNT_KEY`). Without one, the UI still
-loads; chat returns an agent error until you sign in.
+**Without** `AGENT_BASE_URL`, chat uses a local lexical Meg fallback (BM25 over
+`content/chunks.json`) so the UI is demoable before Cursor deploy. Set
+`AGENT_BASE_URL` (and start `npm run dev:agent`, or point at hosted Meg) for
+full model turns. Model turns need a Cursor credential (`agent-sdk login`, or
+`CURSOR_API_KEY` / `CURSOR_SERVICE_ACCOUNT_KEY`).
 
 ### Useful checks (no model key required)
 

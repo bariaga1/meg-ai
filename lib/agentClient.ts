@@ -11,6 +11,10 @@ export type ChatProxyRequest = {
   startIndex?: number;
 };
 
+export function isAgentConfigured(): boolean {
+  return Boolean(process.env.AGENT_BASE_URL?.trim());
+}
+
 function agentBaseUrl(): string {
   const base = process.env.AGENT_BASE_URL?.replace(/\/$/, "");
   if (!base) {

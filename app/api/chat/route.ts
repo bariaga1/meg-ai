@@ -1,5 +1,10 @@
-import { openSessionStream, startOrContinueSession } from "@/lib/agentClient";
+import {
+  isAgentConfigured,
+  openSessionStream,
+  startOrContinueSession,
+} from "@/lib/agentClient";
 import { checkUserMessage } from "@/lib/guardrails";
+import { localMegNdjsonStream, shouldUseLocalFallback } from "@/lib/localMeg";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,6 +15,15 @@ type Body = {
   continuationToken?: unknown;
   startIndex?: unknown;
 };
+
+function ndjsonResponse(stream: ReadableStream<Uint8Array>) {
+  return new Response(stream, {
+    headers: {
+      "content-type": "application/x-ndjson; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  });
+}
 
 export async function POST(req: Request) {
   let body: Body;
@@ -45,6 +59,11 @@ export async function POST(req: Request) {
     );
   }
 
+  // Lexical local Meg when the Cursor agent isn't wired (great for local demo / pre-deploy).
+  if (shouldUseLocalFallback() || !isAgentConfigured()) {
+    return ndjsonResponse(localMegNdjsonStream(checked.text));
+  }
+
   try {
     const session = await startOrContinueSession({
       message: checked.text,
@@ -55,6 +74,9 @@ export async function POST(req: Request) {
     const streamRes = await openSessionStream(session.sessionId, startIndex);
     if (!streamRes.ok || !streamRes.body) {
       const detail = await streamRes.text().catch(() => "");
+      if (process.env.MEG_DISABLE_LOCAL_FALLBACK !== "1") {
+        return ndjsonResponse(localMegNdjsonStream(checked.text));
+      }
       return Response.json(
         {
           ok: false,
@@ -87,7 +109,6 @@ export async function POST(req: Request) {
           controller.close();
           return;
         }
-        // Forward NDJSON; also emit a compact assistant delta helper when we see message.appended
         const chunk = decoder.decode(value, { stream: true });
         controller.enqueue(encoder.encode(chunk));
       },
@@ -96,14 +117,12 @@ export async function POST(req: Request) {
       },
     });
 
-    return new Response(stream, {
-      headers: {
-        "content-type": "application/x-ndjson; charset=utf-8",
-        "cache-control": "no-store",
-      },
-    });
+    return ndjsonResponse(stream);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Agent proxy failed";
+    if (process.env.MEG_DISABLE_LOCAL_FALLBACK !== "1") {
+      return ndjsonResponse(localMegNdjsonStream(checked.text));
+    }
     const missing = message.includes("AGENT_BASE_URL");
     return Response.json(
       { ok: false, error: missing ? "agent_unconfigured" : "agent_error", message },

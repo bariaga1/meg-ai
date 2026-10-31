@@ -58,14 +58,100 @@ export function useMegChat() {
   const [continuationToken, setContinuationToken] = useState<string | null>(null);
   const [startIndex, setStartIndex] = useState(0);
   const [localMode, setLocalMode] = useState(false);
+  const [streamingId, setStreamingId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+
+  const pendingRef = useRef("");
+  const revealIdRef = useRef<string | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const lastTickRef = useRef(0);
+
+  const appendVisible = (id: string, chunk: string) => {
+    setMessages((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, text: `${m.text}${chunk}` } : m)),
+    );
+  };
+
+  const stopRevealLoop = () => {
+    if (rafRef.current != null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+  };
+
+  const pumpReveal = (now: number) => {
+    const id = revealIdRef.current;
+    if (!id || !pendingRef.current) {
+      rafRef.current = null;
+      return;
+    }
+
+    if (now - lastTickRef.current < 16) {
+      rafRef.current = requestAnimationFrame(pumpReveal);
+      return;
+    }
+    lastTickRef.current = now;
+
+    const leftover = pendingRef.current.length;
+    const take = leftover > 180 ? 16 : leftover > 60 ? 9 : leftover > 24 ? 5 : 3;
+    const chunk = pendingRef.current.slice(0, take);
+    pendingRef.current = pendingRef.current.slice(take);
+    appendVisible(id, chunk);
+
+    if (pendingRef.current) {
+      rafRef.current = requestAnimationFrame(pumpReveal);
+    } else {
+      rafRef.current = null;
+    }
+  };
+
+  const enqueueReveal = (id: string, delta: string) => {
+    if (!delta) return;
+    // Small deltas (token/word sized) paint immediately for smoothness.
+    if (delta.length <= 28 && !pendingRef.current) {
+      appendVisible(id, delta);
+      return;
+    }
+    revealIdRef.current = id;
+    pendingRef.current += delta;
+    if (rafRef.current == null) {
+      lastTickRef.current = performance.now();
+      rafRef.current = requestAnimationFrame(pumpReveal);
+    }
+  };
+
+  const flushReveal = () => {
+    const id = revealIdRef.current;
+    const rest = pendingRef.current;
+    stopRevealLoop();
+    pendingRef.current = "";
+    if (id && rest) appendVisible(id, rest);
+  };
+
+  const waitForRevealIdle = async () => {
+    if (!pendingRef.current && rafRef.current == null) return;
+    await new Promise<void>((resolve) => {
+      const start = performance.now();
+      const tick = () => {
+        if ((!pendingRef.current && rafRef.current == null) || performance.now() - start > 2500) {
+          flushReveal();
+          resolve();
+          return;
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  };
+
+  useEffect(() => () => stopRevealLoop(), []);
 
   const hasThread = messages.length > 0;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages, busy]);
+  }, [messages, busy, streamingId]);
 
   const placeholder = useMemo(
     () => (hasThread ? "Ask a follow-up…" : "Ask Meg about Omega’s work…"),
@@ -78,8 +164,11 @@ export function useMegChat() {
 
     setError(null);
     setBusy(true);
+    flushReveal();
     const userMsg: ChatMessage = { id: uid(), role: "user", text: trimmed };
     const assistantId = uid();
+    revealIdRef.current = assistantId;
+    setStreamingId(assistantId);
     setMessages((m) => [...m, userMsg, { id: assistantId, role: "assistant", text: "" }]);
     setInput("");
 
@@ -141,18 +230,18 @@ export function useMegChat() {
           const delta = extractAssistantDelta(ev);
           if (delta) {
             sawAssistant = true;
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === assistantId ? { ...m, text: `${m.text}${delta}` } : m,
-              ),
-            );
+            enqueueReveal(assistantId, delta);
           }
 
           if (ev.type === "message.completed" && ev.data?.text) {
             sawAssistant = true;
+            // Prefer streamed reveal; hard-fill only if the assistant bubble is still empty.
+            const completedText = ev.data.text;
             setMessages((prev) =>
               prev.map((m) =>
-                m.id === assistantId && !m.text ? { ...m, text: ev.data!.text! } : m,
+                m.id === assistantId && !m.text && !pendingRef.current
+                  ? { ...m, text: completedText }
+                  : m,
               ),
             );
           }
@@ -168,6 +257,7 @@ export function useMegChat() {
         }
       }
 
+      await waitForRevealIdle();
       setStartIndex(latestIndex);
       if (!sawAssistant) {
         setMessages((prev) =>
@@ -182,6 +272,7 @@ export function useMegChat() {
         );
       }
     } catch (err) {
+      flushReveal();
       const message = err instanceof Error ? err.message : "Something went wrong.";
       setError(message);
       setMessages((prev) =>
@@ -192,6 +283,8 @@ export function useMegChat() {
         ),
       );
     } finally {
+      await waitForRevealIdle();
+      setStreamingId(null);
       setBusy(false);
     }
   }
@@ -209,6 +302,7 @@ export function useMegChat() {
     error,
     localMode,
     hasThread,
+    streamingId,
     placeholder,
     bottomRef,
     listRef,

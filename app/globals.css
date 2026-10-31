@@ -192,25 +192,20 @@ body {
 }
 
 @keyframes meg-wake-eyes-out {
-  0%,
-  55% {
+  0% {
     opacity: 1;
     transform: scale(1);
   }
   100% {
     opacity: 0;
-    transform: scale(0.88);
+    transform: scale(0.92);
   }
 }
 
 @keyframes meg-wake-body-in {
   0% {
     opacity: 0;
-    transform: scale(0.2);
-  }
-  55% {
-    opacity: 1;
-    transform: scale(1.04);
+    transform: scale(0.42);
   }
   100% {
     opacity: 1;
@@ -220,8 +215,8 @@ body {
 
 @keyframes meg-wake-orb-grow {
   0% {
-    clip-path: circle(0% at 50% 48%);
-    transform: scale(0.55);
+    clip-path: circle(8% at 50% 48%);
+    transform: scale(0.72);
   }
   100% {
     clip-path: circle(72% at 50% 48%);
@@ -230,14 +225,13 @@ body {
 }
 
 @keyframes meg-wake-features-in {
-  0%,
-  35% {
+  0% {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(3px) scale(0.96);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -338,28 +332,41 @@ body {
 }
 
 .meg-wake-bloom--on {
-  animation: meg-wake-bloom 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: meg-wake-bloom 1.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .meg-wake-body {
+  z-index: 1;
   display: grid;
   place-items: center;
   opacity: 0;
   pointer-events: none;
 }
 
+/* Empty orb grows only after sleepy eyes start leaving. */
 .meg-wake-stage--on .meg-wake-body {
-  animation: meg-wake-body-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.52s both;
+  animation: meg-wake-body-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.72s both;
 }
 
 .meg-character--forming .meg-character__orb {
-  animation: meg-wake-orb-grow 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: meg-wake-orb-grow 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.72s both;
 }
 
+/* Face stays invisible until sleepy eyes are gone and the orb is the body. */
 .meg-character--forming .meg-character__features,
 .meg-character--forming .meg-character__specular,
-.meg-character--forming .meg-character__limb {
-  animation: meg-wake-features-in 0.7s ease 0.55s both;
+.meg-character--forming .meg-character__limb,
+.meg-character--forming .meg-character__floor-shadow {
+  opacity: 0;
+  animation: meg-wake-features-in 0.4s ease 1.08s both;
+}
+
+.meg-character--forming .meg-character__eye {
+  animation: none;
+}
+
+.meg-character--forming .meg-character__glow {
+  opacity: 0.55;
 }
 
 .meg-character--forming.meg-character--powering .meg-character__stage,
@@ -613,7 +620,7 @@ body {
 
 .meg-sleepy-eyes {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   gap: 22px;
   align-items: center;
@@ -629,16 +636,17 @@ body {
   opacity: 0.92;
 }
 
+/* Open, then clear before Meg’s face appears. */
 .meg-sleepy-eyes--waking {
-  animation: meg-wake-eyes-out 0.55s ease 0.72s both;
+  animation: meg-wake-eyes-out 0.28s ease 0.78s both;
 }
 
 .meg-sleepy-eyes--waking .meg-sleepy-eye {
-  animation: meg-wake-eye-open 0.85s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+  animation: meg-wake-eye-open 0.78s cubic-bezier(0.34, 1.2, 0.64, 1) both;
 }
 
 .meg-sleepy-eyes--waking .meg-sleepy-eye:nth-child(2) {
-  animation-delay: 70ms;
+  animation-delay: 60ms;
 }
 
 .meg-wake-hint {

@@ -74,8 +74,8 @@ export function MegChat() {
     const finish = window.setTimeout(() => {
       setPowered(true);
       setBooting(false);
-      window.setTimeout(() => setShowUi(true), 160);
-    }, 1680);
+      window.setTimeout(() => setShowUi(true), 120);
+    }, 1520);
     return () => window.clearTimeout(finish);
   }, [booting]);
 

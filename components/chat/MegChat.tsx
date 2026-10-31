@@ -259,7 +259,7 @@ export function MegChat() {
           )}
 
           <p className="mt-4 text-center text-xs text-[var(--meg-ink-soft)]">
-            Answers come from Omega’s resume only. Phone is not shared.
+            Answers come from the resume only. Phone is not shared.
             {localMode ? " · Local resume lookup (agent not connected)." : null}
           </p>
         </div>

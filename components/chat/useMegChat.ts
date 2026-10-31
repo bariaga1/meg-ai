@@ -11,9 +11,9 @@ export type ChatMessage = {
 };
 
 export const STARTERS = [
-  "What did Omega do at Medallia?",
+  "What did you do at Medallia?",
   "Which skills show up across roles?",
-  "How can I contact Omega?",
+  "How can I contact you?",
 ];
 
 function uid(): string {
@@ -153,7 +153,7 @@ export function useMegChat() {
   }, [messages, busy, streamingId]);
 
   const placeholder = useMemo(
-    () => (hasThread ? "Ask a follow-up…" : "Ask Meg about Omega’s work…"),
+    () => (hasThread ? "Ask a follow-up…" : "Ask about a role, skill, or project…"),
     [hasThread],
   );
 

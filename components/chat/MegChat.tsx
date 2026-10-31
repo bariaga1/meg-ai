@@ -124,14 +124,18 @@ export function MegChat() {
                 <div className="meg-message__label">&gt; meg</div>
                 <div className="meg-message__content">{WELCOME}</div>
                 {!hasThread && (
-                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 pl-0.5 text-[13px]">
+                  <div className="mt-3 flex flex-col items-start gap-2 pl-0.5 text-[13px] sm:flex-row sm:flex-wrap">
                     {STARTERS.map((s) => (
                       <button
                         key={s}
                         type="button"
-                        className="meg-suggestion"
+                        className="meg-suggestion rounded-md px-1 py-1.5 text-left"
                         disabled={busy}
-                        onClick={() => void send(s)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          void send(s);
+                        }}
                       >
                         {s}
                       </button>

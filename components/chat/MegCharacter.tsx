@@ -98,30 +98,32 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
       role="img"
       aria-label="Meg, your resume guide"
     >
-      <div
-        className="meg-character__stage"
-        style={
-          reducedMotion
-            ? undefined
-            : {
-                transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+      <div className="meg-character__stage">
+        <div
+          className="meg-character__tilt"
+          style={
+            reducedMotion
+              ? undefined
+              : {
+                  transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                }
+          }
+        >
+          <div className="meg-character__glow" aria-hidden />
+          <div className="meg-character__face">
+            <div
+              className="meg-character__eyes"
+              style={
+                reducedMotion
+                  ? undefined
+                  : { transform: `translate(${eyeShift.x}px, ${eyeShift.y}px)` }
               }
-        }
-      >
-        <div className="meg-character__glow" aria-hidden />
-        <div className="meg-character__face">
-          <div
-            className="meg-character__eyes"
-            style={
-              reducedMotion
-                ? undefined
-                : { transform: `translate(${eyeShift.x}px, ${eyeShift.y}px)` }
-            }
-          >
-            <span className="meg-character__eye meg-character__eye--left" />
-            <span className="meg-character__eye meg-character__eye--right" />
+            >
+              <span className="meg-character__eye meg-character__eye--left" />
+              <span className="meg-character__eye meg-character__eye--right" />
+            </div>
+            <div className="meg-character__mouth" aria-hidden />
           </div>
-          <div className="meg-character__mouth" aria-hidden />
         </div>
       </div>
     </div>

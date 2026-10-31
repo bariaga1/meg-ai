@@ -3,19 +3,97 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --meg-ink: #1a2f33;
+  --meg-ink-soft: #3d5559;
+  --meg-foam: #e8f6f2;
+  --meg-mist: #f3faf8;
+  --meg-lagoon: #2a9d8f;
+  --meg-lagoon-deep: #1d6f66;
+  --meg-sky: #7ec8e3;
+  --meg-coral: #e07a5f;
+  --meg-surface: rgba(255, 255, 255, 0.72);
+  --background: var(--meg-mist);
+  --foreground: var(--meg-ink);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  min-height: 100%;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes meg-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -1.5%, 0) scale(1.04);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes meg-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes meg-soft-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(42, 157, 143, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(42, 157, 143, 0);
+  }
+}
+
+.meg-atmosphere {
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(126, 200, 227, 0.55), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 20%, rgba(42, 157, 143, 0.28), transparent 50%),
+    radial-gradient(ellipse 60% 45% at 50% 100%, rgba(224, 122, 95, 0.18), transparent 55%),
+    linear-gradient(165deg, #f7fcfb 0%, #eaf6f3 42%, #e4f1f7 100%);
+}
+
+.meg-blob {
+  animation: meg-drift 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.meg-rise {
+  animation: meg-rise 0.7s ease-out both;
+}
+
+.meg-rise-delay {
+  animation: meg-rise 0.7s ease-out 0.12s both;
+}
+
+.meg-rise-delay-2 {
+  animation: meg-rise 0.7s ease-out 0.22s both;
+}
+
+.meg-composer:focus-within {
+  animation: meg-soft-pulse 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meg-blob,
+  .meg-rise,
+  .meg-rise-delay,
+  .meg-rise-delay-2,
+  .meg-composer:focus-within {
+    animation: none;
+  }
 }

@@ -14,7 +14,7 @@ export default defineHook({
       await ctx.host.kv.put(key, {
         count: (prev?.count ?? 0) + 1,
         at: event.at,
-        turnId: event.turnId,
+        turnId: event.turnId ?? null,
       });
     },
     async "turn.completed"(event, ctx) {

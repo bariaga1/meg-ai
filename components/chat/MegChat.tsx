@@ -51,22 +51,36 @@ export function MegChat() {
   } = useMegChat();
 
   const rootRef = useRef<HTMLDivElement>(null);
+  const floatRef = useRef<HTMLDivElement>(null);
+  const floatTargetRef = useRef({ x: 0, y: 0 });
+  const floatPosRef = useRef({ x: 0, y: 0 });
   const [powered, setPowered] = useState(false);
   const [booting, setBooting] = useState(false);
   const [showUi, setShowUi] = useState(false);
 
   const powerOn = useCallback(() => {
     if (powered || booting) return;
-    setBooting(true);
-    window.setTimeout(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
       setPowered(true);
-      setBooting(false);
-      window.setTimeout(() => setShowUi(true), 220);
-    }, 100);
+      setShowUi(true);
+      return;
+    }
+    setBooting(true);
   }, [powered, booting]);
 
   useEffect(() => {
-    if (powered) return;
+    if (!booting) return;
+    const finish = window.setTimeout(() => {
+      setPowered(true);
+      setBooting(false);
+      window.setTimeout(() => setShowUi(true), 160);
+    }, 1680);
+    return () => window.clearTimeout(finish);
+  }, [booting]);
+
+  useEffect(() => {
+    if (powered || booting) return;
     const onFirst = () => powerOn();
     window.addEventListener("pointermove", onFirst, { once: true, passive: true });
     window.addEventListener("pointerdown", onFirst, { once: true });
@@ -76,7 +90,7 @@ export function MegChat() {
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
     };
-  }, [powered, powerOn]);
+  }, [powered, booting, powerOn]);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -90,11 +104,17 @@ export function MegChat() {
       const y = (e.clientY / window.innerHeight - 0.5) * 2;
       root.style.setProperty("--meg-px", x.toFixed(3));
       root.style.setProperty("--meg-py", y.toFixed(3));
+      // Soft travel for the floating window once a thread is open.
+      floatTargetRef.current = {
+        x: Math.max(-18, Math.min(18, x * 22)),
+        y: Math.max(-14, Math.min(14, y * 16)),
+      };
     };
 
     const onLeave = () => {
       root.style.setProperty("--meg-px", "0");
       root.style.setProperty("--meg-py", "0");
+      floatTargetRef.current = { x: 0, y: 0 };
     };
 
     window.addEventListener("pointermove", onPointer, { passive: true });
@@ -105,14 +125,40 @@ export function MegChat() {
     };
   }, [powered]);
 
+  useEffect(() => {
+    if (!powered || !hasThread) {
+      floatPosRef.current = { x: 0, y: 0 };
+      if (floatRef.current) floatRef.current.style.transform = "";
+      return;
+    }
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
+    let raf = 0;
+    const tick = () => {
+      const pos = floatPosRef.current;
+      const tgt = floatTargetRef.current;
+      pos.x += (tgt.x - pos.x) * 0.08;
+      pos.y += (tgt.y - pos.y) * 0.08;
+      if (floatRef.current) {
+        floatRef.current.style.transform = `translate3d(${pos.x.toFixed(2)}px, ${pos.y.toFixed(2)}px, 0)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [powered, hasThread]);
+
   const mood: MegMood = busy ? "thinking" : streamingId ? "speaking" : "idle";
 
   if (!powered) {
     return (
       <div
-        className="meg-atmosphere meg-atmosphere--sleeping relative flex min-h-[100dvh] cursor-pointer flex-col items-center justify-center px-6"
-        onClick={powerOn}
+        className={`meg-atmosphere meg-atmosphere--sleeping relative flex min-h-[100dvh] flex-col items-center justify-center px-6 ${booting ? "meg-atmosphere--waking" : "cursor-pointer"}`}
+        onClick={booting ? undefined : powerOn}
         onKeyDown={(e) => {
+          if (booting) return;
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             powerOn();
@@ -120,14 +166,25 @@ export function MegChat() {
         }}
         role="button"
         tabIndex={0}
-        aria-label="Move or tap to meet Meg"
+        aria-label={booting ? "Meg is waking up" : "Move or tap to meet Meg"}
+        aria-busy={booting}
       >
-        <div className="meg-sleepy-eyes mb-16" aria-hidden>
-          <span className="meg-sleepy-eye" />
-          <span className="meg-sleepy-eye" />
+        <div className={`meg-wake-stage ${booting ? "meg-wake-stage--on" : ""}`}>
+          <div className={`meg-wake-bloom ${booting ? "meg-wake-bloom--on" : ""}`} aria-hidden />
+          <div className={`meg-sleepy-eyes ${booting ? "meg-sleepy-eyes--waking" : ""}`} aria-hidden>
+            <span className="meg-sleepy-eye" />
+            <span className="meg-sleepy-eye" />
+          </div>
+          {booting ? (
+            <div className="meg-wake-body" aria-hidden>
+              <MegCharacter powered mood="idle" className="meg-character--forming" />
+            </div>
+          ) : null}
         </div>
-        <p className="absolute bottom-10 text-center text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--meg-ink-soft)]">
-          Move or tap to meet Meg
+        <p
+          className={`absolute bottom-10 text-center text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--meg-ink-soft)] ${booting ? "meg-wake-hint" : ""}`}
+        >
+          {booting ? "Meg is waking…" : "Move or tap to meet Meg"}
         </p>
       </div>
     );
@@ -153,49 +210,49 @@ export function MegChat() {
         Meg online
       </div>
 
-      <main
-        className={`relative z-10 mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-5 pb-8 pt-12 sm:pt-16 ${showUi ? "meg-rise" : "opacity-0"} ${hasThread ? "" : "justify-center"}`}
-      >
-        <header
-          className={`mx-auto flex w-full max-w-md flex-col items-center justify-center text-center ${hasThread ? "mb-5" : "mb-7"}`}
-        >
-          <div className="flex w-full justify-center">
-            <MegCharacter powered={powered} mood={mood} className="mx-auto mb-4" />
+      {hasThread && (
+        <div ref={floatRef} className="meg-float">
+          <div className="meg-float__window">
+            <MegCharacter powered={powered} mood={mood} className="meg-character--dock" />
           </div>
-          <p className="w-full text-center font-[family-name:var(--font-meg-display)] text-5xl font-semibold tracking-tight text-[var(--meg-ink)] sm:text-6xl">
-            Meg
-          </p>
-          {!hasThread && (
+        </div>
+      )}
+
+      <main
+        className={`relative z-10 mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-5 pb-8 pt-12 sm:pt-16 ${showUi ? "meg-rise" : "opacity-0"} ${hasThread ? "meg-main--thread" : "justify-center"}`}
+      >
+        {!hasThread && (
+          <header className="mx-auto mb-7 flex w-full max-w-md flex-col items-center justify-center text-center">
+            <div className="flex w-full justify-center">
+              <MegCharacter powered={powered} mood={mood} className="mx-auto mb-4" />
+            </div>
+            <p className="w-full text-center font-[family-name:var(--font-meg-display)] text-5xl font-semibold tracking-tight text-[var(--meg-ink)] sm:text-6xl">
+              Meg
+            </p>
             <p className="meg-rise-delay mx-auto mt-3 max-w-sm text-center text-[15px] leading-relaxed text-[var(--meg-ink-soft)]">
               Ask about Omega’s work — roles, skills, or projects.
             </p>
-          )}
-        </header>
+          </header>
+        )}
 
         {hasThread && (
           <div
             ref={listRef}
-            className="meg-rise mb-6 w-full flex-1 space-y-4 overflow-y-auto pr-1 text-left"
+            className="meg-thread meg-rise mb-6 w-full flex-1 overflow-y-auto pr-1 pt-2 text-left"
             aria-live="polite"
           >
             {messages.map((m) => {
               const isStreaming = m.id === streamingId;
               if (m.role === "user") {
                 return (
-                  <div
-                    key={m.id}
-                    className="ml-auto max-w-[85%] rounded-2xl bg-[var(--meg-lagoon)] px-4 py-3 text-sm text-white shadow-[0_8px_24px_rgba(47,143,157,0.22)]"
-                  >
+                  <div key={m.id} className="meg-bubble meg-bubble--user">
                     {m.text}
                   </div>
                 );
               }
 
               return (
-                <div
-                  key={m.id}
-                  className="mr-auto max-w-[92%] whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--meg-ink)]"
-                >
+                <div key={m.id} className="meg-bubble meg-bubble--meg">
                   {!m.text && busy ? (
                     <LoadingState />
                   ) : (

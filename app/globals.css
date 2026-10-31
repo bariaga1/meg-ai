@@ -198,8 +198,10 @@ body {
 
 .meg-character {
   position: relative;
+  display: block;
   width: 112px;
   height: 112px;
+  margin-inline: auto;
   perspective: 640px;
 }
 
@@ -246,6 +248,7 @@ body {
   display: flex;
   height: 100%;
   width: 100%;
+  margin-inline: auto;
   overflow: hidden;
   flex-direction: column;
   align-items: center;

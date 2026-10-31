@@ -148,14 +148,16 @@ export function MegChat() {
         className={`relative z-10 mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-5 pb-8 pt-12 sm:pt-16 ${showUi ? "meg-rise" : "opacity-0"} ${hasThread ? "" : "justify-center"}`}
       >
         <header
-          className={`flex w-full flex-col items-center text-center ${hasThread ? "mb-5" : "mb-7"}`}
+          className={`mx-auto flex w-full max-w-md flex-col items-center justify-center text-center ${hasThread ? "mb-5" : "mb-7"}`}
         >
-          <MegCharacter powered={powered} mood={mood} className="mb-4" />
-          <p className="font-[family-name:var(--font-meg-display)] text-5xl font-semibold tracking-tight text-[var(--meg-ink)] sm:text-6xl">
+          <div className="flex w-full justify-center">
+            <MegCharacter powered={powered} mood={mood} className="mx-auto mb-4" />
+          </div>
+          <p className="w-full text-center font-[family-name:var(--font-meg-display)] text-5xl font-semibold tracking-tight text-[var(--meg-ink)] sm:text-6xl">
             Meg
           </p>
           {!hasThread && (
-            <p className="meg-rise-delay mt-3 max-w-sm text-[15px] leading-relaxed text-[var(--meg-ink-soft)]">
+            <p className="meg-rise-delay mx-auto mt-3 max-w-sm text-center text-[15px] leading-relaxed text-[var(--meg-ink-soft)]">
               Ask about Omega’s work — roles, skills, or projects.
             </p>
           )}

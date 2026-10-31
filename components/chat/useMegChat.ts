@@ -12,8 +12,8 @@ export type ChatMessage = {
 
 export const STARTERS = [
   "What did Omega do at Medallia?",
-  "Summarize Can I Park Here?",
   "Which skills show up across roles?",
+  "How can I contact Omega?",
 ];
 
 function uid(): string {

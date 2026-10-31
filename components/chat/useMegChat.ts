@@ -68,7 +68,7 @@ export function useMegChat() {
   }, [messages, busy]);
 
   const placeholder = useMemo(
-    () => (hasThread ? "Ask a follow-up…" : "Ask Meg about Omega’s work…"),
+    () => (hasThread ? "ask a follow-up…" : "ask anything about Omega…"),
     [hasThread],
   );
 

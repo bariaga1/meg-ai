@@ -1,6 +1,11 @@
 "use client";
 
+import { FormEvent, useCallback, useEffect, useState } from "react";
+import { MegCharacter, type MegMood } from "./MegCharacter";
 import { STARTERS, useMegChat } from "./useMegChat";
+
+const WELCOME =
+  "Hi — I’m Meg. Ask me anything on Omega Bariagaber’s resume: roles, skills, projects, or how to get in touch.";
 
 export function MegChat() {
   const {
@@ -15,117 +20,192 @@ export function MegChat() {
     bottomRef,
     listRef,
     send,
-    onSubmit,
   } = useMegChat();
 
+  const [powered, setPowered] = useState(false);
+  const [booting, setBooting] = useState(false);
+  const [showWindow, setShowWindow] = useState(false);
+
+  const powerOn = useCallback(() => {
+    if (powered || booting) return;
+    setBooting(true);
+    window.setTimeout(() => {
+      setPowered(true);
+      setBooting(false);
+      window.setTimeout(() => setShowWindow(true), 280);
+    }, 120);
+  }, [powered, booting]);
+
+  useEffect(() => {
+    if (powered) return;
+    const onFirst = () => powerOn();
+    window.addEventListener("pointermove", onFirst, { once: true, passive: true });
+    window.addEventListener("pointerdown", onFirst, { once: true });
+    window.addEventListener("keydown", onFirst, { once: true });
+    return () => {
+      window.removeEventListener("pointermove", onFirst);
+      window.removeEventListener("pointerdown", onFirst);
+      window.removeEventListener("keydown", onFirst);
+    };
+  }, [powered, powerOn]);
+
+  const mood: MegMood = busy
+    ? "thinking"
+    : hasThread && messages.some((m) => m.role === "assistant" && m.text)
+      ? "speaking"
+      : "idle";
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    void send(input);
+  }
+
+  if (!powered) {
+    return (
+      <div
+        className="meg-atmosphere meg-atmosphere--sleeping relative flex min-h-[100dvh] cursor-pointer flex-col items-center justify-center px-6"
+        onClick={powerOn}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            powerOn();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Move or tap to meet Meg"
+      >
+        <div className="meg-sleepy-eyes mb-16" aria-hidden>
+          <span className="meg-sleepy-eye" />
+          <span className="meg-sleepy-eye" />
+        </div>
+        <p className="absolute bottom-10 text-center text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--meg-brown-gray)]">
+          Move or tap to meet Meg
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative flex min-h-[100dvh] flex-col">
+    <div className="meg-atmosphere relative flex min-h-[100dvh] flex-col">
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-        <div className="meg-blob absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[rgba(126,200,227,0.35)] blur-3xl" />
-        <div className="meg-blob absolute -right-16 top-32 h-80 w-80 rounded-full bg-[rgba(42,157,143,0.22)] blur-3xl [animation-delay:-6s]" />
-        <div className="meg-blob absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-[rgba(224,122,95,0.16)] blur-3xl [animation-delay:-11s]" />
+        <div className="meg-blob absolute -left-20 top-10 h-64 w-64 rounded-full bg-[rgba(255,171,118,0.28)] blur-3xl" />
+        <div className="meg-blob absolute -right-16 bottom-24 h-72 w-72 rounded-full bg-[rgba(255,216,177,0.45)] blur-3xl [animation-delay:-7s]" />
       </div>
 
-      <main className="relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col px-5 pb-8 pt-10 sm:pt-16">
-        <header className={`meg-rise ${hasThread ? "mb-6" : "mb-10 sm:mb-14"}`}>
-          <p className="font-[family-name:var(--font-meg-display)] text-5xl font-semibold tracking-tight text-[var(--meg-ink)] sm:text-6xl md:text-7xl">
-            Meg
-          </p>
-          {!hasThread && (
-            <p className="meg-rise-delay mt-3 max-w-md text-base leading-relaxed text-[var(--meg-ink-soft)] sm:text-lg">
-              Ask about Omega Bariagaber’s work — roles, skills, and projects from the resume.
-            </p>
-          )}
-        </header>
+      <div className="absolute left-4 top-4 z-20 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--meg-peach-dark)] sm:left-6 sm:top-5">
+        <span className="meg-window__status-dot" aria-hidden />
+        Meg online
+      </div>
 
-        {hasThread && (
-          <div
-            ref={listRef}
-            className="meg-rise mb-6 flex-1 space-y-4 overflow-y-auto pr-1"
-            aria-live="polite"
-          >
-            {messages.map((m) => (
-              <div
-                key={m.id}
-                className={
-                  m.role === "user"
-                    ? "ml-8 rounded-2xl bg-[var(--meg-lagoon)] px-4 py-3 text-sm text-white sm:ml-16"
-                    : "mr-4 whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--meg-ink)] sm:mr-10"
-                }
-              >
-                {m.role === "assistant" && !m.text && busy ? (
-                  <span className="inline-flex gap-1 text-[var(--meg-ink-soft)]">
-                    <span className="animate-pulse">●</span>
-                    <span className="animate-pulse [animation-delay:120ms]">●</span>
-                    <span className="animate-pulse [animation-delay:240ms]">●</span>
-                  </span>
-                ) : (
-                  m.text
+      <main className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-4 py-12 sm:px-6 sm:py-16">
+        <div className="mb-3 flex flex-col items-center">
+          <MegCharacter powered={powered} mood={busy ? "thinking" : mood === "speaking" && !busy ? "idle" : mood} />
+          <h1 className="mt-3 font-[family-name:var(--font-meg-display)] text-5xl font-extrabold tracking-tight text-[var(--meg-cocoa)] sm:text-6xl">
+            Meg
+          </h1>
+        </div>
+
+        {showWindow && (
+          <section className="meg-window mt-2" role="region" aria-label="Chat with Meg">
+            <header className="meg-window__header">
+              <div className="meg-window__controls" aria-hidden>
+                <span className="meg-window__control" />
+                <span className="meg-window__control" />
+                <span className="meg-window__control" />
+              </div>
+              <div className="meg-window__title">~/meg_resume.ai</div>
+              <div className="meg-window__status">
+                <span className="meg-window__status-dot" aria-hidden />
+                {busy ? "thinking" : "ready"}
+              </div>
+            </header>
+
+            <div ref={listRef} className="meg-window__body" aria-live="polite">
+              <p className="meg-window__hint">try a starter below, or ask anything on the resume</p>
+
+              <div className="meg-message">
+                <div className="meg-message__label">&gt; meg</div>
+                <div className="meg-message__content">{WELCOME}</div>
+                {!hasThread && (
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 pl-0.5 text-[13px]">
+                    {STARTERS.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        className="meg-suggestion"
+                        disabled={busy}
+                        onClick={() => void send(s)}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
-            ))}
-            <div ref={bottomRef} />
-          </div>
-        )}
 
-        <div className={`meg-rise-delay-2 mt-auto ${hasThread ? "" : "flex-1"}`}>
-          {!hasThread && (
-            <div className="mb-5 flex flex-wrap gap-2">
-              {STARTERS.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => void send(s)}
-                  className="rounded-full border border-[rgba(26,47,51,0.12)] bg-[var(--meg-surface)] px-3.5 py-2 text-left text-sm text-[var(--meg-ink-soft)] backdrop-blur transition hover:border-[var(--meg-lagoon)] hover:text-[var(--meg-ink)] disabled:opacity-50"
+              {messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={m.role === "user" ? "meg-message meg-message--user" : "meg-message"}
                 >
-                  {s}
-                </button>
+                  <div className="meg-message__label">
+                    {m.role === "user" ? "> you" : "> meg"}
+                  </div>
+                  <div className="meg-message__content">
+                    {m.role === "assistant" && !m.text && busy ? (
+                      <span className="inline-flex gap-1 text-[var(--meg-brown-gray)]">
+                        <span className="animate-pulse">●</span>
+                        <span className="animate-pulse [animation-delay:120ms]">●</span>
+                        <span className="animate-pulse [animation-delay:240ms]">●</span>
+                      </span>
+                    ) : (
+                      m.text
+                    )}
+                  </div>
+                </div>
               ))}
+              <div ref={bottomRef} />
             </div>
-          )}
 
-          <form onSubmit={onSubmit} className="meg-composer rounded-2xl border border-[rgba(26,47,51,0.1)] bg-[var(--meg-surface)] p-2 shadow-[0_10px_40px_rgba(26,47,51,0.06)] backdrop-blur">
-            <label htmlFor="meg-input" className="sr-only">
-              Message Meg
-            </label>
-            <div className="flex items-end gap-2">
-              <textarea
+            <form onSubmit={onSubmit} className="meg-window__input-bar">
+              <span className="meg-window__prompt" aria-hidden>
+                &gt;
+              </span>
+              <label htmlFor="meg-input" className="sr-only">
+                Message Meg
+              </label>
+              <input
                 id="meg-input"
-                rows={1}
+                type="text"
                 value={input}
                 disabled={busy}
                 placeholder={placeholder}
+                autoComplete="off"
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    void send(input);
-                  }
-                }}
-                className="max-h-40 min-h-[48px] flex-1 resize-none bg-transparent px-3 py-3 text-[15px] text-[var(--meg-ink)] outline-none placeholder:text-[var(--meg-ink-soft)]"
+                className="min-w-0 flex-1 bg-transparent text-[14px] text-[var(--meg-charcoal)] outline-none placeholder:text-[var(--meg-text-secondary)]"
               />
               <button
                 type="submit"
                 disabled={busy || !input.trim()}
-                className="mb-1 rounded-xl bg-[var(--meg-lagoon)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--meg-lagoon-deep)] disabled:cursor-not-allowed disabled:opacity-40"
+                className="meg-window__send"
               >
-                Send
+                send ↵
               </button>
-            </div>
-          </form>
+            </form>
+          </section>
+        )}
 
-          {error && (
-            <p className="mt-3 text-sm text-[var(--meg-coral)]" role="alert">
-              {error}
-            </p>
-          )}
-
-          <p className="mt-4 text-center text-xs text-[var(--meg-ink-soft)]">
-            Answers come from Omega’s resume only. Phone is not shared.
-            {localMode ? " · Local resume lookup (agent not connected)." : null}
+        {error && (
+          <p className="mt-3 text-sm text-[var(--meg-coral)]" role="alert">
+            {error}
           </p>
-        </div>
+        )}
+
+        <p className="mt-5 max-w-md text-center text-[11px] leading-relaxed text-[var(--meg-text-secondary)]">
+          Answers come from Omega’s resume only. Phone is not shared.
+          {localMode ? " · Local resume lookup (agent not connected)." : null}
+        </p>
       </main>
     </div>
   );

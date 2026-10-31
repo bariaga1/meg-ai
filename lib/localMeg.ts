@@ -73,9 +73,11 @@ export function localMegNdjsonStream(message: string): ReadableStream<Uint8Array
   const text = localMegReply(message);
   const sessionId = `local_${Date.now().toString(36)}`;
   const continuationToken = `local:${sessionId}`;
+  // Small token-ish chunks so the UI can paint progressively even without client buffering.
+  const parts = text.match(/\S+\s*|\s+/g)?.filter(Boolean) ?? [text];
 
   return new ReadableStream<Uint8Array>({
-    start(controller) {
+    async start(controller) {
       controller.enqueue(
         encoder.encode(
           `${JSON.stringify({
@@ -86,7 +88,7 @@ export function localMegNdjsonStream(message: string): ReadableStream<Uint8Array
           })}\n`,
         ),
       );
-      const parts = text.match(/[\s\S]{1,100}/g) ?? [text];
+
       let index = 0;
       for (const delta of parts) {
         controller.enqueue(
@@ -98,7 +100,10 @@ export function localMegNdjsonStream(message: string): ReadableStream<Uint8Array
             })}\n`,
           ),
         );
+        // Soft pacing — keeps local mode from dumping the whole reply in one paint.
+        await new Promise((r) => setTimeout(r, 12));
       }
+
       controller.enqueue(
         encoder.encode(
           `${JSON.stringify({

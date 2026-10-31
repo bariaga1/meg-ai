@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Fraunces, Manrope } from "next/font/google";
+import { JetBrains_Mono, Nunito } from "next/font/google";
 import "./globals.css";
 
-const display = Fraunces({
+const display = Nunito({
   variable: "--font-meg-display",
   subsets: ["latin"],
-  axes: ["SOFT", "WONK", "opsz"],
+  weight: ["600", "700", "800"],
 });
 
-const sans = Manrope({
-  variable: "--font-meg-sans",
+const mono = JetBrains_Mono({
+  variable: "--font-meg-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${display.variable} ${sans.variable} antialiased font-[family-name:var(--font-meg-sans)]`}
+        className={`${display.variable} ${mono.variable} antialiased font-[family-name:var(--font-meg-mono)]`}
       >
         {children}
       </body>

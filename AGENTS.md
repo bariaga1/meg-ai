@@ -16,6 +16,13 @@ npm run check
 
 Run the CLI under Node, never Bun.
 
+## UI
+
+`npm run dev`, then open http://127.0.0.1:3000. That host is listed in
+`allowedDevOrigins`. Any other dev host gets 403 on `/_next` assets and
+the chat page never hydrates, so clicks and typing do nothing. With
+`AGENT_BASE_URL` unset, `/api/chat` answers from the local resume index.
+
 ## Layout
 
 - `bot/instructions.md` is the always-on prompt. Keep it short.

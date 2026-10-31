@@ -27,6 +27,7 @@ type StreamEvent = {
     text?: string;
     delta?: string;
     result?: string;
+    message?: string;
   };
   text?: string;
   sessionId?: string;
@@ -245,8 +246,19 @@ export function useMegChat() {
             );
           }
 
+          if (ev.type === "actions.requested") {
+            pendingRef.current = "";
+            stopRevealLoop();
+            setMessages((prev) =>
+              prev.map((m) => (m.id === assistantId ? { ...m, text: "" } : m)),
+            );
+            continue;
+          }
+
           if (ev.type === "turn.failed") {
-            throw new Error(ev.data?.result || "Meg could not finish that turn.");
+            throw new Error(
+              ev.data?.message || ev.data?.result || "Meg could not finish that turn.",
+            );
           }
 
           if (isTurnDone(ev)) {

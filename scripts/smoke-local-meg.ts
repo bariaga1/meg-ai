@@ -4,11 +4,12 @@ const cases: Array<{ q: string; mustInclude: string; mustNotInclude?: string }> 
   {
     q: "What did Omega do at Medallia?",
     mustInclude: "Medallia",
-    mustNotInclude: "Profile header",
+    mustNotInclude: "Here's what stands out from the resume",
   },
   {
     q: "Summarize the Can I Park Here? project",
     mustInclude: "Park",
+    mustNotInclude: "Here's what stands out from the resume",
   },
   {
     q: "How can I contact Omega?",

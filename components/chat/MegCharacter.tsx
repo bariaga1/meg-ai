@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type MegMood = "idle" | "thinking" | "speaking";
 
@@ -12,8 +12,14 @@ type Props = {
 
 type Vec = { x: number; y: number };
 
-const MAX_TILT = 18;
-const LERP = 0.14;
+/** Degrees of head pitch/yaw toward the pointer. */
+const MAX_TILT = 26;
+/** Head catch-up — lower = more lag (portfolio-like). */
+const HEAD_LERP = 0.075;
+/** Eyes chase a bit slower than the head. */
+const EYE_LERP = 0.048;
+const EYE_TRAVEL_X = 7.5;
+const EYE_TRAVEL_Y = 5.5;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -21,10 +27,11 @@ function lerp(a: number, b: number, t: number): number {
 
 export function MegCharacter({ powered, mood = "idle", className = "" }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const tiltRef = useRef<HTMLDivElement>(null);
+  const eyesRef = useRef<HTMLDivElement>(null);
   const targetRef = useRef<Vec>({ x: 0, y: 0 });
-  const currentRef = useRef<Vec>({ x: 0, y: 0 });
-  const [tilt, setTilt] = useState<Vec>({ x: 0, y: 0 });
-  const [eyeShift, setEyeShift] = useState<Vec>({ x: 0, y: 0 });
+  const headRef = useRef<Vec>({ x: 0, y: 0 });
+  const eyesVecRef = useRef<Vec>({ x: 0, y: 0 });
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -38,6 +45,16 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
   useEffect(() => {
     if (!powered || reducedMotion) {
       targetRef.current = { x: 0, y: 0 };
+      headRef.current = { x: 0, y: 0 };
+      eyesVecRef.current = { x: 0, y: 0 };
+      if (tiltRef.current) {
+        tiltRef.current.style.transform = "";
+        tiltRef.current.style.removeProperty("--meg-spec-x");
+        tiltRef.current.style.removeProperty("--meg-spec-y");
+        tiltRef.current.style.removeProperty("--meg-shade-x");
+        tiltRef.current.style.removeProperty("--meg-shade-y");
+      }
+      if (eyesRef.current) eyesRef.current.style.transform = "";
       return;
     }
 
@@ -47,39 +64,52 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
       const rect = el.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      const nx = Math.max(-1, Math.min(1, (clientX - cx) / 260));
-      const ny = Math.max(-1, Math.min(1, (clientY - cy) / 200));
+      // Soft falloff so far-away pointer still pulls, near pointer is snappy.
+      const nx = Math.max(-1, Math.min(1, (clientX - cx) / 320));
+      const ny = Math.max(-1, Math.min(1, (clientY - cy) / 260));
       targetRef.current = { x: ny * MAX_TILT, y: nx * MAX_TILT };
     };
 
     const onMove = (e: PointerEvent) => onPointer(e.clientX, e.clientY);
     window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
-  }, [powered, reducedMotion]);
-
-  useEffect(() => {
-    if (!powered || reducedMotion) {
-      currentRef.current = { x: 0, y: 0 };
-      setTilt({ x: 0, y: 0 });
-      setEyeShift({ x: 0, y: 0 });
-      return;
-    }
 
     let raf = 0;
     const tick = () => {
-      const cur = currentRef.current;
       const tgt = targetRef.current;
-      cur.x = lerp(cur.x, tgt.x, LERP);
-      cur.y = lerp(cur.y, tgt.y, LERP);
-      setTilt({ x: cur.x, y: cur.y });
-      setEyeShift({
-        x: (cur.y / MAX_TILT) * 4.2,
-        y: (cur.x / MAX_TILT) * 3.2,
-      });
+      const head = headRef.current;
+      const eyes = eyesVecRef.current;
+
+      head.x = lerp(head.x, tgt.x, HEAD_LERP);
+      head.y = lerp(head.y, tgt.y, HEAD_LERP);
+
+      // Eyes aim at the same target, but spring slower → lag behind the face.
+      const eyeTargetX = (tgt.y / MAX_TILT) * EYE_TRAVEL_X;
+      const eyeTargetY = (tgt.x / MAX_TILT) * EYE_TRAVEL_Y;
+      eyes.x = lerp(eyes.x, eyeTargetX, EYE_LERP);
+      eyes.y = lerp(eyes.y, eyeTargetY, EYE_LERP);
+
+      const nx = head.y / MAX_TILT;
+      const ny = head.x / MAX_TILT;
+      const tiltEl = tiltRef.current;
+      if (tiltEl) {
+        tiltEl.style.transform = `rotateX(${head.x.toFixed(3)}deg) rotateY(${head.y.toFixed(3)}deg) translateZ(16px)`;
+        tiltEl.style.setProperty("--meg-spec-x", `${42 + nx * 30}%`);
+        tiltEl.style.setProperty("--meg-spec-y", `${28 + ny * 24}%`);
+        tiltEl.style.setProperty("--meg-shade-x", `${50 - nx * 20}%`);
+        tiltEl.style.setProperty("--meg-shade-y", `${62 - ny * 16}%`);
+      }
+      if (eyesRef.current) {
+        eyesRef.current.style.transform = `translate3d(${eyes.x.toFixed(3)}px, ${eyes.y.toFixed(3)}px, 8px)`;
+      }
+
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(raf);
+    };
   }, [powered, reducedMotion]);
 
   const moodClass =
@@ -91,18 +121,6 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
           ? ""
           : "meg-character--breathing";
 
-  const nx = tilt.y / MAX_TILT;
-  const ny = tilt.x / MAX_TILT;
-  const tiltStyle: CSSProperties | undefined = reducedMotion
-    ? undefined
-    : ({
-        transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateZ(12px)`,
-        "--meg-spec-x": `${42 + nx * 28}%`,
-        "--meg-spec-y": `${28 + ny * 22}%`,
-        "--meg-shade-x": `${50 - nx * 18}%`,
-        "--meg-shade-y": `${62 - ny * 14}%`,
-      } as CSSProperties);
-
   return (
     <div
       ref={rootRef}
@@ -111,21 +129,14 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
       aria-label="Meg, your resume guide"
     >
       <div className="meg-character__stage">
-        <div className="meg-character__tilt" style={tiltStyle}>
+        <div ref={tiltRef} className="meg-character__tilt">
           <div className="meg-character__glow" aria-hidden />
           <div className="meg-character__orb">
             <div className="meg-character__face">
               <div className="meg-character__shade" aria-hidden />
               <div className="meg-character__specular" aria-hidden />
               <div className="meg-character__rim" aria-hidden />
-              <div
-                className="meg-character__eyes"
-                style={
-                  reducedMotion
-                    ? undefined
-                    : { transform: `translate(${eyeShift.x}px, ${eyeShift.y}px)` }
-                }
-              >
+              <div ref={eyesRef} className="meg-character__eyes">
                 <span className="meg-character__eye meg-character__eye--left">
                   <span className="meg-character__pupil" />
                 </span>

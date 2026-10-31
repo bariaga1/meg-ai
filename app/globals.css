@@ -202,12 +202,14 @@ body {
   width: 112px;
   height: 112px;
   margin-inline: auto;
-  perspective: 640px;
+  perspective: 760px;
+  perspective-origin: 50% 40%;
 }
 
 .meg-character__stage {
   width: 100%;
   height: 100%;
+  transform-style: preserve-3d;
   will-change: transform;
 }
 
@@ -217,6 +219,7 @@ body {
   height: 100%;
   transform-style: preserve-3d;
   will-change: transform;
+  transition: none;
 }
 
 .meg-character__glow {
@@ -322,6 +325,8 @@ body {
   display: flex;
   gap: 22px;
   align-items: center;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .meg-character__eye {

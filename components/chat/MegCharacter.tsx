@@ -12,14 +12,14 @@ type Props = {
 
 type Vec = { x: number; y: number };
 
-/** Degrees of head pitch/yaw toward the pointer. */
-const MAX_TILT = 26;
-/** Head catch-up — lower = more lag (portfolio-like). */
-const HEAD_LERP = 0.075;
-/** Eyes chase a bit slower than the head. */
-const EYE_LERP = 0.048;
-const EYE_TRAVEL_X = 7.5;
-const EYE_TRAVEL_Y = 5.5;
+/** How fast the gloss tracks the pointer. The silhouette never rotates. */
+const LIGHT_LERP = 0.14;
+/** Face slides inside the sphere, slower than the highlight. */
+const FACE_LERP = 0.05;
+const FACE_TRAVEL_X = 7;
+const FACE_TRAVEL_Y = 5;
+const PUPIL_EXTRA_X = 2.2;
+const PUPIL_EXTRA_Y = 1.5;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -28,10 +28,10 @@ function lerp(a: number, b: number, t: number): number {
 export function MegCharacter({ powered, mood = "idle", className = "" }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const tiltRef = useRef<HTMLDivElement>(null);
-  const eyesRef = useRef<HTMLDivElement>(null);
+  const faceRef = useRef<HTMLDivElement>(null);
   const targetRef = useRef<Vec>({ x: 0, y: 0 });
-  const headRef = useRef<Vec>({ x: 0, y: 0 });
-  const eyesVecRef = useRef<Vec>({ x: 0, y: 0 });
+  const lightRef = useRef<Vec>({ x: 36, y: 28 });
+  const faceVecRef = useRef<Vec>({ x: 0, y: 0 });
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -45,16 +45,16 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
   useEffect(() => {
     if (!powered || reducedMotion) {
       targetRef.current = { x: 0, y: 0 };
-      headRef.current = { x: 0, y: 0 };
-      eyesVecRef.current = { x: 0, y: 0 };
+      lightRef.current = { x: 36, y: 28 };
+      faceVecRef.current = { x: 0, y: 0 };
       if (tiltRef.current) {
-        tiltRef.current.style.transform = "";
-        tiltRef.current.style.removeProperty("--meg-spec-x");
-        tiltRef.current.style.removeProperty("--meg-spec-y");
-        tiltRef.current.style.removeProperty("--meg-shade-x");
-        tiltRef.current.style.removeProperty("--meg-shade-y");
+        tiltRef.current.style.removeProperty("--meg-light-x");
+        tiltRef.current.style.removeProperty("--meg-light-y");
+        tiltRef.current.style.removeProperty("--meg-pupil-x");
+        tiltRef.current.style.removeProperty("--meg-pupil-y");
+        tiltRef.current.style.removeProperty("--meg-shadow-x");
       }
-      if (eyesRef.current) eyesRef.current.style.transform = "";
+      if (faceRef.current) faceRef.current.style.transform = "";
       return;
     }
 
@@ -64,10 +64,9 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
       const rect = el.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      // Soft falloff so far-away pointer still pulls, near pointer is snappy.
       const nx = Math.max(-1, Math.min(1, (clientX - cx) / 320));
       const ny = Math.max(-1, Math.min(1, (clientY - cy) / 260));
-      targetRef.current = { x: ny * MAX_TILT, y: nx * MAX_TILT };
+      targetRef.current = { x: nx, y: ny };
     };
 
     const onMove = (e: PointerEvent) => onPointer(e.clientX, e.clientY);
@@ -76,30 +75,30 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
     let raf = 0;
     const tick = () => {
       const tgt = targetRef.current;
-      const head = headRef.current;
-      const eyes = eyesVecRef.current;
+      const light = lightRef.current;
+      const face = faceVecRef.current;
 
-      head.x = lerp(head.x, tgt.x, HEAD_LERP);
-      head.y = lerp(head.y, tgt.y, HEAD_LERP);
+      const lightX = 36 + tgt.x * 14;
+      const lightY = 28 + tgt.y * 10;
+      light.x = lerp(light.x, lightX, LIGHT_LERP);
+      light.y = lerp(light.y, lightY, LIGHT_LERP);
 
-      // Eyes aim at the same target, but spring slower → lag behind the face.
-      const eyeTargetX = (tgt.y / MAX_TILT) * EYE_TRAVEL_X;
-      const eyeTargetY = (tgt.x / MAX_TILT) * EYE_TRAVEL_Y;
-      eyes.x = lerp(eyes.x, eyeTargetX, EYE_LERP);
-      eyes.y = lerp(eyes.y, eyeTargetY, EYE_LERP);
+      face.x = lerp(face.x, tgt.x * FACE_TRAVEL_X, FACE_LERP);
+      face.y = lerp(face.y, tgt.y * FACE_TRAVEL_Y, FACE_LERP);
 
-      const nx = head.y / MAX_TILT;
-      const ny = head.x / MAX_TILT;
+      const nx = (light.x - 36) / 14;
+      const faceNx = face.x / FACE_TRAVEL_X;
+      const faceNy = face.y / FACE_TRAVEL_Y;
       const tiltEl = tiltRef.current;
       if (tiltEl) {
-        tiltEl.style.transform = `rotateX(${head.x.toFixed(3)}deg) rotateY(${head.y.toFixed(3)}deg) translateZ(16px)`;
-        tiltEl.style.setProperty("--meg-spec-x", `${42 + nx * 30}%`);
-        tiltEl.style.setProperty("--meg-spec-y", `${28 + ny * 24}%`);
-        tiltEl.style.setProperty("--meg-shade-x", `${50 - nx * 20}%`);
-        tiltEl.style.setProperty("--meg-shade-y", `${62 - ny * 16}%`);
+        tiltEl.style.setProperty("--meg-light-x", `${light.x.toFixed(2)}%`);
+        tiltEl.style.setProperty("--meg-light-y", `${light.y.toFixed(2)}%`);
+        tiltEl.style.setProperty("--meg-pupil-x", `${(faceNx * PUPIL_EXTRA_X).toFixed(2)}px`);
+        tiltEl.style.setProperty("--meg-pupil-y", `${(faceNy * PUPIL_EXTRA_Y).toFixed(2)}px`);
+        tiltEl.style.setProperty("--meg-shadow-x", `${(-nx * 6).toFixed(2)}px`);
       }
-      if (eyesRef.current) {
-        eyesRef.current.style.transform = `translate3d(${eyes.x.toFixed(3)}px, ${eyes.y.toFixed(3)}px, 8px)`;
+      if (faceRef.current) {
+        faceRef.current.style.transform = `translate3d(${face.x.toFixed(2)}px, ${face.y.toFixed(2)}px, 0)`;
       }
 
       raf = requestAnimationFrame(tick);
@@ -132,11 +131,10 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
         <div ref={tiltRef} className="meg-character__tilt">
           <div className="meg-character__glow" aria-hidden />
           <div className="meg-character__orb">
-            <div className="meg-character__face">
-              <div className="meg-character__shade" aria-hidden />
-              <div className="meg-character__specular" aria-hidden />
-              <div className="meg-character__rim" aria-hidden />
-              <div ref={eyesRef} className="meg-character__eyes">
+            <div className="meg-character__limb" aria-hidden />
+            <div className="meg-character__specular" aria-hidden />
+            <div ref={faceRef} className="meg-character__features">
+              <div className="meg-character__eyes">
                 <span className="meg-character__eye meg-character__eye--left">
                   <span className="meg-character__pupil" />
                 </span>

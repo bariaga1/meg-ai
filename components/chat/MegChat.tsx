@@ -49,11 +49,7 @@ export function MegChat() {
     };
   }, [powered, powerOn]);
 
-  const mood: MegMood = busy
-    ? "thinking"
-    : hasThread && messages.some((m) => m.role === "assistant" && m.text)
-      ? "speaking"
-      : "idle";
+  const mood: MegMood = busy ? "thinking" : "idle";
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -100,7 +96,7 @@ export function MegChat() {
 
       <main className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-4 py-12 sm:px-6 sm:py-16">
         <div className="mb-3 flex flex-col items-center">
-          <MegCharacter powered={powered} mood={busy ? "thinking" : mood === "speaking" && !busy ? "idle" : mood} />
+          <MegCharacter powered={powered} mood={mood} />
           <h1 className="mt-3 font-[family-name:var(--font-meg-display)] text-5xl font-extrabold tracking-tight text-[var(--meg-cocoa)] sm:text-6xl">
             Meg
           </h1>

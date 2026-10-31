@@ -3,15 +3,21 @@
 @tailwind utilities;
 
 :root {
-  --meg-ink: #1a2f33;
-  --meg-ink-soft: #3d5559;
+  --meg-ink: #14282e;
+  --meg-ink-soft: #4a6066;
   --meg-foam: #e8f6f2;
-  --meg-mist: #f3faf8;
-  --meg-lagoon: #2a9d8f;
-  --meg-lagoon-deep: #1d6f66;
-  --meg-sky: #7ec8e3;
-  --meg-coral: #e07a5f;
-  --meg-surface: rgba(255, 255, 255, 0.72);
+  --meg-mist: #f2f7f8;
+  --meg-lagoon: #2f8f9d;
+  --meg-lagoon-deep: #1f6d79;
+  --meg-sky: #8ec5d8;
+  --meg-coral: #d9785c;
+  --meg-glass: rgba(255, 255, 255, 0.52);
+  --meg-glass-strong: rgba(255, 255, 255, 0.68);
+  --meg-glass-edge: rgba(255, 255, 255, 0.78);
+  --meg-hairline: rgba(20, 40, 46, 0.1);
+  --meg-surface: var(--meg-glass);
+  --meg-px: 0;
+  --meg-py: 0;
   --background: var(--meg-mist);
   --foreground: var(--meg-ink);
 }
@@ -31,7 +37,7 @@ body {
     transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(2%, -1.5%, 0) scale(1.04);
+    transform: translate3d(2.4%, -1.8%, 0) scale(1.05);
   }
   100% {
     transform: translate3d(0, 0, 0) scale(1);
@@ -41,7 +47,7 @@ body {
 @keyframes meg-rise {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -52,19 +58,85 @@ body {
 @keyframes meg-soft-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(42, 157, 143, 0.35);
+    box-shadow:
+      0 0 0 0 rgba(47, 143, 157, 0.22),
+      0 18px 48px rgba(20, 40, 46, 0.06);
   }
   50% {
-    box-shadow: 0 0 0 10px rgba(42, 157, 143, 0);
+    box-shadow:
+      0 0 0 8px rgba(47, 143, 157, 0),
+      0 18px 48px rgba(20, 40, 46, 0.08);
+  }
+}
+
+@keyframes meg-shimmer {
+  0% {
+    background-position: 160% 0;
+  }
+  100% {
+    background-position: -60% 0;
+  }
+}
+
+@keyframes meg-dot-bounce {
+  0%,
+  80%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0) scale(0.85);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1);
+  }
+}
+
+@keyframes meg-caret {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes meg-stream-in {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
   }
 }
 
 .meg-atmosphere {
   background:
-    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(126, 200, 227, 0.55), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 90% 20%, rgba(42, 157, 143, 0.28), transparent 50%),
-    radial-gradient(ellipse 60% 45% at 50% 100%, rgba(224, 122, 95, 0.18), transparent 55%),
-    linear-gradient(165deg, #f7fcfb 0%, #eaf6f3 42%, #e4f1f7 100%);
+    radial-gradient(ellipse 85% 65% at 12% 8%, rgba(142, 197, 216, 0.5), transparent 58%),
+    radial-gradient(ellipse 70% 55% at 92% 18%, rgba(47, 143, 157, 0.26), transparent 52%),
+    radial-gradient(ellipse 55% 40% at 48% 100%, rgba(217, 120, 92, 0.12), transparent 58%),
+    linear-gradient(165deg, #f8fcfd 0%, #eef6f7 46%, #e7f1f5 100%);
+}
+
+.meg-glass {
+  background: var(--meg-glass);
+  border: 1px solid var(--meg-hairline);
+  box-shadow:
+    inset 0 1px 0 var(--meg-glass-edge),
+    0 12px 40px rgba(20, 40, 46, 0.05);
+  backdrop-filter: saturate(165%) blur(22px);
+  -webkit-backdrop-filter: saturate(165%) blur(22px);
+}
+
+.meg-blob-layer {
+  transform: translate3d(
+    calc(var(--meg-px) * 18px),
+    calc(var(--meg-py) * 14px),
+    0
+  );
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
 
 .meg-blob {
@@ -72,20 +144,99 @@ body {
   will-change: transform;
 }
 
+.meg-blob-b {
+  transform: translate3d(
+    calc(var(--meg-px) * -12px),
+    calc(var(--meg-py) * 10px),
+    0
+  );
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.meg-blob-c {
+  transform: translate3d(
+    calc(var(--meg-px) * 8px),
+    calc(var(--meg-py) * -16px),
+    0
+  );
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .meg-rise {
-  animation: meg-rise 0.7s ease-out both;
+  animation: meg-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .meg-rise-delay {
-  animation: meg-rise 0.7s ease-out 0.12s both;
+  animation: meg-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
 }
 
 .meg-rise-delay-2 {
-  animation: meg-rise 0.7s ease-out 0.22s both;
+  animation: meg-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
 }
 
 .meg-composer:focus-within {
-  animation: meg-soft-pulse 2.4s ease-in-out infinite;
+  animation: meg-soft-pulse 2.6s ease-in-out infinite;
+  border-color: rgba(47, 143, 157, 0.28);
+}
+
+.meg-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  max-width: 16rem;
+}
+
+.meg-shimmer-bar {
+  height: 0.65rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    100deg,
+    rgba(47, 143, 157, 0.08) 20%,
+    rgba(255, 255, 255, 0.78) 45%,
+    rgba(142, 197, 216, 0.22) 70%
+  );
+  background-size: 220% 100%;
+  animation: meg-shimmer 1.35s ease-in-out infinite;
+}
+
+.meg-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.meg-dots > span {
+  display: block;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--meg-lagoon);
+  animation: meg-dot-bounce 1.05s ease-in-out infinite;
+}
+
+.meg-dots > span:nth-child(2) {
+  animation-delay: 0.14s;
+  background: var(--meg-sky);
+}
+
+.meg-dots > span:nth-child(3) {
+  animation-delay: 0.28s;
+  background: var(--meg-lagoon-deep);
+}
+
+.meg-stream-text {
+  animation: meg-stream-in 0.28s ease-out both;
+}
+
+.meg-caret {
+  display: inline-block;
+  width: 0.12em;
+  height: 1.05em;
+  margin-left: 0.12em;
+  vertical-align: -0.12em;
+  border-radius: 1px;
+  background: var(--meg-lagoon);
+  animation: meg-caret 1s steps(1, end) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -93,7 +244,25 @@ body {
   .meg-rise,
   .meg-rise-delay,
   .meg-rise-delay-2,
-  .meg-composer:focus-within {
+  .meg-composer:focus-within,
+  .meg-shimmer-bar,
+  .meg-dots > span,
+  .meg-caret,
+  .meg-stream-text,
+  .meg-blob-layer,
+  .meg-blob-b,
+  .meg-blob-c {
     animation: none;
+    transition: none;
+  }
+
+  .meg-blob-layer,
+  .meg-blob-b,
+  .meg-blob-c {
+    transform: none;
+  }
+
+  .meg-caret {
+    opacity: 1;
   }
 }

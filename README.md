@@ -19,6 +19,9 @@ turns run on the **Cursor Agent SDK** — no OpenAI/Anthropic API keys.
 Requires **Node 22.13+** (not Bun).
 
 ```bash
+git clone https://github.com/bariaga1/meg-ai.git
+cd meg-ai
+npm install
 cp .env.example .env.local
 # AGENT_BASE_URL=http://127.0.0.1:3001
 
@@ -51,36 +54,55 @@ npx @grok/agent-sdk run --dir . --message "What did Omega do at Medallia?"
 npx @grok/agent-sdk eval --dir .
 ```
 
+## Publish / push (if starting from a local copy)
+
+Repo: [https://github.com/bariaga1/meg-ai](https://github.com/bariaga1/meg-ai)
+
+```bash
+cd /path/to/meg-ai
+git remote add origin https://github.com/bariaga1/meg-ai.git   # once
+git push -u origin main
+```
+
 ## Deploy
 
 ### 1. Cursor-hosted agent
 
-1. Push this repo to GitHub (`bariaga1/meg-ai`).
-2. Attach a Cursor service account for the team that can deploy agents.
-3. From a trusted operator terminal:
+Needs a Cursor **service account** (or operator `agent-sdk login`) with deploy
+rights. This cloud agent environment did **not** have
+`CURSOR_SERVICE_ACCOUNT_KEY`.
+
+1. Ensure `main` is pushed to GitHub.
+2. On your machine (or a Cursor env with a service account attached):
 
 ```bash
+cd meg-ai
+npx @grok/agent-sdk@0.5.0 whoami --json
 npx @grok/agent-sdk@0.5.0 validate --dir .
 npx @grok/agent-sdk@0.5.0 deploy --dir . --dry-run
 npx @grok/agent-sdk@0.5.0 deploy --dir .
 ```
 
-4. Save the one-time alias token from the first deploy.
-5. Note the hosted HTTP base URL from the deploy output / dashboard:
-   [https://cursor.com/dashboard/deployed-agents](https://cursor.com/dashboard/deployed-agents)
+3. Save the **one-time alias token** from the first deploy.
+4. Copy the hosted HTTP base URL from the deploy output or
+   [Deployed agents](https://cursor.com/dashboard/deployed-agents).
+5. Smoke: `npx @grok/agent-sdk@0.5.0 session create --slug meg-ai --message "What did Omega do at Medallia?" --wait`
 
 ### 2. Vercel UI
 
+Needs Vercel CLI auth (`vercel login`). Not available in this build environment.
+
 ```bash
 npm i -g vercel
+cd meg-ai
 vercel link
-vercel env add AGENT_BASE_URL
-# optional: vercel env add AGENT_BEARER_TOKEN
+vercel env add AGENT_BASE_URL          # Cursor-hosted agent URL, no trailing slash
+# optional:
+vercel env add AGENT_BEARER_TOKEN      # alias / bearer from Cursor deploy
 vercel --prod
 ```
 
-Set `AGENT_BASE_URL` to the Cursor-hosted agent URL (no trailing slash).
-Never expose the bearer/alias token as `NEXT_PUBLIC_*`.
+Never put the bearer/alias token in `NEXT_PUBLIC_*`.
 
 ## Layout
 

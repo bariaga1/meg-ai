@@ -39,6 +39,12 @@ Run the CLI under Node, never Bun.
 - Docs: `npx @grok/agent-sdk docs`
 - LLM docs index: `node_modules/@grok/agent-sdk/dist/docs/llms.txt`
 
+## Cursor Cloud
+
+Install is `npm ci` under Node 22 (never Bun). On boot, Next.js dev is `http://127.0.0.1:3000` and the Agent SDK playground is `http://127.0.0.1:3001/playground`. Bind Next with `--hostname 127.0.0.1`. Next 16 blocks dev assets for that host when the server is bound to `0.0.0.0`, so the page renders but clicks do nothing. Leave `AGENT_BASE_URL` unset to use the local lexical resume fallback. Model turns need a Cursor credential.
+
+`npm run lint` calls `next lint`, which Next 16 removed. Use `npm run check:agent`, `npm run validate:agent`, `npm run smoke:retrieve`, and `npm run smoke:local` without a model key.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know

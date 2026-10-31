@@ -153,7 +153,7 @@ export function useMegChat() {
   }, [messages, busy, streamingId]);
 
   const placeholder = useMemo(
-    () => (hasThread ? "Ask a follow-up…" : "Ask about a role, skill, or project…"),
+    () => (hasThread ? "Ask a follow-up…" : "Ask Meg…"),
     [hasThread],
   );
 

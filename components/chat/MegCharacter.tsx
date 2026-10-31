@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 
 export type MegMood = "idle" | "thinking" | "speaking";
 
@@ -12,8 +12,8 @@ type Props = {
 
 type Vec = { x: number; y: number };
 
-const MAX_TILT = 14;
-const LERP = 0.12;
+const MAX_TILT = 18;
+const LERP = 0.14;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -47,8 +47,8 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
       const rect = el.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      const nx = Math.max(-1, Math.min(1, (clientX - cx) / 280));
-      const ny = Math.max(-1, Math.min(1, (clientY - cy) / 220));
+      const nx = Math.max(-1, Math.min(1, (clientX - cx) / 260));
+      const ny = Math.max(-1, Math.min(1, (clientY - cy) / 200));
       targetRef.current = { x: ny * MAX_TILT, y: nx * MAX_TILT };
     };
 
@@ -73,8 +73,8 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
       cur.y = lerp(cur.y, tgt.y, LERP);
       setTilt({ x: cur.x, y: cur.y });
       setEyeShift({
-        x: (cur.y / MAX_TILT) * 3.5,
-        y: (cur.x / MAX_TILT) * 2.5,
+        x: (cur.y / MAX_TILT) * 4.2,
+        y: (cur.x / MAX_TILT) * 3.2,
       });
       raf = requestAnimationFrame(tick);
     };
@@ -91,6 +91,18 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
           ? ""
           : "meg-character--breathing";
 
+  const nx = tilt.y / MAX_TILT;
+  const ny = tilt.x / MAX_TILT;
+  const tiltStyle: CSSProperties | undefined = reducedMotion
+    ? undefined
+    : ({
+        transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateZ(12px)`,
+        "--meg-spec-x": `${42 + nx * 28}%`,
+        "--meg-spec-y": `${28 + ny * 22}%`,
+        "--meg-shade-x": `${50 - nx * 18}%`,
+        "--meg-shade-y": `${62 - ny * 14}%`,
+      } as CSSProperties);
+
   return (
     <div
       ref={rootRef}
@@ -99,31 +111,32 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
       aria-label="Meg, your resume guide"
     >
       <div className="meg-character__stage">
-        <div
-          className="meg-character__tilt"
-          style={
-            reducedMotion
-              ? undefined
-              : {
-                  transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-                }
-          }
-        >
+        <div className="meg-character__tilt" style={tiltStyle}>
           <div className="meg-character__glow" aria-hidden />
-          <div className="meg-character__face">
-            <div
-              className="meg-character__eyes"
-              style={
-                reducedMotion
-                  ? undefined
-                  : { transform: `translate(${eyeShift.x}px, ${eyeShift.y}px)` }
-              }
-            >
-              <span className="meg-character__eye meg-character__eye--left" />
-              <span className="meg-character__eye meg-character__eye--right" />
+          <div className="meg-character__orb">
+            <div className="meg-character__face">
+              <div className="meg-character__shade" aria-hidden />
+              <div className="meg-character__specular" aria-hidden />
+              <div className="meg-character__rim" aria-hidden />
+              <div
+                className="meg-character__eyes"
+                style={
+                  reducedMotion
+                    ? undefined
+                    : { transform: `translate(${eyeShift.x}px, ${eyeShift.y}px)` }
+                }
+              >
+                <span className="meg-character__eye meg-character__eye--left">
+                  <span className="meg-character__pupil" />
+                </span>
+                <span className="meg-character__eye meg-character__eye--right">
+                  <span className="meg-character__pupil" />
+                </span>
+              </div>
+              <div className="meg-character__mouth" aria-hidden />
             </div>
-            <div className="meg-character__mouth" aria-hidden />
           </div>
+          <div className="meg-character__floor-shadow" aria-hidden />
         </div>
       </div>
     </div>

@@ -3,21 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --meg-ink: #14282e;
-  --meg-ink-soft: #4a6066;
-  --meg-foam: #e8f6f2;
-  --meg-mist: #f2f7f8;
+  --meg-ink: #122429;
+  --meg-ink-soft: #455a60;
+  --meg-foam: #dfeceb;
+  --meg-mist: #e4ecee;
   --meg-lagoon: #2f8f9d;
   --meg-lagoon-deep: #1f6d79;
   --meg-sky: #8ec5d8;
   --meg-coral: #d9785c;
-  --meg-glass: rgba(255, 255, 255, 0.52);
-  --meg-glass-strong: rgba(255, 255, 255, 0.68);
-  --meg-glass-edge: rgba(255, 255, 255, 0.78);
-  --meg-hairline: rgba(20, 40, 46, 0.1);
+  --meg-glass: rgba(255, 255, 255, 0.48);
+  --meg-glass-strong: rgba(255, 255, 255, 0.62);
+  --meg-glass-edge: rgba(255, 255, 255, 0.72);
+  --meg-hairline: rgba(20, 40, 46, 0.12);
   --meg-surface: var(--meg-glass);
   --meg-px: 0;
   --meg-py: 0;
+  --meg-spec-x: 42%;
+  --meg-spec-y: 28%;
+  --meg-shade-x: 50%;
+  --meg-shade-y: 62%;
   --background: var(--meg-mist);
   --foreground: var(--meg-ink);
 }
@@ -180,23 +184,23 @@ body {
 
 .meg-atmosphere {
   background:
-    radial-gradient(ellipse 85% 65% at 12% 8%, rgba(142, 197, 216, 0.5), transparent 58%),
-    radial-gradient(ellipse 70% 55% at 92% 18%, rgba(47, 143, 157, 0.26), transparent 52%),
-    radial-gradient(ellipse 55% 40% at 48% 100%, rgba(217, 120, 92, 0.12), transparent 58%),
-    linear-gradient(165deg, #f8fcfd 0%, #eef6f7 46%, #e7f1f5 100%);
+    radial-gradient(ellipse 80% 60% at 14% 10%, rgba(110, 168, 186, 0.38), transparent 58%),
+    radial-gradient(ellipse 65% 50% at 90% 20%, rgba(36, 118, 132, 0.22), transparent 52%),
+    radial-gradient(ellipse 55% 40% at 48% 100%, rgba(180, 96, 72, 0.1), transparent 58%),
+    linear-gradient(168deg, #e8f0f2 0%, #dbe6e9 48%, #d0dde2 100%);
 }
 
 .meg-atmosphere--sleeping {
   background:
-    radial-gradient(ellipse 55% 45% at 50% 42%, rgba(142, 197, 216, 0.28), transparent 60%),
-    linear-gradient(180deg, #f5fafb 0%, #e4eef1 100%);
+    radial-gradient(ellipse 55% 45% at 50% 42%, rgba(110, 168, 186, 0.22), transparent 60%),
+    linear-gradient(180deg, #e6eef0 0%, #d2dfe4 100%);
 }
 
 .meg-character {
   position: relative;
-  width: 84px;
-  height: 84px;
-  perspective: 400px;
+  width: 112px;
+  height: 112px;
+  perspective: 640px;
 }
 
 .meg-character__stage {
@@ -215,17 +219,25 @@ body {
 
 .meg-character__glow {
   position: absolute;
-  inset: -18%;
+  inset: -22%;
   border-radius: 50%;
   background: radial-gradient(
     circle at center,
-    rgba(47, 143, 157, 0.85) 0%,
-    rgba(142, 197, 216, 0.55) 42%,
-    transparent 72%
+    rgba(47, 143, 157, 0.72) 0%,
+    rgba(142, 197, 216, 0.38) 44%,
+    transparent 74%
   );
-  filter: blur(18px);
-  opacity: 0.9;
+  filter: blur(20px);
+  opacity: 0.95;
   pointer-events: none;
+}
+
+.meg-character__orb {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
 }
 
 .meg-character__face {
@@ -234,39 +246,129 @@ body {
   display: flex;
   height: 100%;
   width: 100%;
+  overflow: hidden;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   border-radius: 50%;
-  background: linear-gradient(160deg, #9fd0df 0%, var(--meg-lagoon) 55%, #1f6d79 100%);
+  background:
+    radial-gradient(
+      circle at 32% 24%,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.08) 28%,
+      transparent 48%
+    ),
+    radial-gradient(
+      circle at 70% 78%,
+      rgba(15, 55, 64, 0.45) 0%,
+      transparent 42%
+    ),
+    linear-gradient(152deg, #b7dbe6 0%, var(--meg-lagoon) 48%, #175863 100%);
   box-shadow:
-    inset 0 -6px 14px rgba(31, 109, 121, 0.35),
-    0 8px 28px rgba(47, 143, 157, 0.28);
+    inset 0 -10px 22px rgba(12, 48, 56, 0.42),
+    inset 0 8px 16px rgba(255, 255, 255, 0.28),
+    0 14px 34px rgba(20, 70, 80, 0.28);
+}
+
+.meg-character__shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at var(--meg-shade-x) var(--meg-shade-y),
+    transparent 34%,
+    rgba(8, 36, 42, 0.28) 72%,
+    rgba(8, 36, 42, 0.4) 100%
+  );
+  pointer-events: none;
+}
+
+.meg-character__specular {
+  position: absolute;
+  width: 38%;
+  height: 26%;
+  top: var(--meg-spec-y);
+  left: var(--meg-spec-x);
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(255, 255, 255, 0.28) 42%,
+    transparent 72%
+  );
+  filter: blur(1.5px);
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+.meg-character__rim {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+    inset -6px -8px 14px rgba(255, 255, 255, 0.12);
+  pointer-events: none;
 }
 
 .meg-character__eyes {
+  position: relative;
+  z-index: 2;
   display: flex;
-  gap: 18px;
+  gap: 22px;
   align-items: center;
 }
 
 .meg-character__eye {
+  position: relative;
   display: block;
-  width: 9px;
-  height: 18px;
-  border-radius: 5px;
-  background: #0f1f24;
+  width: 11px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #1a3036 0%, #0a161a 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.18),
+    0 1px 2px rgba(0, 0, 0, 0.18);
   transform-origin: center;
   animation: meg-blink 5.5s ease-in-out infinite;
+  overflow: hidden;
+}
+
+.meg-character__pupil {
+  position: absolute;
+  top: 18%;
+  left: 22%;
+  width: 42%;
+  height: 28%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  filter: blur(0.4px);
 }
 
 .meg-character__mouth {
-  width: 28px;
-  height: 12px;
+  position: relative;
+  z-index: 2;
+  width: 32px;
+  height: 14px;
   border: 2.5px solid #0f1f24;
   border-top: none;
-  border-radius: 0 0 16px 16px;
+  border-radius: 0 0 18px 18px;
+  opacity: 0.92;
+}
+
+.meg-character__floor-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 64%;
+  height: 14px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(18, 48, 56, 0.28), transparent 70%);
+  filter: blur(4px);
+  pointer-events: none;
 }
 
 .meg-character--breathing .meg-character__stage {
@@ -296,7 +398,7 @@ body {
   height: 10px;
   border-radius: 999px;
   background: var(--meg-lagoon);
-  box-shadow: 0 0 18px rgba(142, 197, 216, 0.85);
+  box-shadow: 0 0 18px rgba(110, 168, 186, 0.75);
   opacity: 0.92;
 }
 
@@ -430,22 +532,22 @@ body {
 
 @media (max-width: 767px) {
   .meg-character {
-    width: 64px;
-    height: 64px;
+    width: 88px;
+    height: 88px;
   }
 
   .meg-character__eyes {
-    gap: 14px;
+    gap: 16px;
   }
 
   .meg-character__eye {
-    width: 7px;
-    height: 14px;
+    width: 9px;
+    height: 18px;
   }
 
   .meg-character__mouth {
-    width: 22px;
-    height: 10px;
+    width: 26px;
+    height: 12px;
   }
 }
 

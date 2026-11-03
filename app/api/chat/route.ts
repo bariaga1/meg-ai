@@ -3,14 +3,22 @@ import {
   openSessionStream,
   startOrContinueSession,
 } from "@/lib/agentClient";
+import { enforceChatGuards } from "@/lib/chatGuard";
+import {
+  isGatewayConfigured,
+  megGatewayNdjsonStream,
+  normalizeHistory,
+} from "@/lib/megGatewayChat";
 import { checkUserMessage } from "@/lib/guardrails";
 import { localMegNdjsonStream, shouldUseLocalFallback } from "@/lib/localMeg";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 type Body = {
   message?: unknown;
+  history?: unknown;
   sessionId?: unknown;
   continuationToken?: unknown;
   startIndex?: unknown;
@@ -26,6 +34,14 @@ function ndjsonResponse(stream: ReadableStream<Uint8Array>) {
 }
 
 export async function POST(req: Request) {
+  const guard = await enforceChatGuards(req);
+  if (!guard.ok) {
+    return Response.json(
+      { ok: false, error: guard.error, message: guard.message },
+      { status: guard.status },
+    );
+  }
+
   let body: Body;
   try {
     body = (await req.json()) as Body;
@@ -40,6 +56,8 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
+
+  const history = normalizeHistory(body.history);
 
   const sessionId =
     typeof body.sessionId === "string" && body.sessionId ? body.sessionId : undefined;
@@ -59,24 +77,42 @@ export async function POST(req: Request) {
     );
   }
 
-  // Lexical local Meg when the Cursor agent isn't wired (great for local demo / pre-deploy).
-  if (shouldUseLocalFallback() || !isAgentConfigured()) {
+  const fromLocalOrGw =
+    sessionId?.startsWith("local_") ||
+    sessionId?.startsWith("gw_") ||
+    continuationToken?.startsWith("local:") ||
+    continuationToken?.startsWith("gw:");
+  const agentSessionId = fromLocalOrGw ? undefined : sessionId;
+  const agentToken = fromLocalOrGw ? undefined : continuationToken;
+  const agentStart = fromLocalOrGw ? 0 : startIndex;
+
+  if (shouldUseLocalFallback()) {
+    return ndjsonResponse(localMegNdjsonStream(checked.text));
+  }
+
+  // Prefer AI Gateway when no Cursor agent URL is configured.
+  if (!isAgentConfigured() && isGatewayConfigured()) {
+    try {
+      return ndjsonResponse(megGatewayNdjsonStream(checked.text, history));
+    } catch {
+      return ndjsonResponse(localMegNdjsonStream(checked.text));
+    }
+  }
+
+  if (!isAgentConfigured()) {
     return ndjsonResponse(localMegNdjsonStream(checked.text));
   }
 
   try {
     const session = await startOrContinueSession({
       message: checked.text,
-      sessionId,
-      continuationToken,
+      sessionId: agentSessionId,
+      continuationToken: agentToken,
     });
 
-    const streamRes = await openSessionStream(session.sessionId, startIndex);
+    const streamRes = await openSessionStream(session.sessionId, agentStart);
     if (!streamRes.ok || !streamRes.body) {
       const detail = await streamRes.text().catch(() => "");
-      if (process.env.MEG_DISABLE_LOCAL_FALLBACK !== "1") {
-        return ndjsonResponse(localMegNdjsonStream(checked.text));
-      }
       return Response.json(
         {
           ok: false,
@@ -90,6 +126,8 @@ export async function POST(req: Request) {
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
     const upstream = streamRes.body.getReader();
+    let pending = "";
+    let turnSettled = false;
 
     const stream = new ReadableStream<Uint8Array>({
       start(controller) {
@@ -104,6 +142,10 @@ export async function POST(req: Request) {
         );
       },
       async pull(controller) {
+        if (turnSettled) {
+          controller.close();
+          return;
+        }
         const { done, value } = await upstream.read();
         if (done) {
           controller.close();
@@ -111,6 +153,24 @@ export async function POST(req: Request) {
         }
         const chunk = decoder.decode(value, { stream: true });
         controller.enqueue(encoder.encode(chunk));
+        pending += chunk;
+        const lines = pending.split("\n");
+        pending = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.includes('"type"')) continue;
+          try {
+            const ev = JSON.parse(line) as { type?: string };
+            if (ev.type === "turn.completed" || ev.type === "turn.failed") {
+              turnSettled = true;
+            }
+          } catch {
+            // Keep forwarding. A split JSON line stays in `pending`.
+          }
+        }
+        if (turnSettled) {
+          await upstream.cancel();
+          controller.close();
+        }
       },
       cancel() {
         void upstream.cancel();
@@ -120,9 +180,6 @@ export async function POST(req: Request) {
     return ndjsonResponse(stream);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Agent proxy failed";
-    if (process.env.MEG_DISABLE_LOCAL_FALLBACK !== "1") {
-      return ndjsonResponse(localMegNdjsonStream(checked.text));
-    }
     const missing = message.includes("AGENT_BASE_URL");
     return Response.json(
       { ok: false, error: missing ? "agent_unconfigured" : "agent_error", message },

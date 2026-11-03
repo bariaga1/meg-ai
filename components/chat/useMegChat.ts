@@ -11,9 +11,9 @@ export type ChatMessage = {
 };
 
 export const STARTERS = [
-  "What did Omega do at Medallia?",
+  "What did you do at Medallia?",
   "Which skills show up across roles?",
-  "How can I contact Omega?",
+  "How can I contact you?",
 ];
 
 function uid(): string {
@@ -27,6 +27,7 @@ type StreamEvent = {
     text?: string;
     delta?: string;
     result?: string;
+    message?: string;
   };
   text?: string;
   sessionId?: string;
@@ -153,7 +154,7 @@ export function useMegChat() {
   }, [messages, busy, streamingId]);
 
   const placeholder = useMemo(
-    () => (hasThread ? "Ask a follow-up…" : "Ask Meg about Omega’s work…"),
+    () => (hasThread ? "Ask a follow-up…" : "Ask Meg…"),
     [hasThread],
   );
 
@@ -172,11 +173,18 @@ export function useMegChat() {
     setInput("");
 
     try {
+      const history = [...messages, userMsg]
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .filter((m) => m.text.trim())
+        .slice(-8)
+        .map((m) => ({ role: m.role as "user" | "assistant", text: m.text }));
+
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           message: trimmed,
+          history,
           sessionId: sessionId ?? undefined,
           continuationToken: continuationToken ?? undefined,
           startIndex,
@@ -216,8 +224,13 @@ export function useMegChat() {
           if (ev.type === "session" && ev.sessionId && ev.continuationToken) {
             setSessionId(ev.sessionId);
             setContinuationToken(ev.continuationToken);
-            if (ev.mode === "local" || ev.sessionId.startsWith("local_")) {
-              setLocalMode(true);
+            if (
+              ev.mode === "local" ||
+              ev.mode === "gateway" ||
+              ev.sessionId.startsWith("local_") ||
+              ev.sessionId.startsWith("gw_")
+            ) {
+              setLocalMode(ev.mode === "local" || ev.sessionId.startsWith("local_"));
             }
             continue;
           }
@@ -245,8 +258,19 @@ export function useMegChat() {
             );
           }
 
+          if (ev.type === "actions.requested") {
+            pendingRef.current = "";
+            stopRevealLoop();
+            setMessages((prev) =>
+              prev.map((m) => (m.id === assistantId ? { ...m, text: "" } : m)),
+            );
+            continue;
+          }
+
           if (ev.type === "turn.failed") {
-            throw new Error(ev.data?.result || "Meg could not finish that turn.");
+            throw new Error(
+              ev.data?.message || ev.data?.result || "Meg could not finish that turn.",
+            );
           }
 
           if (isTurnDone(ev)) {
@@ -264,7 +288,7 @@ export function useMegChat() {
             m.id === assistantId && !m.text
               ? {
                   ...m,
-                  text: "I could not stream a reply. Is the Agent SDK server running?",
+                  text: "I could not stream a reply. Try again in a moment.",
                 }
               : m,
           ),

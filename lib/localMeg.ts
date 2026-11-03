@@ -130,5 +130,7 @@ export function localMegNdjsonStream(message: string): ReadableStream<Uint8Array
 export function shouldUseLocalFallback(): boolean {
   if (process.env.MEG_FORCE_LOCAL === "1") return true;
   if (process.env.MEG_DISABLE_LOCAL_FALLBACK === "1") return false;
-  return !process.env.AGENT_BASE_URL?.trim();
+  // Lexical-only mode when neither Cursor agent nor AI Gateway is available.
+  // Gateway availability is decided in the chat route via isGatewayConfigured().
+  return false;
 }

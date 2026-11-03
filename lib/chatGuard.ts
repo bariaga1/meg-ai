@@ -1,12 +1,17 @@
 import { unstable_checkRateLimit as checkRateLimit } from "@vercel/firewall";
 import { checkBotId } from "botid/server";
+import { MEG_MAX_HISTORY_MESSAGES } from "./megPrompt";
 
 /** Must match the Vercel Firewall rate-limit rule id. */
 export const CHAT_RATE_LIMIT_ID = "meg-chat";
 
+/** Process-local backup (Hobby / multi-instance soft); Firewall is the durable cap when available. */
 const WINDOW_MS = 60_000;
-const MAX_PER_WINDOW = 8;
-const MAX_PER_DAY = 80;
+const MAX_PER_WINDOW = 5;
+const MAX_PER_DAY = 30;
+
+/** Max user turns in a single browser session before we ask them to refresh. */
+export const MEG_MAX_USER_TURNS_PER_SESSION = 12;
 
 type Bucket = { count: number; resetAt: number };
 const minuteBuckets = new Map<string, Bucket>();
@@ -93,5 +98,37 @@ export async function enforceChatGuards(req: Request): Promise<ChatGuardResult> 
     };
   }
 
+  return { ok: true };
+}
+
+/**
+ * Reject oversized client history / long sessions before they burn tokens.
+ * `userTurnCount` is the thread’s user-message total (client-reported; rate
+ * limits still bound abuse if spoofed).
+ */
+export function enforceSessionBudget(
+  historyLength: number,
+  userTurnCount?: number,
+): ChatGuardResult {
+  if (historyLength > MEG_MAX_HISTORY_MESSAGES) {
+    return {
+      ok: false,
+      status: 400,
+      error: "history_too_long",
+      message: "Chat history is too long. Refresh and start a shorter thread.",
+    };
+  }
+  if (
+    typeof userTurnCount === "number" &&
+    Number.isFinite(userTurnCount) &&
+    userTurnCount > MEG_MAX_USER_TURNS_PER_SESSION
+  ) {
+    return {
+      ok: false,
+      status: 429,
+      error: "session_limit",
+      message: "This chat session is full. Refresh the page to start a new one.",
+    };
+  }
   return { ok: true };
 }

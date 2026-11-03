@@ -3,7 +3,7 @@ import {
   openSessionStream,
   startOrContinueSession,
 } from "@/lib/agentClient";
-import { enforceChatGuards } from "@/lib/chatGuard";
+import { enforceChatGuards, enforceSessionBudget } from "@/lib/chatGuard";
 import {
   isGatewayConfigured,
   megGatewayNdjsonStream,
@@ -19,6 +19,7 @@ export const maxDuration = 60;
 type Body = {
   message?: unknown;
   history?: unknown;
+  userTurnCount?: unknown;
   sessionId?: unknown;
   continuationToken?: unknown;
   startIndex?: unknown;
@@ -57,6 +58,18 @@ export async function POST(req: Request) {
     );
   }
 
+  const rawHistoryLen = Array.isArray(body.history) ? body.history.length : 0;
+  const userTurnCount =
+    typeof body.userTurnCount === "number" && Number.isFinite(body.userTurnCount)
+      ? Math.max(0, Math.floor(body.userTurnCount))
+      : undefined;
+  const sessionBudget = enforceSessionBudget(rawHistoryLen, userTurnCount);
+  if (!sessionBudget.ok) {
+    return Response.json(
+      { ok: false, error: sessionBudget.error, message: sessionBudget.message },
+      { status: sessionBudget.status },
+    );
+  }
   const history = normalizeHistory(body.history);
 
   const sessionId =

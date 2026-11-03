@@ -162,6 +162,13 @@ export function useMegChat() {
     const trimmed = text.trim();
     if (!trimmed || busy) return;
 
+    const priorUserTurns = messages.filter((m) => m.role === "user").length;
+    const userTurnCount = priorUserTurns + 1;
+    if (userTurnCount > 12) {
+      setError("This chat session is full. Refresh the page to start a new one.");
+      return;
+    }
+
     setError(null);
     setBusy(true);
     flushReveal();
@@ -185,6 +192,7 @@ export function useMegChat() {
         body: JSON.stringify({
           message: trimmed,
           history,
+          userTurnCount,
           sessionId: sessionId ?? undefined,
           continuationToken: continuationToken ?? undefined,
           startIndex,

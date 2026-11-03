@@ -70,8 +70,8 @@ export function megGatewayNdjsonStream(
       },
     ],
     maxOutputTokens: MEG_MAX_OUTPUT_TOKENS,
-    // Low temperature: public site must not invent resume facts.
-    temperature: 0.2,
+    // Low enough to stay on-resume; high enough for natural phrasing.
+    temperature: 0.35,
   });
 
   return new ReadableStream<Uint8Array>({

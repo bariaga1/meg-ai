@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const display = Fraunces({
@@ -13,10 +14,31 @@ const sans = Manrope({
   subsets: ["latin"],
 });
 
+const canonical = siteUrl();
+
 export const metadata: Metadata = {
-  title: "Meg — ask about Omega Bariagaber",
-  description:
-    "Meg is an employer-facing resume chat agent for Omega Bariagaber. Ask about skills, roles, and projects.",
+  metadataBase: new URL(canonical),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: "Omega Bariagaber" }],
+  openGraph: {
+    type: "website",
+    url: canonical,
+    siteName: SITE_NAME,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

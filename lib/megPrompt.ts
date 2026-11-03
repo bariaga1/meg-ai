@@ -32,8 +32,8 @@ Voice
 // Flash (not lite): still cheap, better at staying inside resume context.
 export const DEFAULT_GATEWAY_MODEL = "google/gemini-2.5-flash";
 
-/** Cap reply length to control spend. */
-export const MEG_MAX_OUTPUT_TOKENS = 450;
+/** Cap reply length to control spend (public LinkedIn traffic). */
+export const MEG_MAX_OUTPUT_TOKENS = 300;
 
 /** Max prior turns the client may send (user+assistant pairs count as two). */
 export const MEG_MAX_HISTORY_MESSAGES = 8;

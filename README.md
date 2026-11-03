@@ -42,9 +42,38 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000).
    replies grounded by BM25 retrieve  
 4. Otherwise lexical fallback  
 
-Public deploy uses Gateway + BotID + rate limits (see `/api/chat`). Set
-`AI_GATEWAY_MODEL` (default `google/gemini-2.5-flash-lite`) and a Gateway
-budget in the Vercel dashboard.
+Public deploy uses Gateway + BotID + rate limits (see `/api/chat`). Default
+model is `google/gemini-2.5-flash`. Caps: **5 messages/min** and **30/day**
+per IP (process-local backup), **12 user turns** per browser session, **300**
+max output tokens.
+
+### Budget alerts (do this in the Vercel dashboard)
+
+AI Gateway spend is not enforced in app code. In
+[AI Gateway](https://vercel.com/dashboard) → your team → **AI Gateway** /
+**Budgets**:
+
+1. Set a monthly budget (start around **$10–20** for LinkedIn posts).
+2. Enable alerts at **50% / 75% / 100%** (email or Slack if available).
+3. Prefer **hard stop** at 100% so a scrape cannot run unbounded.
+4. Keep `AI_GATEWAY_MODEL` on Flash — do not switch to Pro for public Q&A.
+
+### Open Graph (LinkedIn link preview)
+
+When someone pastes your URL on LinkedIn, LinkedIn fetches **Open Graph**
+tags (`og:title`, `og:description`, `og:image`). This repo generates
+`/opengraph-image` and wires metadata in `app/layout.tsx`.
+
+After deploy, test with [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/)
+(it caches aggressively — “Inspect” again after changes). Set
+`NEXT_PUBLIC_SITE_URL` to your production URL (custom domain when ready).
+
+### Custom domain
+
+Current production host: `meg-ai-nine.vercel.app`. `meg.ai` is **not**
+available to register. In Vercel → Project → **Domains**, add a domain you
+own (or buy one), then set `NEXT_PUBLIC_SITE_URL=https://that.domain` and
+redeploy so OG absolute URLs match.
 
 ### Useful checks (no model key required)
 

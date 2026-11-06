@@ -23,6 +23,10 @@ const FOLLOW_UP_HINT =
 const SKILL_HINT =
   /\b(skills?|python|typescript|javascript|node\.?js|sql|power\s*bi|tableau|salesforce|familiar|know|used|stack|tools?|cursor|claude|copilot)\b/i;
 
+/** Skills that repeat across the career, not a single tool. */
+const ACROSS_ROLES_HINT =
+  /\b(across\s+(his\s+|the\s+)?(roles?|jobs?|employers?|positions?|career)|throughout\s+(his\s+)?career|in\s+common|show(?:s|ed)?\s+up)\b/i;
+
 /** Broad AI work. Excludes “which AI coding tools” and a single named project. */
 const AI_WORK_HINT =
   /\b(ai|a\.i\.|artificial intelligence|machine learning|llm|gpt|generative)\b/i;
@@ -140,6 +144,7 @@ export function retrieveResumeContext(
   const searchQuery = retrievalQuery(query, history);
   const wantContact = PROFILE_HINT.test(query) || PROFILE_HINT.test(searchQuery);
   const wantSkills = SKILL_HINT.test(query);
+  const acrossRoles = ACROSS_ROLES_HINT.test(query) || ACROSS_ROLES_HINT.test(searchQuery);
   const wantEducation = EDUCATION_HINT.test(query);
   const priorTalkedProjects = history.some(
     (t) => PROJECT_HINT.test(t.text) || /park here|careeros|storefront/i.test(t.text),
@@ -212,7 +217,14 @@ export function retrieveResumeContext(
   if (wantRoles) {
     prefer([careerOrderChunk(), ...orderedJobChunks()]);
   }
-  if (wantSkills) {
+  if (wantSkills && acrossRoles) {
+    prefer(
+      index
+        .search("technical skills programming SQL Python JavaScript scripts", 4)
+        .filter((h) => h.id === "technical-skills"),
+    );
+    prefer(orderedJobChunks());
+  } else if (wantSkills) {
     const skills = index.search(
       `${query} technical skills Python TypeScript SQL Power BI Tableau Informatica`,
       8,
@@ -230,9 +242,11 @@ export function retrieveResumeContext(
   const tail =
     wantRoles || wantWeakness
       ? ranked.filter((hit) => !isProjectChunk(hit))
-      : wantAiPicture || askedProjects
-        ? ranked.filter((hit) => hit.id !== "summary")
-        : ranked;
+      : acrossRoles
+        ? ranked.filter((hit) => hit.id !== "summary" && !isProjectChunk(hit))
+        : wantAiPicture || askedProjects
+          ? ranked.filter((hit) => hit.id !== "summary")
+          : ranked;
   prefer(tail);
 
   if (byId.size === 0) {
@@ -240,7 +254,9 @@ export function retrieveResumeContext(
   }
 
   const limit =
-    wantRoles
+    acrossRoles
+      ? 1 + orderedJobChunks().length
+      : wantRoles
       ? 1 + orderedJobChunks().length + 3
       : wantWeakness
       ? 3

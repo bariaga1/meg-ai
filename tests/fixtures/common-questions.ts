@@ -271,8 +271,8 @@ export const GROUNDING_CASES: GroundingCase[] = [
   {
     id: "skills",
     question: "Which skills show up across roles?",
-    mustRetrieveIds: ["technical-skills"],
-    mustAppearInContext: ["Python", "Power BI"],
+    mustRetrieveIds: ["technical-skills", "medallia", "marathon", "nasdaq", "saama"],
+    mustAppearInContext: ["Python", "SQL", "scripts", "web-based"],
   },
   {
     id: "python",

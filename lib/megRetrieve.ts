@@ -17,10 +17,6 @@ const ROLE_HINT =
 const OTHER_ROLES_HINT =
   /\b(other\s+roles?|where\s+else|previous\s+roles?|prior\s+roles?|before\s+that|earlier\s+roles?|other\s+jobs?|other\s+employers?|anywhere\s+else)\b/i;
 
-/** "last two roles" / "most recent job" — a count, not the whole career. */
-const RECENT_ROLES_HINT =
-  /\b(?:last|latest|most\s+recent|recent)\b(?:\s+\w+){0,4}\s+\b(?:roles?|jobs?|positions?|employers?)\b/i;
-
 const FOLLOW_UP_HINT =
   /\b(else|other|another|more|anything\s+else|what\s+about|tell\s+me\s+more|and\s+then|before\s+that|previous|prior)\b/i;
 
@@ -113,30 +109,22 @@ function endRecency(title: string): number {
   return Number(last[2]) * 12 + (MONTH_INDEX[last[1].toLowerCase()] ?? 0);
 }
 
-function recentRoleCount(query: string): number {
-  const word = query.match(/\b(one|1|two|2|three|3|four|4)\b/i);
-  const counts: Record<string, number> = {
-    one: 1,
-    "1": 1,
-    two: 2,
-    "2": 2,
-    three: 3,
-    "3": 3,
-    four: 4,
-    "4": 4,
-  };
-  if (word) return counts[word[1].toLowerCase()] ?? 2;
-  if (/\b(role|job|position|employer)\b/i.test(query) && !/\b(roles|jobs|positions|employers)\b/i.test(query)) {
-    return 1;
-  }
-  return 2;
-}
-
-function recentJobChunks(count: number): RankedChunk[] {
+function orderedJobChunks(): RankedChunk[] {
   return allJobChunks()
     .slice()
-    .sort((a, b) => endRecency(b.title) - endRecency(a.title))
-    .slice(0, count);
+    .sort((a, b) => endRecency(b.title) - endRecency(a.title));
+}
+
+/** Short dated list so the model can answer order and count questions. */
+function careerOrderChunk(): RankedChunk {
+  const lines = orderedJobChunks().map((job, index) => `${index + 1}. ${job.title}`);
+  return {
+    id: "career-order",
+    title: "Career order (most recent first)",
+    tags: ["career-order"],
+    score: 0,
+    text: `Career order, most recent first. Use this list for questions about sequence, counts, the last role, the first role, or what came before or after.\n${lines.join("\n")}`,
+  };
 }
 
 /** Top resume sections for a recruiter question (lexical, no embeddings). */
@@ -157,11 +145,6 @@ export function retrieveResumeContext(
       ROLE_HINT.test(t.text) ||
       /medallia|marathon|nasdaq|calypso|saama/i.test(t.text),
   );
-  const recentCount = RECENT_ROLES_HINT.test(query) ? recentRoleCount(query) : null;
-  if (recentCount != null) {
-    return recentJobChunks(recentCount);
-  }
-
   const wantAiPicture =
     (AI_WORK_HINT.test(query) || AI_WORK_HINT.test(searchQuery)) &&
     !AI_TOOL_HINT.test(query) &&
@@ -208,7 +191,7 @@ export function retrieveResumeContext(
     );
   }
   if (wantRoles) {
-    prefer(allJobChunks());
+    prefer([careerOrderChunk(), ...orderedJobChunks()]);
   }
   if (wantSkills) {
     const skills = index.search(
@@ -225,14 +208,16 @@ export function retrieveResumeContext(
     prefer(index.search("Omega Bariagaber email LinkedIn Remote contact", 6));
   }
 
-  prefer(ranked);
+  prefer(wantRoles ? ranked.filter((hit) => !isProjectChunk(hit)) : ranked);
 
   if (byId.size === 0) {
     return ranked.slice(0, topK);
   }
 
   const limit =
-    wantAiPicture || wantProjects || wantRoles
+    wantRoles
+      ? 1 + orderedJobChunks().length + 3
+      : wantAiPicture || wantProjects
       ? Math.max(topK, 6)
       : wantSkills || wantEducation || wantContact
         ? Math.max(topK, 5)

@@ -44,14 +44,18 @@ describe("meg retrieval grounding (no model calls)", () => {
 });
 
 describe("recent roles", () => {
-  it("returns only the two most recent jobs, Medallia then Marathon", () => {
+  it("puts a most-recent-first career list ahead of the jobs and leaves projects out", () => {
     const hits = retrieveResumeContext("What were your last two roles?");
-    assert.equal(hits.length, 2);
-    assert.match(hits[0].id, /medallia/i);
-    assert.match(hits[1].id, /marathon/i);
-    const context = formatResumeContext(hits);
-    assert.equal(context.includes("Nasdaq"), false);
-    assert.equal(context.includes("CareerOS"), false);
+    assert.match(hits[0].id, /career-order/);
+    const order = hits[0].text;
+    const medallia = order.indexOf("Medallia");
+    const marathon = order.indexOf("Marathon");
+    const nasdaq = order.indexOf("Nasdaq");
+    assert.ok(medallia >= 0 && medallia < marathon && marathon < nasdaq);
+    assert.equal(
+      hits.some((hit) => /careeros|storefront|park/i.test(hit.id)),
+      false,
+    );
   });
 });
 

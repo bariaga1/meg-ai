@@ -1,6 +1,6 @@
-# Independent projects
+# Personal side projects
 
-Source for Meg when a question is about AI or applied projects. The resume keeps the short PDF lines. This file is the fuller picture. Dates: October 2025 – Present. Phone numbers stay out.
+These are not employers. Professional roles come first. The projects show newer technology Omega has been building on the side since October 2025. The resume keeps the short PDF lines. This file is the fuller picture when someone asks about a project. Phone numbers stay out.
 
 ## Can I Park Here?
 

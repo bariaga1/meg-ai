@@ -82,6 +82,51 @@ function allJobChunks(): RankedChunk[] {
     .filter(isJobChunk);
 }
 
+const MONTH_INDEX: Record<string, number> = {
+  january: 0,
+  february: 1,
+  march: 2,
+  april: 3,
+  may: 4,
+  june: 5,
+  july: 6,
+  august: 7,
+  september: 8,
+  october: 9,
+  november: 10,
+  december: 11,
+};
+
+/** End date in the job title, as year * 12 + month. Missing dates sort last. */
+function endRecency(title: string): number {
+  const found = [
+    ...title.matchAll(
+      /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})/gi,
+    ),
+  ];
+  if (found.length === 0) return 0;
+  const last = found[found.length - 1];
+  return Number(last[2]) * 12 + (MONTH_INDEX[last[1].toLowerCase()] ?? 0);
+}
+
+function orderedJobChunks(): RankedChunk[] {
+  return allJobChunks()
+    .slice()
+    .sort((a, b) => endRecency(b.title) - endRecency(a.title));
+}
+
+/** Short dated list so the model can answer order and count questions. */
+function careerOrderChunk(): RankedChunk {
+  const lines = orderedJobChunks().map((job, index) => `${index + 1}. ${job.title}`);
+  return {
+    id: "career-order",
+    title: "Career order (most recent first)",
+    tags: ["career-order"],
+    score: 0,
+    text: `Career order, most recent first. Use this list for questions about sequence, counts, the last role, the first role, or what came before or after.\n${lines.join("\n")}`,
+  };
+}
+
 /** Top resume sections for a recruiter question (lexical, no embeddings). */
 export function retrieveResumeContext(
   query: string,
@@ -105,10 +150,10 @@ export function retrieveResumeContext(
     !AI_TOOL_HINT.test(query) &&
     !NAMED_PROJECT_HINT.test(query) &&
     !SENTIMENT_HINT.test(query);
-  const wantProjects =
-    wantAiPicture ||
+  const askedProjects =
     PROJECT_HINT.test(query) ||
     (FOLLOW_UP_HINT.test(query) && priorTalkedProjects && !OTHER_ROLES_HINT.test(query));
+  const wantProjects = askedProjects;
   const wantRoles =
     !wantAiPicture &&
     (OTHER_ROLES_HINT.test(query) ||
@@ -130,23 +175,23 @@ export function retrieveResumeContext(
     }
   };
 
-  if (wantProjects) {
-    prefer(allProjectChunks());
-  }
   if (wantAiPicture) {
     prefer(
       index
         .search("Medallia AI-assisted sentiment classification model 84%", 4)
         .filter((h) => /medallia/i.test(h.id)),
     );
+    prefer(allProjectChunks());
     prefer(
       index
         .search("technical skills AI automation n8n LLM", 4)
         .filter((h) => h.id === "technical-skills"),
     );
+  } else if (askedProjects) {
+    prefer(allProjectChunks());
   }
   if (wantRoles) {
-    prefer(allJobChunks());
+    prefer([careerOrderChunk(), ...orderedJobChunks()]);
   }
   if (wantSkills) {
     const skills = index.search(
@@ -163,15 +208,19 @@ export function retrieveResumeContext(
     prefer(index.search("Omega Bariagaber email LinkedIn Remote contact", 6));
   }
 
-  prefer(ranked);
+  prefer(wantRoles ? ranked.filter((hit) => !isProjectChunk(hit)) : ranked);
 
   if (byId.size === 0) {
     return ranked.slice(0, topK);
   }
 
   const limit =
-    wantAiPicture || wantProjects || wantRoles
+    wantRoles
+      ? 1 + orderedJobChunks().length + 3
+      : wantAiPicture
       ? Math.max(topK, 6)
+      : wantProjects
+      ? Math.max(topK, 4)
       : wantSkills || wantEducation || wantContact
         ? Math.max(topK, 5)
         : topK;

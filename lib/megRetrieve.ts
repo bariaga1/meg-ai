@@ -127,7 +127,10 @@ export function retrieveResumeContext(
     prefer(allJobChunks());
   }
   if (wantSkills) {
-    const skills = index.search("technical skills Python TypeScript Power BI", 8);
+    const skills = index.search(
+      `${query} technical skills Python TypeScript SQL Power BI Tableau Informatica`,
+      8,
+    );
     prefer(skills.filter((h) => h.id === "technical-skills" || h.tags.includes("skills")));
     prefer(skills);
   }

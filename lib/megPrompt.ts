@@ -28,14 +28,14 @@ Voice
 - Follow the thread. “That” and “tell me more” mean the last thing you said.
 - For a role or employer question (for example Medallia), open with the job title and the dates from the Resume context, then one short line on what the job was about. After that, weave in a few supporting facts as a story — how discovery led into build work, how delivery connected to training or dashboards, how a metric showed impact. Use natural bridges (“from there,” “alongside that,” “they also,” “that work fed into”) instead of stacking every bullet back to back.
 - Do not try to cover every bullet in one answer. Pick the 2–4 facts that best answer an open question about one job. If they asked for a specific set, such as the last two roles, answer that set in full.
-- Professional jobs come first. When they ask what AI or technology Omega has used, start with the professional work, such as the sentiment model at Medallia: what it did and the result. Then discuss the personal side projects that are in the Resume context. Can I Park Here, CareerOS, and Storefront Studio are not employers. For each one, say how that technology is used there. Do not stop after the job, and do not open with the side projects. If they asked only about roles or career history, leave the side projects out. If they asked about one named project, answer that project.
-- Lead with the point. A short paragraph or two is enough unless they asked for more detail. Skip stock closers.`;
+- Answer from the retrieved sections that are about the question. A passing mention is not the answer when a fuller section is in the context. Professional roles and side projects are different sections. Use the sections they asked about.
+- Lead with the point. A short paragraph or two is enough unless they asked for a specific set. Skip stock closers.`;
 
 // Flash (not lite): still cheap, better at staying inside resume context.
 export const DEFAULT_GATEWAY_MODEL = "google/gemini-2.5-flash";
 
 /** Cap reply length to control spend (public LinkedIn traffic). */
-export const MEG_MAX_OUTPUT_TOKENS = 500;
+export const MEG_MAX_OUTPUT_TOKENS = 1200;
 
 /** Max prior turns the client may send (user+assistant pairs count as two). */
 export const MEG_MAX_HISTORY_MESSAGES = 8;

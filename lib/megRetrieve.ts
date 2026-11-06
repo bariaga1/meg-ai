@@ -150,15 +150,16 @@ export function retrieveResumeContext(
       /medallia|marathon|nasdaq|calypso|saama/i.test(t.text),
   );
   const wantWeakness = WEAKNESS_HINT.test(query) || WEAKNESS_HINT.test(searchQuery);
+  const askedProjects =
+    PROJECT_HINT.test(query) ||
+    (FOLLOW_UP_HINT.test(query) && priorTalkedProjects && !OTHER_ROLES_HINT.test(query));
   const wantAiPicture =
     !wantWeakness &&
+    !(askedProjects && !AI_WORK_HINT.test(query)) &&
     (AI_WORK_HINT.test(query) || AI_WORK_HINT.test(searchQuery)) &&
     !AI_TOOL_HINT.test(query) &&
     !NAMED_PROJECT_HINT.test(query) &&
     !SENTIMENT_HINT.test(query);
-  const askedProjects =
-    PROJECT_HINT.test(query) ||
-    (FOLLOW_UP_HINT.test(query) && priorTalkedProjects && !OTHER_ROLES_HINT.test(query));
   const wantProjects = askedProjects;
   const wantRoles =
     !wantAiPicture &&
@@ -226,9 +227,13 @@ export function retrieveResumeContext(
     prefer(index.search("Omega Bariagaber email LinkedIn Remote contact", 6));
   }
 
-  prefer(
-    wantRoles || wantWeakness ? ranked.filter((hit) => !isProjectChunk(hit)) : ranked,
-  );
+  const tail =
+    wantRoles || wantWeakness
+      ? ranked.filter((hit) => !isProjectChunk(hit))
+      : wantAiPicture || askedProjects
+        ? ranked.filter((hit) => hit.id !== "summary")
+        : ranked;
+  prefer(tail);
 
   if (byId.size === 0) {
     return ranked.slice(0, topK);

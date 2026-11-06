@@ -150,10 +150,10 @@ export function retrieveResumeContext(
     !AI_TOOL_HINT.test(query) &&
     !NAMED_PROJECT_HINT.test(query) &&
     !SENTIMENT_HINT.test(query);
-  const wantProjects =
-    wantAiPicture ||
+  const askedProjects =
     PROJECT_HINT.test(query) ||
     (FOLLOW_UP_HINT.test(query) && priorTalkedProjects && !OTHER_ROLES_HINT.test(query));
+  const wantProjects = askedProjects;
   const wantRoles =
     !wantAiPicture &&
     (OTHER_ROLES_HINT.test(query) ||
@@ -175,20 +175,20 @@ export function retrieveResumeContext(
     }
   };
 
-  if (wantProjects) {
-    prefer(allProjectChunks());
-  }
   if (wantAiPicture) {
     prefer(
       index
         .search("Medallia AI-assisted sentiment classification model 84%", 4)
         .filter((h) => /medallia/i.test(h.id)),
     );
+    prefer(allProjectChunks());
     prefer(
       index
         .search("technical skills AI automation n8n LLM", 4)
         .filter((h) => h.id === "technical-skills"),
     );
+  } else if (askedProjects) {
+    prefer(allProjectChunks());
   }
   if (wantRoles) {
     prefer([careerOrderChunk(), ...orderedJobChunks()]);
@@ -217,8 +217,10 @@ export function retrieveResumeContext(
   const limit =
     wantRoles
       ? 1 + orderedJobChunks().length + 3
-      : wantAiPicture || wantProjects
+      : wantAiPicture
       ? Math.max(topK, 6)
+      : wantProjects
+      ? Math.max(topK, 4)
       : wantSkills || wantEducation || wantContact
         ? Math.max(topK, 5)
         : topK;

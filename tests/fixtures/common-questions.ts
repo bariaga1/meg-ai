@@ -250,7 +250,7 @@ export const GROUNDING_CASES: GroundingCase[] = [
   {
     id: "ai-related-work",
     question: "What AI related work have you done?",
-    mustRetrieveIds: ["careeros", "storefront", "park", "medallia", "technical-skills"],
+    mustRetrieveIds: ["medallia", "careeros", "storefront", "park", "technical-skills"],
     mustAppearInContext: [
       "CareerOS",
       "GPT-4o-mini",
@@ -263,7 +263,7 @@ export const GROUNDING_CASES: GroundingCase[] = [
   {
     id: "ai-experience",
     question: "Tell me about your experience with AI",
-    mustRetrieveIds: ["careeros", "storefront", "park", "medallia"],
+    mustRetrieveIds: ["medallia", "careeros", "storefront", "park"],
     mustAppearInContext: ["CareerOS", "Storefront Studio", "84%"],
   },
 

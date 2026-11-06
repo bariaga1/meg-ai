@@ -43,6 +43,19 @@ describe("meg retrieval grounding (no model calls)", () => {
   }
 });
 
+describe("jobs before side projects", () => {
+  it("leads an AI-technology question with Medallia, then the full personal projects", () => {
+    const hits = retrieveResumeContext("What AI technology has Omega used?");
+    const ids = hits.map((hit) => hit.id);
+    const medallia = ids.findIndex((id) => /medallia/i.test(id));
+    const park = ids.findIndex((id) => /park/i.test(id));
+    const careeros = ids.findIndex((id) => /careeros/i.test(id));
+    const storefront = ids.findIndex((id) => /storefront/i.test(id));
+    assert.ok(medallia >= 0);
+    assert.ok(park > medallia && careeros > medallia && storefront > medallia);
+  });
+});
+
 describe("recent roles", () => {
   it("puts a most-recent-first career list ahead of the jobs and leaves projects out", () => {
     const hits = retrieveResumeContext("What were your last two roles?");

@@ -206,6 +206,12 @@ export const GROUNDING_CASES: GroundingCase[] = [
     mustAppearInContext: ["React Native", "TypeScript"],
   },
   {
+    id: "park-rules",
+    question: "How does Can I Park Here decide the verdict?",
+    mustRetrieveIds: ["park"],
+    mustAppearInContext: ["strictest", "Uncertain", "OCR"],
+  },
+  {
     id: "careeros",
     question: "What is CareerOS?",
     mustRetrieveIds: ["careeros"],
@@ -215,7 +221,13 @@ export const GROUNDING_CASES: GroundingCase[] = [
     id: "careeros-scoring",
     question: "How does CareerOS score job fits?",
     mustRetrieveIds: ["careeros"],
-    mustAppearInContext: ["fit scoring", "GPT-4o-mini"],
+    mustAppearInContext: ["fit scoring", "GPT-4o-mini", "0.55"],
+  },
+  {
+    id: "careeros-gate",
+    question: "How does CareerOS decide which jobs the model scores?",
+    mustRetrieveIds: ["careeros"],
+    mustAppearInContext: ["alignment gate", "GPT-4o-mini"],
   },
   {
     id: "storefront-studio",
@@ -224,10 +236,35 @@ export const GROUNDING_CASES: GroundingCase[] = [
     mustAppearInContext: ["Storefront Studio", "n8n"],
   },
   {
+    id: "storefront-architecture",
+    question: "How is Storefront Studio architected?",
+    mustRetrieveIds: ["storefront"],
+    mustAppearInContext: ["CONTEXT.md", "Git Data API", "honeypot"],
+  },
+  {
     id: "ai-projects",
     question: "Any AI projects I should know about?",
-    mustRetrieveIds: ["careeros"],
-    mustAppearInContext: ["CareerOS"],
+    mustRetrieveIds: ["careeros", "storefront", "park", "medallia"],
+    mustAppearInContext: ["CareerOS", "Storefront Studio", "Can I Park Here", "84%"],
+  },
+  {
+    id: "ai-related-work",
+    question: "What AI related work have you done?",
+    mustRetrieveIds: ["careeros", "storefront", "park", "medallia", "technical-skills"],
+    mustAppearInContext: [
+      "CareerOS",
+      "GPT-4o-mini",
+      "Storefront Studio",
+      "Can I Park Here",
+      "84%",
+      "n8n",
+    ],
+  },
+  {
+    id: "ai-experience",
+    question: "Tell me about your experience with AI",
+    mustRetrieveIds: ["careeros", "storefront", "park", "medallia"],
+    mustAppearInContext: ["CareerOS", "Storefront Studio", "84%"],
   },
 
   // --- Skills / tools ---

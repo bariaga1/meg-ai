@@ -1,17 +1,10 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { Bm25Index, type RankedChunk, type ResumeChunk } from "../bot/lib/bm25";
-
-type ChunksFile = { version: number; chunks: ResumeChunk[] };
+import { Bm25Index, type RankedChunk } from "../bot/lib/bm25";
+import { loadResumeChunks } from "../bot/lib/loadChunks";
 
 let index: Bm25Index | null = null;
 
 function getIndex(): Bm25Index {
-  if (!index) {
-    const path = join(process.cwd(), "content", "chunks.json");
-    const raw = JSON.parse(readFileSync(path, "utf8")) as ChunksFile;
-    index = new Bm25Index(raw.chunks);
-  }
+  if (!index) index = new Bm25Index(loadResumeChunks());
   return index;
 }
 
@@ -29,6 +22,16 @@ const FOLLOW_UP_HINT =
 
 const SKILL_HINT =
   /\b(skills?|python|typescript|javascript|node\.?js|sql|power\s*bi|tableau|salesforce|familiar|know|used|stack|tools?|cursor|claude|copilot)\b/i;
+
+/** Broad AI work. Excludes “which AI coding tools” and a single named project. */
+const AI_WORK_HINT =
+  /\b(ai|a\.i\.|artificial intelligence|machine learning|llm|gpt|generative)\b/i;
+
+const AI_TOOL_HINT = /\b(coding tools|ai tools|cursor|claude|copilot|chatgpt)\b/i;
+
+const NAMED_PROJECT_HINT = /\b(can\s*i\s*park|park here|careeros|storefront)\b/i;
+
+const SENTIMENT_HINT = /\bsentiment\b/i;
 
 const EDUCATION_HINT =
   /\b(school|college|university|studied|study|degree|education|michigan\s+state)\b/i;
@@ -97,16 +100,23 @@ export function retrieveResumeContext(
       ROLE_HINT.test(t.text) ||
       /medallia|marathon|nasdaq|calypso|saama/i.test(t.text),
   );
+  const wantAiPicture =
+    (AI_WORK_HINT.test(query) || AI_WORK_HINT.test(searchQuery)) &&
+    !AI_TOOL_HINT.test(query) &&
+    !NAMED_PROJECT_HINT.test(query) &&
+    !SENTIMENT_HINT.test(query);
   const wantProjects =
+    wantAiPicture ||
     PROJECT_HINT.test(query) ||
     (FOLLOW_UP_HINT.test(query) && priorTalkedProjects && !OTHER_ROLES_HINT.test(query));
   const wantRoles =
-    OTHER_ROLES_HINT.test(query) ||
-    (!wantSkills &&
-      !wantEducation &&
-      !wantContact &&
-      (ROLE_HINT.test(query) ||
-        (FOLLOW_UP_HINT.test(query) && priorTalkedRoles && !wantProjects)));
+    !wantAiPicture &&
+    (OTHER_ROLES_HINT.test(query) ||
+      (!wantSkills &&
+        !wantEducation &&
+        !wantContact &&
+        (ROLE_HINT.test(query) ||
+          (FOLLOW_UP_HINT.test(query) && priorTalkedRoles && !wantProjects))));
 
   const index = getIndex();
   const ranked = index
@@ -122,6 +132,18 @@ export function retrieveResumeContext(
 
   if (wantProjects) {
     prefer(allProjectChunks());
+  }
+  if (wantAiPicture) {
+    prefer(
+      index
+        .search("Medallia AI-assisted sentiment classification model 84%", 4)
+        .filter((h) => /medallia/i.test(h.id)),
+    );
+    prefer(
+      index
+        .search("technical skills AI automation n8n LLM", 4)
+        .filter((h) => h.id === "technical-skills"),
+    );
   }
   if (wantRoles) {
     prefer(allJobChunks());
@@ -148,9 +170,11 @@ export function retrieveResumeContext(
   }
 
   const limit =
-    wantProjects || wantRoles ? Math.max(topK, 6) : wantSkills || wantEducation || wantContact
-      ? Math.max(topK, 5)
-      : topK;
+    wantAiPicture || wantProjects || wantRoles
+      ? Math.max(topK, 6)
+      : wantSkills || wantEducation || wantContact
+        ? Math.max(topK, 5)
+        : topK;
   return [...byId.values()].slice(0, limit);
 }
 

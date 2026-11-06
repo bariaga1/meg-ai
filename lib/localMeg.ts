@@ -1,19 +1,5 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { Bm25Index, type RankedChunk, type ResumeChunk } from "../bot/lib/bm25";
-
-type ChunksFile = { version: number; chunks: ResumeChunk[] };
-
-let index: Bm25Index | null = null;
-
-function getIndex(): Bm25Index {
-  if (!index) {
-    const path = join(process.cwd(), "content", "chunks.json");
-    const raw = JSON.parse(readFileSync(path, "utf8")) as ChunksFile;
-    index = new Bm25Index(raw.chunks);
-  }
-  return index;
-}
+import type { RankedChunk } from "../bot/lib/bm25";
+import { retrieveResumeContext } from "./megRetrieve";
 
 const CONTACT_HINT =
   /\b(contact|email|reach|linkedin|hire|get\s+in\s+touch)\b/i;
@@ -34,11 +20,7 @@ function excerpt(chunk: RankedChunk, maxLines = 5): string {
 }
 
 function pickHits(message: string): RankedChunk[] {
-  const wantContact = CONTACT_HINT.test(message);
-  const hits = getIndex()
-    .search(message, 6)
-    .filter((h) => (wantContact ? true : h.id !== "header"));
-  return hits.slice(0, 3);
+  return retrieveResumeContext(message, 4);
 }
 
 /** Deterministic resume-grounded reply when the Cursor agent is unavailable. */

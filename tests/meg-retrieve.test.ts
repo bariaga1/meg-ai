@@ -66,6 +66,24 @@ describe("shortcomings", () => {
   });
 });
 
+describe("project follow-up", () => {
+  it("answers what about the projects with the three projects, not the summary", () => {
+    const hits = retrieveResumeContext("what about the projects", 4, [
+      { role: "user", text: "Tell me about your experience with AI" },
+      {
+        role: "assistant",
+        text: "Omega deepened Python skills through hands-on projects.",
+      },
+    ]);
+    const ids = hits.map((hit) => hit.id);
+    assert.ok(ids.some((id) => /park/i.test(id)));
+    assert.ok(ids.some((id) => /careeros/i.test(id)));
+    assert.ok(ids.some((id) => /storefront/i.test(id)));
+    assert.equal(ids.includes("summary"), false);
+    assert.ok(ids.findIndex((id) => /park|careeros|storefront/i.test(id)) === 0);
+  });
+});
+
 describe("jobs before side projects", () => {
   it("leads an AI-technology question with Medallia, then the full personal projects", () => {
     const hits = retrieveResumeContext("What AI technology has Omega used?");

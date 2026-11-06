@@ -43,6 +43,29 @@ describe("meg retrieval grounding (no model calls)", () => {
   }
 });
 
+describe("shortcomings", () => {
+  it("uses the resume summary and leaves project limits out", () => {
+    for (const question of ["any shortcomings?", "any short comings?"]) {
+      const ids = retrieveResumeContext(question)
+        .map((hit) => hit.id)
+        .join(" ");
+      assert.match(ids, /summary|career-highlights/);
+      assert.match(ids, /medallia/i);
+      assert.doesNotMatch(ids, /careeros|storefront|park/i);
+    }
+  });
+
+  it("keeps a lone question mark on the prior shortcomings question", () => {
+    const ids = retrieveResumeContext("?", 4, [
+      { role: "user", text: "any shortcomings?" },
+    ])
+      .map((hit) => hit.id)
+      .join(" ");
+    assert.match(ids, /medallia/i);
+    assert.doesNotMatch(ids, /careeros|storefront|park/i);
+  });
+});
+
 describe("jobs before side projects", () => {
   it("leads an AI-technology question with Medallia, then the full personal projects", () => {
     const hits = retrieveResumeContext("What AI technology has Omega used?");
@@ -101,5 +124,7 @@ describe("gateway system prompt contract", () => {
     assert.match(MEG_SYSTEM_PROMPT, /Do not invent filler portfolio/i);
     assert.match(MEG_SYSTEM_PROMPT, /title and the dates/i);
     assert.match(MEG_SYSTEM_PROMPT, /Never say Medallia was the only role/i);
+    assert.match(MEG_SYSTEM_PROMPT, /does not list any/i);
+    assert.match(MEG_SYSTEM_PROMPT, /character cap/i);
   });
 });

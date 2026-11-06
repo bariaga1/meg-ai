@@ -39,6 +39,10 @@ const EDUCATION_HINT =
 const PROFILE_HINT =
   /\b(remote|location|based|linkedin|email|contact|reach|phone|hire|get\s+in\s+touch)\b/i;
 
+/** A personal weakness. Not a tool limit such as a character cap or a rate limit. */
+const WEAKNESS_HINT =
+  /\b(short\s*comings?|weakness(?:es)?|downsides?|limitations?|failures?|struggles?|not\s+good\s+at|room\s+for\s+improvement)\b/i;
+
 export type HistoryTurn = { role: "user" | "assistant"; text: string };
 
 function isProjectChunk(h: RankedChunk): boolean {
@@ -56,11 +60,11 @@ export function retrievalQuery(message: string, history: HistoryTurn[] = []): st
     return "professional experience roles Medallia Marathon Petroleum Nasdaq Calypso Saama";
   }
 
-  const recentUser = history
-    .filter((t) => t.role === "user")
-    .map((t) => t.text)
-    .slice(-3)
-    .join(" ");
+  const recentUserTurns = history.filter((t) => t.role === "user").map((t) => t.text);
+  const recentUser = recentUserTurns.slice(-3).join(" ");
+  if (/^[\s?.!]+$/.test(message.trim()) && recentUserTurns.length > 0) {
+    return recentUserTurns[recentUserTurns.length - 1];
+  }
   if (FOLLOW_UP_HINT.test(message) && recentUser) {
     return `${recentUser}\n${message}`;
   }
@@ -145,7 +149,9 @@ export function retrieveResumeContext(
       ROLE_HINT.test(t.text) ||
       /medallia|marathon|nasdaq|calypso|saama/i.test(t.text),
   );
+  const wantWeakness = WEAKNESS_HINT.test(query) || WEAKNESS_HINT.test(searchQuery);
   const wantAiPicture =
+    !wantWeakness &&
     (AI_WORK_HINT.test(query) || AI_WORK_HINT.test(searchQuery)) &&
     !AI_TOOL_HINT.test(query) &&
     !NAMED_PROJECT_HINT.test(query) &&
@@ -175,6 +181,18 @@ export function retrieveResumeContext(
     }
   };
 
+  if (wantWeakness) {
+    prefer(
+      index
+        .search("professional summary career highlights", 6)
+        .filter((h) => h.id === "summary" || h.id === "career-highlights"),
+    );
+    prefer(
+      index
+        .search("Medallia Senior Technical Consultant", 4)
+        .filter((h) => /medallia/i.test(h.id)),
+    );
+  }
   if (wantAiPicture) {
     prefer(
       index
@@ -208,7 +226,9 @@ export function retrieveResumeContext(
     prefer(index.search("Omega Bariagaber email LinkedIn Remote contact", 6));
   }
 
-  prefer(wantRoles ? ranked.filter((hit) => !isProjectChunk(hit)) : ranked);
+  prefer(
+    wantRoles || wantWeakness ? ranked.filter((hit) => !isProjectChunk(hit)) : ranked,
+  );
 
   if (byId.size === 0) {
     return ranked.slice(0, topK);
@@ -217,6 +237,8 @@ export function retrieveResumeContext(
   const limit =
     wantRoles
       ? 1 + orderedJobChunks().length + 3
+      : wantWeakness
+      ? 3
       : wantAiPicture
       ? Math.max(topK, 6)
       : wantProjects

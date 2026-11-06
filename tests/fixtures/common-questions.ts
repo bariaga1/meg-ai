@@ -273,7 +273,7 @@ export const GROUNDING_CASES: GroundingCase[] = [
     id: "biggest-impact",
     question: "What's a highlight from your career?",
     mustRetrieveIds: ["career-highlights"],
-    mustAppearInContext: ["$5 million"],
+    mustAppearInContext: ["$5M+"],
   },
   {
     id: "fortune-100",
@@ -287,7 +287,7 @@ export const GROUNDING_CASES: GroundingCase[] = [
     id: "summary",
     question: "Give me a quick overview of your background.",
     mustRetrieveIds: ["summary"],
-    mustAppearInContext: ["Fortune 500", "SaaS"],
+    mustAppearInContext: ["10+ years", "Fortune 100"],
   },
   {
     id: "education",
@@ -306,6 +306,12 @@ export const GROUNDING_CASES: GroundingCase[] = [
     question: "Do you have any certifications?",
     mustRetrieveIds: ["certifications"],
     mustAppearInContext: ["Medallia Product Certification", "Lean Six Sigma"],
+  },
+  {
+    id: "location",
+    question: "Where are you based?",
+    mustRetrieveIds: ["header"],
+    mustAppearInContext: ["San Jose"],
   },
   {
     id: "languages",
@@ -336,7 +342,7 @@ export const GROUNDING_CASES: GroundingCase[] = [
   {
     id: "remote",
     question: "Are you open to remote work?",
-    mustRetrieveIds: ["header"],
+    mustRetrieveIds: ["medallia"],
     mustAppearInContext: ["Remote"],
   },
   {

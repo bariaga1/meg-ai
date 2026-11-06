@@ -1,18 +1,18 @@
 # Omega Bariagaber
 
 Technical Implementation Leader | Applied AI & Data Integration
-US, Remote | omegabariagaber@gmail.com | LinkedIn
+San Jose, CA | omegabariagaber@gmail.com | LinkedIn: https://www.linkedin.com/in/obariagaber/
 (Phone omitted from public knowledge base by design.)
 
 ## Career Highlights
-- Delivered client implementations on time or ahead of schedule for 8 consecutive quarters, maintaining 80%+ resource utilization while minimizing rework and improving delivery efficiency
-- Helped turn around two at-risk Fortune 100 customer relationships, contributing to more than $5 million in renewed SaaS revenue
-- Built analytics dashboards used by 2,000+ users per account, giving global teams real-time visibility into CX performance
-- Led a predictive-maintenance initiative using OSI PI data that improved repair planning and operational safety while generating multimillion-dollar savings
-- Built tools that reduced compliance penalties across Marathon Petroleum’s Bay Area facilities, delivering $500K+ in cost savings over two years
+- Delivered 25+ implementation projects across Fortune 100 accounts at Medallia, from discovery and data integration through launch, consistently on time or ahead of schedule
+- Rescued two at-risk enterprise accounts, lifting client NPS by 25+ points through reliable delivery and proactive communication, helping secure $5M+ in renewals
+- Built end-to-end CX data pipelines that turned 10M+ raw customer records into real-time dashboards, closed-loop alerts, and CRM integrations
+- Led predictive maintenance at Marathon Petroleum using OSI PI sensor data, improving safety and generating multimillion-dollar savings in reduced downtime, featured in the company-wide quarterly roundtable
+- Built a workforce compliance application used by up to 750 union craft workers and contractors, checking skill levels and hours before job sign-up to prevent overtime violations and save $500K+ in penalties over two years
 
 ## Summary
-Technical implementation leader with 10+ years owning enterprise SaaS implementations for Fortune 500 clients, from discovery and requirements through solution design, configuration, and launch. Works directly with customers to turn business needs into working platforms, then uses data and reporting to show the value, and partners with Product, Engineering, and Customer Success so customer feedback shapes what gets built next. Recently deepened engineering skills, strengthening Python and software fundamentals while leveraging AI development tools to accelerate delivery. Reviews and understands the code these tools produce, applying AI-driven development with sound technical judgment.
+Technical implementation leader with 10+ years across enterprise software delivery, building for Fortune 100 clients from discovery through launch, working directly with customers to turn business needs into data integrations and platform configurations, and partnering with Product and Engineering to resolve technical gaps along the way. Deepening Python and software development skills through hands-on projects, using AI to speed up planning, development, and testing while reviewing and validating everything, and staying hands-on with data, integrations, and automation.
 
 ## Technical Skills
 - Programming & Development: Python, SQL, JavaScript, TypeScript, Node.js, HTML/CSS
@@ -26,7 +26,7 @@ Technical implementation leader with 10+ years owning enterprise SaaS implementa
 ## Professional Experience
 
 ### Senior Technical Consultant, Professional Services — Medallia (July 2021 – October 2025, Remote - CA)
-Led enterprise CX platform implementations for Fortune 500 clients, working directly with stakeholders to understand what they needed and building the platform around it.
+Led enterprise CX platform implementations for Fortune 100 clients, working directly with stakeholders to understand what they needed and building the platform around it.
 - Ran discovery and requirements sessions with enterprise stakeholders and built the Medallia solution from what came out of them
 - Owned full lifecycle implementations, including solution design, platform configuration, data integration, custom workflows, UAT, and launch
 - Customized the platform to fit each customer's operating model and worked with Product and Engineering to close technical gaps
@@ -42,20 +42,20 @@ Worked on site at a California refinery, partnering with engineering, compliance
 - Delivered web-based operational tools that reduced compliance penalties by $250K annually
 - Led migrations off legacy systems, which made reporting more reliable and got more site teams using it
 
-### Infrastructure Quality Engineer — Nasdaq/Calypso (July 2014 – August 2017, San Francisco - CA)
+### Infrastructure Quality Engineer — Nasdaq/Calypso (February 2015 – August 2017, San Francisco - CA)
 Validated and maintained enterprise trading platforms, integrating third-party financial systems while ensuring accurate real-time market data flows.
 - Promoted within six months to Infrastructure team responsible for stable integration of external market data into trading platforms
 - Led validation and integration of interfaces with Bloomberg and Reuters, ensuring accurate data flow and consistent platform performance
 - Increased automation coverage using behavior-driven testing (BDD), reducing regression defects by ~30% and improving release quality
 - Developed automated test strategies and scripts in partnership with Product and Engineering to support reliable releases
 
-#### Front Office QA
+#### Front Office QA (July 2014 – January 2015)
 - Validated front office trading workflows across order management, pricing, and risk modules, from trade capture through P&L calculations
 - Partnered with traders, product managers, and developers to turn requirements into test scenarios for complex financial instruments, and used SQL to reconcile trade data and validate pricing logic
 - Ran regression, functional, and UAT testing on new releases and caught high-impact defects before they reached production
 
 ### Associate Consultant/Data Analyst (Intern) — Saama (January 2014 – June 2014, San Jose - CA)
-Selected for an international Business Intelligence program in India, where trained on data architecture, ETL, and visualization tools while building end-to-end reporting solutions.
+Selected for an international Business Intelligence program in India, where I trained on data architecture, ETL, and visualization tools while building end-to-end reporting solutions.
 - Designed relational data models and ETL pipelines using Informatica to consolidate structured data sources
 - Built interactive Tableau dashboards and semantic reporting layers in SAP BusinessObjects for self-service reporting
 

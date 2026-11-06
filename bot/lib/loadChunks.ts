@@ -10,13 +10,25 @@ function projectRoot(): string {
   return join(dirname(fileURLToPath(import.meta.url)), "../..");
 }
 
-export function loadResumeChunks(): ResumeChunk[] {
-  const path = join(projectRoot(), "content", "chunks.json");
+function readChunks(filename: string): ResumeChunk[] {
+  const path = join(projectRoot(), "content", filename);
   const raw = JSON.parse(readFileSync(path, "utf8")) as ChunksFile;
-  if (!Array.isArray(raw.chunks) || raw.chunks.length === 0) {
-    throw new Error(`No resume chunks found at ${path}`);
+  if (!Array.isArray(raw.chunks)) {
+    throw new Error(`No chunks array in ${path}`);
   }
   return raw.chunks;
+}
+
+/** Resume sections plus the independent-project source. */
+export function loadResumeChunks(): ResumeChunk[] {
+  const resume = readChunks("chunks.json");
+  const projects = readChunks("project-chunks.json");
+  if (resume.length === 0) {
+    throw new Error("No resume chunks found");
+  }
+  const seen = new Set(resume.map((c) => c.id));
+  const extra = projects.filter((c) => !seen.has(c.id));
+  return [...resume, ...extra];
 }
 
 export function chunksPath(): string {

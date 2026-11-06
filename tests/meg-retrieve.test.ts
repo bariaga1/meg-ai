@@ -43,6 +43,18 @@ describe("meg retrieval grounding (no model calls)", () => {
   }
 });
 
+describe("recent roles", () => {
+  it("returns only the two most recent jobs, Medallia then Marathon", () => {
+    const hits = retrieveResumeContext("What were your last two roles?");
+    assert.equal(hits.length, 2);
+    assert.match(hits[0].id, /medallia/i);
+    assert.match(hits[1].id, /marathon/i);
+    const context = formatResumeContext(hits);
+    assert.equal(context.includes("Nasdaq"), false);
+    assert.equal(context.includes("CareerOS"), false);
+  });
+});
+
 describe("retrievalQuery follow-ups", () => {
   it("does not re-anchor other-roles on the prior Medallia question", () => {
     const history = [

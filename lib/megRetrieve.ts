@@ -17,6 +17,10 @@ const ROLE_HINT =
 const OTHER_ROLES_HINT =
   /\b(other\s+roles?|where\s+else|previous\s+roles?|prior\s+roles?|before\s+that|earlier\s+roles?|other\s+jobs?|other\s+employers?|anywhere\s+else)\b/i;
 
+/** "last two roles" / "most recent job" — a count, not the whole career. */
+const RECENT_ROLES_HINT =
+  /\b(?:last|latest|most\s+recent|recent)\b(?:\s+\w+){0,4}\s+\b(?:roles?|jobs?|positions?|employers?)\b/i;
+
 const FOLLOW_UP_HINT =
   /\b(else|other|another|more|anything\s+else|what\s+about|tell\s+me\s+more|and\s+then|before\s+that|previous|prior)\b/i;
 
@@ -82,6 +86,59 @@ function allJobChunks(): RankedChunk[] {
     .filter(isJobChunk);
 }
 
+const MONTH_INDEX: Record<string, number> = {
+  january: 0,
+  february: 1,
+  march: 2,
+  april: 3,
+  may: 4,
+  june: 5,
+  july: 6,
+  august: 7,
+  september: 8,
+  october: 9,
+  november: 10,
+  december: 11,
+};
+
+/** End date in the job title, as year * 12 + month. Missing dates sort last. */
+function endRecency(title: string): number {
+  const found = [
+    ...title.matchAll(
+      /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})/gi,
+    ),
+  ];
+  if (found.length === 0) return 0;
+  const last = found[found.length - 1];
+  return Number(last[2]) * 12 + (MONTH_INDEX[last[1].toLowerCase()] ?? 0);
+}
+
+function recentRoleCount(query: string): number {
+  const word = query.match(/\b(one|1|two|2|three|3|four|4)\b/i);
+  const counts: Record<string, number> = {
+    one: 1,
+    "1": 1,
+    two: 2,
+    "2": 2,
+    three: 3,
+    "3": 3,
+    four: 4,
+    "4": 4,
+  };
+  if (word) return counts[word[1].toLowerCase()] ?? 2;
+  if (/\b(role|job|position|employer)\b/i.test(query) && !/\b(roles|jobs|positions|employers)\b/i.test(query)) {
+    return 1;
+  }
+  return 2;
+}
+
+function recentJobChunks(count: number): RankedChunk[] {
+  return allJobChunks()
+    .slice()
+    .sort((a, b) => endRecency(b.title) - endRecency(a.title))
+    .slice(0, count);
+}
+
 /** Top resume sections for a recruiter question (lexical, no embeddings). */
 export function retrieveResumeContext(
   query: string,
@@ -100,6 +157,11 @@ export function retrieveResumeContext(
       ROLE_HINT.test(t.text) ||
       /medallia|marathon|nasdaq|calypso|saama/i.test(t.text),
   );
+  const recentCount = RECENT_ROLES_HINT.test(query) ? recentRoleCount(query) : null;
+  if (recentCount != null) {
+    return recentJobChunks(recentCount);
+  }
+
   const wantAiPicture =
     (AI_WORK_HINT.test(query) || AI_WORK_HINT.test(searchQuery)) &&
     !AI_TOOL_HINT.test(query) &&

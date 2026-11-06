@@ -70,6 +70,7 @@ export function megGatewayNdjsonStream(
       },
     ],
     maxOutputTokens: MEG_MAX_OUTPUT_TOKENS,
+    reasoning: "none",
     // Low enough to stay on-resume; high enough for natural phrasing.
     temperature: 0.35,
   });

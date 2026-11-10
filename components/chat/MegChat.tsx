@@ -33,7 +33,12 @@ function LoadingState() {
   );
 }
 
-export function MegChat() {
+type MegChatProps = {
+  /** Shell embed: skip wake, no floating face, constrained height. */
+  embedded?: boolean;
+};
+
+export function MegChat({ embedded = false }: MegChatProps) {
   const {
     messages,
     input,
@@ -54,9 +59,9 @@ export function MegChat() {
   const floatRef = useRef<HTMLDivElement>(null);
   const floatTargetRef = useRef({ x: 0, y: 0 });
   const floatPosRef = useRef({ x: 0, y: 0 });
-  const [powered, setPowered] = useState(false);
+  const [powered, setPowered] = useState(embedded);
   const [booting, setBooting] = useState(false);
-  const [showUi, setShowUi] = useState(false);
+  const [showUi, setShowUi] = useState(embedded);
 
   const powerOn = useCallback(() => {
     if (powered || booting) return;
@@ -80,7 +85,7 @@ export function MegChat() {
   }, [booting]);
 
   useEffect(() => {
-    if (powered || booting) return;
+    if (embedded || powered || booting) return;
     const onFirst = () => powerOn();
     window.addEventListener("pointermove", onFirst, { once: true, passive: true });
     window.addEventListener("pointerdown", onFirst, { once: true });
@@ -90,7 +95,7 @@ export function MegChat() {
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
     };
-  }, [powered, booting, powerOn]);
+  }, [embedded, powered, booting, powerOn]);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -104,7 +109,6 @@ export function MegChat() {
       const y = (e.clientY / window.innerHeight - 0.5) * 2;
       root.style.setProperty("--meg-px", x.toFixed(3));
       root.style.setProperty("--meg-py", y.toFixed(3));
-      // Soft travel for the floating window once a thread is open.
       floatTargetRef.current = {
         x: Math.max(-18, Math.min(18, x * 22)),
         y: Math.max(-14, Math.min(14, y * 16)),
@@ -126,7 +130,7 @@ export function MegChat() {
   }, [powered]);
 
   useEffect(() => {
-    if (!powered || !hasThread) {
+    if (embedded || !powered || !hasThread) {
       floatPosRef.current = { x: 0, y: 0 };
       if (floatRef.current) floatRef.current.style.transform = "";
       return;
@@ -148,7 +152,7 @@ export function MegChat() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [powered, hasThread]);
+  }, [embedded, powered, hasThread]);
 
   const mood: MegMood = busy ? "thinking" : streamingId ? "speaking" : "idle";
 
@@ -186,6 +190,120 @@ export function MegChat() {
         >
           {booting ? "Meg is waking…" : "Move or tap to meet Meg"}
         </p>
+      </div>
+    );
+  }
+
+  if (embedded) {
+    return (
+      <div ref={rootRef} className="meg-chat-embed relative flex w-full flex-col">
+        <div className="flex items-center gap-3 border-b border-[var(--meg-hairline)] px-4 py-3">
+          <MegCharacter powered={powered} mood={mood} className="meg-character--embed" />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--meg-lagoon)]">
+              <span className="meg-online-dot" aria-hidden />
+              Meg online
+            </div>
+            <p className="truncate text-sm text-[var(--meg-ink-soft)]">
+              Ask about roles, skills, or projects.
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={`flex min-h-[22rem] flex-1 flex-col px-4 pb-4 pt-3 ${showUi ? "meg-rise" : "opacity-0"}`}
+        >
+          {hasThread ? (
+            <div
+              ref={listRef}
+              className="meg-thread mb-4 max-h-[20rem] w-full flex-1 overflow-y-auto pr-1 text-left"
+              aria-live="polite"
+            >
+              {messages.map((m) => {
+                const isStreaming = m.id === streamingId;
+                if (m.role === "user") {
+                  return (
+                    <div key={m.id} className="meg-bubble meg-bubble--user">
+                      {m.text}
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={m.id} className="meg-bubble meg-bubble--meg">
+                    {!m.text && busy ? (
+                      <LoadingState />
+                    ) : (
+                      <span className={isStreaming ? "meg-stream-text" : undefined}>
+                        {toPlainSpeech(m.text)}
+                        {isStreaming ? <span className="meg-caret" aria-hidden /> : null}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+              <div ref={bottomRef} />
+            </div>
+          ) : (
+            <div className="mb-4 flex flex-wrap items-center justify-center gap-2 py-6">
+              {STARTERS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void send(s)}
+                  className="meg-glass rounded-full px-3.5 py-2 text-center text-sm text-[var(--meg-ink-soft)] transition hover:border-[rgba(47,143,157,0.35)] hover:text-[var(--meg-ink)] disabled:opacity-50"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <form
+            onSubmit={onSubmit}
+            className="meg-composer meg-glass mt-auto rounded-2xl bg-[var(--meg-glass-strong)] p-2"
+          >
+            <label htmlFor="meg-input-embed" className="sr-only">
+              Message Meg
+            </label>
+            <div className="flex items-end gap-2">
+              <textarea
+                id="meg-input-embed"
+                rows={1}
+                value={input}
+                disabled={busy}
+                placeholder={placeholder}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void send(input);
+                  }
+                }}
+                className="max-h-40 min-h-[48px] flex-1 resize-none bg-transparent px-3 py-3 text-[15px] text-[var(--meg-ink)] outline-none placeholder:text-[var(--meg-ink-soft)]"
+              />
+              <button
+                type="submit"
+                disabled={busy || !input.trim()}
+                className="mb-1 rounded-xl bg-[var(--meg-lagoon)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--meg-lagoon-deep)] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Send
+              </button>
+            </div>
+          </form>
+
+          {error && (
+            <p className="mt-3 text-center text-sm text-[var(--meg-coral)]" role="alert">
+              {error}
+            </p>
+          )}
+
+          <p className="mt-3 text-center text-xs text-[var(--meg-ink-soft)]">
+            Answers come from the resume only. Phone is not shared.
+            {localMode ? " · Local resume lookup (agent not connected)." : null}
+          </p>
+        </div>
       </div>
     );
   }

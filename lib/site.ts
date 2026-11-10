@@ -11,7 +11,11 @@ export function siteUrl(): string {
   return "http://127.0.0.1:3000";
 }
 
-export const SITE_NAME = "Meg";
-export const SITE_TITLE = "Meg — ask about Omega Bariagaber";
+export const SITE_NAME = "Omega Bariagaber";
+export const SITE_TITLE = "Omega Bariagaber — work, projects, and Meg";
 export const SITE_DESCRIPTION =
-  "Chat with Meg about Omega Bariagaber’s resume: roles, skills, and projects. Answers stay grounded in the public resume.";
+  "Technical implementation leader building applied AI and data integrations. Meet Meg, a resume chat grounded in public work history, plus side projects.";
+
+export const SITE_EMAIL = "omegabariagaber@gmail.com";
+export const SITE_LINKEDIN = "https://www.linkedin.com/in/obariagaber/";
+export const SITE_ROLE = "Technical Implementation Leader | Applied AI & Data Integration";

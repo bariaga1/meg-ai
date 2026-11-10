@@ -27,6 +27,10 @@
   --foreground: var(--meg-ink);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   min-height: 100%;
@@ -386,6 +390,32 @@ body {
   width: 96px;
   height: 96px;
   margin: 0;
+}
+
+.meg-character--embed {
+  width: 56px;
+  height: 56px;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.site-shell {
+  position: relative;
+}
+
+.site-section {
+  position: relative;
+  padding: 4.5rem 1.25rem 1rem;
+}
+
+.site-meg-panel {
+  box-shadow:
+    inset 0 1px 0 var(--meg-glass-edge),
+    0 18px 48px rgba(20, 60, 70, 0.1);
+}
+
+.meg-chat-embed {
+  min-height: 28rem;
 }
 
 .meg-float {

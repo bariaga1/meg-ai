@@ -6,7 +6,7 @@ type ContactProps = {
 
 export function Contact({ onOpenMeg }: ContactProps) {
   return (
-    <section id="contact" className="site-section scroll-mt-20 pb-24">
+    <section id="contact" className="site-section scroll-mt-20 pb-28">
       <div className="mx-auto max-w-5xl">
         <div className="max-w-2xl">
           <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--meg-ink)]">

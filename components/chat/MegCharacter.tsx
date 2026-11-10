@@ -8,6 +8,8 @@ type Props = {
   powered: boolean;
   mood?: MegMood;
   className?: string;
+  /** When false, the face stays centered (use inside clipped panels / FAB). */
+  trackPointer?: boolean;
 };
 
 type Vec = { x: number; y: number };
@@ -25,7 +27,12 @@ function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
-export function MegCharacter({ powered, mood = "idle", className = "" }: Props) {
+export function MegCharacter({
+  powered,
+  mood = "idle",
+  className = "",
+  trackPointer = true,
+}: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const tiltRef = useRef<HTMLDivElement>(null);
   const faceRef = useRef<HTMLDivElement>(null);
@@ -43,7 +50,7 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
   }, []);
 
   useEffect(() => {
-    if (!powered || reducedMotion) {
+    if (!powered || reducedMotion || !trackPointer) {
       targetRef.current = { x: 0, y: 0 };
       lightRef.current = { x: 36, y: 28 };
       faceVecRef.current = { x: 0, y: 0 };
@@ -109,7 +116,7 @@ export function MegCharacter({ powered, mood = "idle", className = "" }: Props) 
       window.removeEventListener("pointermove", onMove);
       cancelAnimationFrame(raf);
     };
-  }, [powered, reducedMotion]);
+  }, [powered, reducedMotion, trackPointer]);
 
   const moodClass =
     mood === "thinking"

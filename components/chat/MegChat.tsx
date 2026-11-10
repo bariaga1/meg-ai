@@ -196,9 +196,16 @@ export function MegChat({ embedded = false }: MegChatProps) {
 
   if (embedded) {
     return (
-      <div ref={rootRef} className="meg-chat-embed relative flex w-full flex-col">
-        <div className="flex items-center gap-3 border-b border-[var(--meg-hairline)] px-4 py-3">
-          <MegCharacter powered={powered} mood={mood} className="meg-character--embed" />
+      <div ref={rootRef} className="meg-chat-embed relative flex h-full min-h-0 w-full flex-col">
+        <div className="flex shrink-0 items-center gap-3 px-4 pb-1 pt-3">
+          <div className="site-meg-status-orb">
+            <MegCharacter
+              powered={powered}
+              mood={mood}
+              trackPointer={false}
+              className="meg-character--embed"
+            />
+          </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--meg-lagoon)]">
               <span className="meg-online-dot" aria-hidden />
@@ -211,12 +218,12 @@ export function MegChat({ embedded = false }: MegChatProps) {
         </div>
 
         <div
-          className={`flex min-h-[22rem] flex-1 flex-col px-4 pb-4 pt-3 ${showUi ? "meg-rise" : "opacity-0"}`}
+          className={`flex min-h-0 flex-1 flex-col px-4 pb-4 pt-2 ${showUi ? "meg-rise" : "opacity-0"}`}
         >
           {hasThread ? (
             <div
               ref={listRef}
-              className="meg-thread mb-4 max-h-[20rem] w-full flex-1 overflow-y-auto pr-1 text-left"
+              className="meg-thread mb-3 min-h-0 w-full flex-1 overflow-y-auto pr-1 text-left"
               aria-live="polite"
             >
               {messages.map((m) => {
@@ -245,7 +252,7 @@ export function MegChat({ embedded = false }: MegChatProps) {
               <div ref={bottomRef} />
             </div>
           ) : (
-            <div className="mb-4 flex flex-wrap items-center justify-center gap-2 py-6">
+            <div className="mb-3 flex min-h-0 flex-1 flex-wrap content-center items-center justify-center gap-2 py-4">
               {STARTERS.map((s) => (
                 <button
                   key={s}
@@ -262,7 +269,7 @@ export function MegChat({ embedded = false }: MegChatProps) {
 
           <form
             onSubmit={onSubmit}
-            className="meg-composer meg-glass mt-auto rounded-2xl bg-[var(--meg-glass-strong)] p-2"
+            className="meg-composer meg-glass mt-auto shrink-0 rounded-2xl bg-[var(--meg-glass-strong)] p-2"
           >
             <label htmlFor="meg-input-embed" className="sr-only">
               Message Meg
@@ -281,12 +288,12 @@ export function MegChat({ embedded = false }: MegChatProps) {
                     void send(input);
                   }
                 }}
-                className="max-h-40 min-h-[48px] flex-1 resize-none bg-transparent px-3 py-3 text-[15px] text-[var(--meg-ink)] outline-none placeholder:text-[var(--meg-ink-soft)]"
+                className="max-h-28 min-h-[44px] flex-1 resize-none bg-transparent px-3 py-2.5 text-[15px] text-[var(--meg-ink)] outline-none placeholder:text-[var(--meg-ink-soft)]"
               />
               <button
                 type="submit"
                 disabled={busy || !input.trim()}
-                className="mb-1 rounded-xl bg-[var(--meg-lagoon)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--meg-lagoon-deep)] disabled:cursor-not-allowed disabled:opacity-40"
+                className="mb-0.5 rounded-xl bg-[var(--meg-lagoon)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--meg-lagoon-deep)] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Send
               </button>
@@ -294,12 +301,12 @@ export function MegChat({ embedded = false }: MegChatProps) {
           </form>
 
           {error && (
-            <p className="mt-3 text-center text-sm text-[var(--meg-coral)]" role="alert">
+            <p className="mt-2 shrink-0 text-center text-sm text-[var(--meg-coral)]" role="alert">
               {error}
             </p>
           )}
 
-          <p className="mt-3 text-center text-xs text-[var(--meg-ink-soft)]">
+          <p className="mt-2 shrink-0 text-center text-[11px] text-[var(--meg-ink-soft)]">
             Answers come from the resume only. Phone is not shared.
             {localMode ? " · Local resume lookup (agent not connected)." : null}
           </p>

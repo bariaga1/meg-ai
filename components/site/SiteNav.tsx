@@ -3,7 +3,9 @@ type SiteNavProps = {
 };
 
 const LINKS = [
-  { href: "#top", label: "About" },
+  { href: "#about", label: "About" },
+  { href: "#highlights", label: "Highlights" },
+  { href: "#resume", label: "Resume" },
   { href: "#work", label: "Work" },
   { href: "#meg", label: "Meg" },
   { href: "#contact", label: "Contact" },

@@ -144,5 +144,7 @@ describe("gateway system prompt contract", () => {
     assert.match(MEG_SYSTEM_PROMPT, /Never say Medallia was the only role/i);
     assert.match(MEG_SYSTEM_PROMPT, /does not list any/i);
     assert.match(MEG_SYSTEM_PROMPT, /character cap/i);
+    assert.match(MEG_SYSTEM_PROMPT, /dashboard or report counts/i);
+    assert.match(MEG_SYSTEM_PROMPT, /he\/him/i);
   });
 });

@@ -44,7 +44,7 @@ Open [http://127.0.0.1:3000](http://127.0.0.1:3000).
 
 Public deploy uses Gateway + BotID + rate limits (see `/api/chat`). Default
 model is `google/gemini-2.5-flash`. Caps: **5 messages/min** and **30/day**
-per IP (process-local backup), **12 user turns** per browser session, **500**
+per IP (process-local backup), **12 user turns** per browser session, **1200**
 max output tokens.
 
 ### Budget alerts (do this in the Vercel dashboard)

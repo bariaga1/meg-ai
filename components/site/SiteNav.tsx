@@ -1,32 +1,40 @@
+type SiteNavProps = {
+  onOpenMeg?: () => void;
+};
+
 const LINKS = [
-  { href: "#top", label: "Omega" },
+  { href: "#top", label: "About" },
   { href: "#work", label: "Work" },
   { href: "#meg", label: "Meg" },
   { href: "#contact", label: "Contact" },
 ] as const;
 
-export function SiteNav() {
+export function SiteNav({ onOpenMeg }: SiteNavProps) {
   return (
-    <nav
-      className="site-nav sticky top-0 z-40 border-b border-[var(--meg-hairline)] bg-[rgba(228,236,238,0.78)] backdrop-blur-md"
-      aria-label="Site"
-    >
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-5 py-3">
+    <nav className="site-nav sticky top-0 z-40 border-b border-[var(--site-line)] bg-[rgba(249,247,242,0.9)] backdrop-blur-md" aria-label="Site">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-5 py-3.5">
         <a
           href="#top"
-          className="font-[family-name:var(--font-meg-display)] text-lg font-semibold tracking-tight text-[var(--meg-ink)]"
+          className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[var(--meg-ink)]"
         >
-          Omega
+          itsomega.com
         </a>
-        <ul className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--meg-ink-soft)]">
+        <ul className="flex flex-wrap items-center justify-end gap-x-5 gap-y-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--meg-ink)]">
           {LINKS.map((link) => (
             <li key={link.href}>
-              <a
-                href={link.href}
-                className="transition hover:text-[var(--meg-lagoon-deep)]"
-              >
-                {link.label}
-              </a>
+              {link.href === "#meg" && onOpenMeg ? (
+                <button
+                  type="button"
+                  onClick={onOpenMeg}
+                  className="transition hover:opacity-60"
+                >
+                  {link.label}
+                </button>
+              ) : (
+                <a href={link.href} className="transition hover:opacity-60">
+                  {link.label}
+                </a>
+              )}
             </li>
           ))}
         </ul>

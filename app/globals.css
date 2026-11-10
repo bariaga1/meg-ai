@@ -3,18 +3,23 @@
 @tailwind utilities;
 
 :root {
-  --meg-ink: #122429;
-  --meg-ink-soft: #455a60;
-  --meg-foam: #dfeceb;
-  --meg-mist: #e4ecee;
+  --site-paper: #f9f7f2;
+  --site-card: #ffffff;
+  --site-line: rgba(17, 17, 17, 0.12);
+  --site-feature: #121212;
+  --site-feature-muted: rgba(249, 247, 242, 0.72);
+  --meg-ink: #111111;
+  --meg-ink-soft: #5a5a5a;
+  --meg-foam: #f3f1eb;
+  --meg-mist: #f9f7f2;
   --meg-lagoon: #2f8f9d;
   --meg-lagoon-deep: #1f6d79;
   --meg-sky: #8ec5d8;
   --meg-coral: #d9785c;
-  --meg-glass: rgba(255, 255, 255, 0.48);
-  --meg-glass-strong: rgba(255, 255, 255, 0.62);
-  --meg-glass-edge: rgba(255, 255, 255, 0.72);
-  --meg-hairline: rgba(20, 40, 46, 0.12);
+  --meg-glass: rgba(255, 255, 255, 0.92);
+  --meg-glass-strong: #ffffff;
+  --meg-glass-edge: rgba(255, 255, 255, 0.9);
+  --meg-hairline: var(--site-line);
   --meg-surface: var(--meg-glass);
   --meg-px: 0;
   --meg-py: 0;
@@ -23,7 +28,7 @@
   --meg-pupil-x: 0px;
   --meg-pupil-y: 0px;
   --meg-shadow-x: 0px;
-  --background: var(--meg-mist);
+  --background: var(--site-paper);
   --foreground: var(--meg-ink);
 }
 
@@ -401,21 +406,91 @@ body {
 
 .site-shell {
   position: relative;
+  background: var(--site-paper);
+  color: var(--meg-ink);
 }
 
 .site-section {
   position: relative;
-  padding: 4.5rem 1.25rem 1rem;
+  padding: 4.25rem 1.25rem 1rem;
 }
 
-.site-meg-panel {
-  box-shadow:
-    inset 0 1px 0 var(--meg-glass-edge),
-    0 18px 48px rgba(20, 60, 70, 0.1);
+.site-card {
+  background: var(--site-card);
+  border: 1px solid var(--site-line);
+  box-shadow: 0 10px 30px rgba(17, 17, 17, 0.04);
+}
+
+.site-meg-feature {
+  background:
+    radial-gradient(circle at 12% 20%, rgba(47, 143, 157, 0.35), transparent 42%),
+    linear-gradient(135deg, #171717 0%, #232323 55%, #1a2a2e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 50px rgba(17, 17, 17, 0.18);
+}
+
+.site-meg-orb {
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.site-meg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.site-meg-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(17, 17, 17, 0.45);
+  cursor: pointer;
+}
+
+.site-meg-overlay__panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(44rem, 100%);
+  max-height: min(90dvh, 52rem);
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: var(--site-card);
+  border: 1px solid var(--site-line);
+  box-shadow: 0 24px 80px rgba(17, 17, 17, 0.28);
+}
+
+.site-meg-overlay__chat {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
 }
 
 .meg-chat-embed {
-  min-height: 28rem;
+  min-height: 24rem;
+}
+
+@media (min-width: 900px) {
+  .site-meg-overlay {
+    place-items: stretch end;
+    padding: 1.25rem;
+  }
+
+  .site-meg-overlay__panel {
+    width: min(28rem, calc(100vw - 2.5rem));
+    height: calc(100dvh - 2.5rem);
+    max-height: none;
+    border-radius: 1.35rem;
+  }
 }
 
 .meg-float {

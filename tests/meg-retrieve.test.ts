@@ -43,6 +43,22 @@ describe("meg retrieval grounding (no model calls)", () => {
   }
 });
 
+describe("strengths", () => {
+  it("maps strength wording to core competencies", () => {
+    for (const question of [
+      "What are his strengths?",
+      "What are Omega's strengths?",
+      "What are his strengths should be listed",
+      "What competencies does he have?",
+    ]) {
+      const ids = retrieveResumeContext(question)
+        .map((hit) => hit.id)
+        .join(" ");
+      assert.match(ids, /core-competencies/);
+    }
+  });
+});
+
 describe("shortcomings", () => {
   it("uses the resume summary and leaves project limits out", () => {
     for (const question of ["any shortcomings?", "any short comings?"]) {

@@ -7,7 +7,8 @@ export default defineTool({
   description: prompt`
     Lexical search over Omega Bariagaber’s resume and independent-project
     sources. Call this before answering any factual question about skills,
-    roles, projects, education, certifications, or career history.
+    strengths, competencies, roles, projects, education, certifications, or
+    career history.
     AI questions also return the project source, not only employer work.
     Returns the top matching sections with scores. Do not invent facts
     that are not present in the retrieved text.

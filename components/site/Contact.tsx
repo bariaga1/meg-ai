@@ -1,4 +1,4 @@
-import { SITE_EMAIL, SITE_LINKEDIN } from "@/lib/site";
+import { SITE_EMAIL, SITE_LINKEDIN, SITE_RESUME_PDF } from "@/lib/site";
 
 type ContactProps = {
   onOpenMeg?: () => void;
@@ -34,6 +34,14 @@ export function Contact({ onOpenMeg }: ContactProps) {
             >
               LinkedIn
             </a>
+            <a
+              href={SITE_RESUME_PDF}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-[var(--site-line)] bg-white px-5 py-2.5 text-sm font-semibold text-[var(--meg-ink)] transition hover:border-[var(--meg-ink)]"
+            >
+              Download PDF ↓
+            </a>
             {onOpenMeg ? (
               <button
                 type="button"
@@ -44,9 +52,6 @@ export function Contact({ onOpenMeg }: ContactProps) {
               </button>
             ) : null}
           </div>
-          <p className="mt-6 text-xs text-[var(--meg-ink-soft)]">
-            Resume PDF will appear here when added to the site.
-          </p>
         </div>
       </div>
     </section>

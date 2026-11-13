@@ -1,4 +1,4 @@
-import { SITE_EMAIL, SITE_LINKEDIN } from "@/lib/site";
+import { SITE_EMAIL, SITE_LINKEDIN, SITE_RESUME_PDF } from "@/lib/site";
 import { SITE_EXPERIENCE } from "@/lib/siteContent";
 
 export function Experience() {
@@ -28,6 +28,14 @@ export function Experience() {
               className="hover:opacity-60"
             >
               LinkedIn
+            </a>
+            <a
+              href={SITE_RESUME_PDF}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:opacity-60"
+            >
+              Download PDF ↓
             </a>
           </div>
         </div>

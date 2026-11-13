@@ -197,20 +197,12 @@ export function MegChat({ embedded = false }: MegChatProps) {
   if (embedded) {
     return (
       <div ref={rootRef} className="meg-chat-embed relative flex h-full min-h-0 w-full flex-col">
-        <div className="flex shrink-0 items-center gap-3 px-4 pb-1 pt-3">
-          <div className="site-meg-status-orb">
-            <MegCharacter
-              powered={powered}
-              mood={mood}
-              trackPointer={false}
-              className="meg-character--embed"
-            />
-          </div>
+        <div className="flex shrink-0 items-center gap-2 px-4 pb-1 pt-3">
+          <span className="meg-online-dot" aria-hidden />
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--meg-lagoon)]">
-              <span className="meg-online-dot" aria-hidden />
+            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--meg-lagoon)]">
               Meg online
-            </div>
+            </p>
             <p className="truncate text-sm text-[var(--meg-ink-soft)]">
               Ask about roles, skills, or projects.
             </p>

@@ -21,12 +21,7 @@ export function MegPanel({ state, onOpen, onMinimize }: MegPanelProps) {
         aria-label="Open Meg"
       >
         <span className="site-meg-fab__orb" aria-hidden>
-          <MegCharacter
-            powered
-            mood="idle"
-            trackPointer={false}
-            className="meg-character--fab"
-          />
+          <MegCharacter powered mood="idle" className="meg-character--fab" />
         </span>
         <span className="site-meg-fab__pulse" aria-hidden />
       </button>
@@ -43,26 +38,31 @@ export function MegPanel({ state, onOpen, onMinimize }: MegPanelProps) {
         aria-label="Minimize Meg"
         onClick={onMinimize}
       />
-      <div className="site-meg-overlay__panel">
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--site-line)] px-4 py-3">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--meg-lagoon)]">
-              Live · text agent
-            </p>
-            <p className="font-[family-name:var(--font-meg-display)] text-xl font-semibold text-[var(--meg-ink)]">
-              Meg
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onMinimize}
-            className="rounded-full border border-[var(--site-line)] px-3.5 py-1.5 text-sm font-semibold text-[var(--meg-ink)] transition hover:border-[var(--meg-ink)]"
-          >
-            Minimize
-          </button>
+      <div className="site-meg-overlay__shell">
+        <div className="site-meg-overlay__mascot" aria-hidden>
+          <MegCharacter powered mood="idle" className="meg-character--panel" />
         </div>
-        <div className="site-meg-overlay__chat">
-          <MegChat embedded />
+        <div className="site-meg-overlay__panel">
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--site-line)] px-4 py-3">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--meg-lagoon)]">
+                Live · text agent
+              </p>
+              <p className="font-[family-name:var(--font-meg-display)] text-xl font-semibold text-[var(--meg-ink)]">
+                Meg
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onMinimize}
+              className="rounded-full border border-[var(--site-line)] px-3.5 py-1.5 text-sm font-semibold text-[var(--meg-ink)] transition hover:border-[var(--meg-ink)]"
+            >
+              Minimize
+            </button>
+          </div>
+          <div className="site-meg-overlay__chat">
+            <MegChat embedded />
+          </div>
         </div>
       </div>
     </div>

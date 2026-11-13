@@ -404,11 +404,27 @@ body {
   flex-shrink: 0;
 }
 
+.meg-character--panel {
+  width: 92px;
+  height: 92px;
+  margin: 0;
+}
+
 .meg-character--fab {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   margin: 0;
   flex-shrink: 0;
+}
+
+.meg-character--fab .meg-character__floor-shadow,
+.meg-character--panel .meg-character__floor-shadow {
+  display: none;
+}
+
+.meg-character--fab .meg-character__glow {
+  inset: -18%;
+  filter: blur(10px);
 }
 
 .site-shell {
@@ -451,15 +467,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.site-meg-status-orb {
-  display: grid;
-  place-items: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  overflow: visible;
-  flex-shrink: 0;
-}
-
 .site-meg-overlay {
   position: fixed;
   inset: 0;
@@ -479,12 +486,38 @@ body {
   pointer-events: auto;
 }
 
+.site-meg-overlay__shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  max-height: min(88dvh, 42rem);
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  padding-top: 2.75rem;
+  animation: site-meg-sheet-in 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-meg-overlay__mascot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 2;
+  width: 5.75rem;
+  height: 5.75rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+  filter: drop-shadow(0 10px 18px rgba(16, 52, 60, 0.22));
+}
+
 .site-meg-overlay__panel {
   position: relative;
   z-index: 1;
   display: flex;
   width: 100%;
-  max-height: min(88dvh, 40rem);
+  min-height: 0;
+  flex: 1;
   flex-direction: column;
   overflow: hidden;
   border-radius: 1.5rem 1.5rem 0 0;
@@ -492,7 +525,6 @@ body {
   border: 1px solid var(--site-line);
   box-shadow: 0 24px 80px rgba(17, 17, 17, 0.28);
   pointer-events: auto;
-  animation: site-meg-sheet-in 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .site-meg-overlay__chat {
@@ -515,8 +547,8 @@ body {
   bottom: max(1.25rem, calc(env(safe-area-inset-bottom) + 1rem));
   display: grid;
   place-items: center;
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 5.25rem;
+  height: 5.25rem;
   border: 0;
   padding: 0;
   border-radius: 999px;
@@ -530,29 +562,24 @@ body {
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 5.25rem;
+  height: 5.25rem;
   overflow: visible;
   border-radius: 999px;
-  background:
-    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.75), transparent 55%),
-    rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(17, 17, 17, 0.1);
-  box-shadow:
-    0 14px 36px rgba(17, 17, 17, 0.16),
-    0 0 24px rgba(110, 182, 200, 0.35);
+  background: transparent;
   transition: transform 180ms ease;
+  filter: drop-shadow(0 12px 22px rgba(16, 52, 60, 0.28));
 }
 
 .site-meg-fab:hover .site-meg-fab__orb {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
 .site-meg-fab__pulse {
   position: absolute;
-  inset: -4px;
+  inset: -2px;
   border-radius: 999px;
-  border: 1.5px solid rgba(47, 143, 157, 0.45);
+  border: 1.5px solid rgba(47, 143, 157, 0.4);
   animation: site-meg-fab-pulse 2.4s ease-out infinite;
   pointer-events: none;
 }
@@ -597,12 +624,26 @@ body {
     padding: 1.25rem;
   }
 
-  .site-meg-overlay__panel {
+  .site-meg-overlay__shell {
     width: min(26.5rem, calc(100vw - 2.5rem));
     height: calc(100dvh - 2.5rem);
     max-height: none;
-    border-radius: 1.35rem;
+    align-items: stretch;
+    padding-top: 3rem;
     animation-name: site-meg-dock-in;
+  }
+
+  .site-meg-overlay__mascot {
+    left: auto;
+    right: 1.15rem;
+    transform: none;
+  }
+
+  .site-meg-overlay__panel {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    border-radius: 1.35rem;
   }
 
   .site-meg-overlay__backdrop {

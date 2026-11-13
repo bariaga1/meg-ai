@@ -1,4 +1,4 @@
-import { SITE_LINKEDIN, SITE_ROLE } from "@/lib/site";
+import { SITE_LINKEDIN, SITE_RESUME_PDF, SITE_ROLE } from "@/lib/site";
 
 type HeroProps = {
   onOpenMeg: () => void;
@@ -38,6 +38,14 @@ export function Hero({ onOpenMeg }: HeroProps) {
               className="rounded-full border border-[var(--site-line)] bg-white px-5 py-2.5 text-sm font-semibold text-[var(--meg-ink)] transition hover:border-[var(--meg-ink)]"
             >
               LinkedIn
+            </a>
+            <a
+              href={SITE_RESUME_PDF}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-[var(--site-line)] bg-white px-5 py-2.5 text-sm font-semibold text-[var(--meg-ink)] transition hover:border-[var(--meg-ink)]"
+            >
+              Resume PDF ↓
             </a>
           </div>
         </div>

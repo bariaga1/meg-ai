@@ -23,6 +23,10 @@ const FOLLOW_UP_HINT =
 const SKILL_HINT =
   /\b(skills?|python|typescript|javascript|node\.?js|sql|power\s*bi|tableau|salesforce|familiar|know|used|stack|tools?|cursor|claude|copilot)\b/i;
 
+/** Soft skills / competencies; “strengths” is not in the chunk text. */
+const STRENGTH_HINT =
+  /\b(strengths?|competenc(?:y|ies)|strong\s+at|good\s+at|best\s+at|what\s+(is|are)\s+he\s+known\s+for)\b/i;
+
 /** Skills that repeat across the career, not a single tool. */
 const ACROSS_ROLES_HINT =
   /\b(across\s+(his\s+|the\s+)?(roles?|jobs?|employers?|positions?|career)|throughout\s+(his\s+)?career|in\s+common|show(?:s|ed)?\s+up)\b/i;
@@ -144,6 +148,7 @@ export function retrieveResumeContext(
   const searchQuery = retrievalQuery(query, history);
   const wantContact = PROFILE_HINT.test(query) || PROFILE_HINT.test(searchQuery);
   const wantSkills = SKILL_HINT.test(query);
+  const wantStrengths = STRENGTH_HINT.test(query) || STRENGTH_HINT.test(searchQuery);
   const acrossRoles = ACROSS_ROLES_HINT.test(query) || ACROSS_ROLES_HINT.test(searchQuery);
   const wantEducation = EDUCATION_HINT.test(query);
   const priorTalkedProjects = history.some(
@@ -168,6 +173,7 @@ export function retrieveResumeContext(
   const wantProjects = askedProjects;
   const wantRoles =
     !wantAiPicture &&
+    !wantStrengths &&
     (OTHER_ROLES_HINT.test(query) ||
       (!wantSkills &&
         !wantEducation &&
@@ -186,6 +192,24 @@ export function retrieveResumeContext(
       if (!byId.has(h.id)) byId.set(h.id, h);
     }
   };
+
+  if (wantStrengths) {
+    prefer(
+      index
+        .search("core competencies strengths stakeholder consulting implementations", 6)
+        .filter(
+          (h) =>
+            h.id === "core-competencies" ||
+            h.tags.includes("competencies") ||
+            h.tags.includes("strengths"),
+        ),
+    );
+    prefer(
+      index
+        .search("professional summary career highlights", 4)
+        .filter((h) => h.id === "summary" || h.id === "career-highlights"),
+    );
+  }
 
   if (wantWeakness) {
     prefer(
@@ -258,6 +282,8 @@ export function retrieveResumeContext(
       ? 1 + orderedJobChunks().length
       : wantRoles
       ? 1 + orderedJobChunks().length + 3
+      : wantStrengths
+      ? Math.max(topK, 3)
       : wantWeakness
       ? 3
       : wantAiPicture

@@ -73,7 +73,7 @@ Selected for an international Business Intelligence program in India, where I tr
 - Built an intake flow that validates small business inquiries and commits them as structured markdown context for downstream AI agent workflows
 - Connected the intake flow to an n8n workflow through a webhook, where an AI agent reviews the client context and proposes an approach for the user to approve before anything moves forward
 
-## Core Competencies
+## Core Competencies (strengths)
 Client-Facing Consulting · Requirements Gathering & Analysis · Enterprise SaaS Implementations · Stakeholder Management · Cross-Functional Collaboration · Analytics Strategy & Insights · Offshore Team Leadership
 
 ## Certifications

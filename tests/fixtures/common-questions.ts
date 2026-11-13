@@ -362,6 +362,18 @@ export const GROUNDING_CASES: GroundingCase[] = [
     mustRetrieveIds: ["core-competencies"],
     mustAppearInContext: ["Stakeholder Management"],
   },
+  {
+    id: "his-strengths",
+    question: "What are his strengths?",
+    mustRetrieveIds: ["core-competencies"],
+    mustAppearInContext: ["Stakeholder Management"],
+  },
+  {
+    id: "strengths-listed",
+    question: "What are his strengths should be listed",
+    mustRetrieveIds: ["core-competencies"],
+    mustAppearInContext: ["Client-Facing Consulting"],
+  },
 
   // --- Contact / logistics ---
   {

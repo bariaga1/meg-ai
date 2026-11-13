@@ -52,8 +52,8 @@
     {
       "id": "core-competencies",
       "title": "Core Competencies",
-      "tags": ["competencies"],
-      "text": "## Core Competencies\nClient-Facing Consulting · Requirements Gathering & Analysis · Enterprise SaaS Implementations · Stakeholder Management · Cross-Functional Collaboration · Analytics Strategy & Insights · Offshore Team Leadership"
+      "tags": ["competencies", "strengths"],
+      "text": "## Core Competencies (strengths)\nClient-Facing Consulting · Requirements Gathering & Analysis · Enterprise SaaS Implementations · Stakeholder Management · Cross-Functional Collaboration · Analytics Strategy & Insights · Offshore Team Leadership"
     },
     {
       "id": "certifications",

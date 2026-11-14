@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import type { MegMood } from "./MegCharacter";
 
 export type Role = "user" | "assistant" | "system";
 
@@ -152,6 +153,12 @@ export function useMegChat() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, busy, streamingId]);
+
+  // Thinking until the first words land, then speaking until the reveal ends.
+  const streamingText = streamingId
+    ? messages.find((m) => m.id === streamingId)?.text ?? ""
+    : "";
+  const mood: MegMood = !streamingId ? "idle" : streamingText ? "speaking" : "thinking";
 
   const placeholder = useMemo(
     () => (hasThread ? "Ask a follow-up…" : "Ask Meg…"),
@@ -334,6 +341,7 @@ export function useMegChat() {
     localMode,
     hasThread,
     streamingId,
+    mood,
     placeholder,
     bottomRef,
     listRef,
@@ -341,3 +349,5 @@ export function useMegChat() {
     onSubmit,
   };
 }
+
+export type MegChatState = ReturnType<typeof useMegChat>;

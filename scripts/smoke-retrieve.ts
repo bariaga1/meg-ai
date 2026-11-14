@@ -1,5 +1,5 @@
-import { Bm25Index } from "../bot/lib/bm25.js";
-import { loadResumeChunks } from "../bot/lib/loadChunks.js";
+import { Bm25Index } from "../lib/bm25.js";
+import { loadResumeChunks } from "../lib/loadChunks.js";
 
 const cases: Array<{ q: string; expectIdIncludes: string }> = [
   { q: "Medallia Power BI dashboards", expectIdIncludes: "medallia" },

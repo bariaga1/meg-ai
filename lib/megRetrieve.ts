@@ -1,5 +1,5 @@
-import { Bm25Index, type RankedChunk } from "../bot/lib/bm25";
-import { loadResumeChunks } from "../bot/lib/loadChunks";
+import { Bm25Index, type RankedChunk } from "./bm25";
+import { loadResumeChunks } from "./loadChunks";
 
 let index: Bm25Index | null = null;
 

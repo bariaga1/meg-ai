@@ -41,14 +41,12 @@ export function normalizeHistory(raw: unknown): ChatTurn[] {
   return out;
 }
 
-/** NDJSON stream shaped like the Agent SDK events MegChat already parses. */
+/** Streams Meg's reply as NDJSON events: session, message.appended, message.completed, turn.completed. */
 export function megGatewayNdjsonStream(
   message: string,
   history: ChatTurn[] = [],
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
-  const sessionId = `gw_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-  const continuationToken = `gw:${sessionId}`;
   const historyForRetrieve = history.filter((t) => t.text !== message);
   const hits = retrieveResumeContext(message, 4, historyForRetrieve);
   const context = formatResumeContext(hits);
@@ -84,8 +82,6 @@ export function megGatewayNdjsonStream(
 
       push({
         type: "session",
-        sessionId,
-        continuationToken,
         mode: "gateway",
       });
 

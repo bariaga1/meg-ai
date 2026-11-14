@@ -1,50 +1,39 @@
 # meg-ai
 
-Agent SDK project (`@grok/agent-sdk`). This file is
-for coding agents editing the project. The served agent's prompt is
-`bot/instructions.md`.
+Notes for coding agents working in this repo. Human docs are in README.md.
 
 ## Loop
 
 ```bash
-agent-sdk validate --dir .
-agent-sdk info --dir . --json
-agent-sdk run --dir . --message "..."
-agent-sdk eval --dir .
-npm run check
+npm run lint
+npm run typecheck
+npm test          # retrieval grounding tests, no model calls
+npm run build
 ```
-
-Run the CLI under Node, never Bun.
 
 ## UI
 
-`npm run dev`, then open http://127.0.0.1:3000. That host is listed in
-`allowedDevOrigins`. Any other dev host gets 403 on `/_next` assets and
-the chat page never hydrates, so clicks and typing do nothing. With
-`AGENT_BASE_URL` unset, `/api/chat` answers from the local resume index.
+`npm run dev`, then open http://127.0.0.1:3000 (port 3000). That host is in
+`allowedDevOrigins`; other dev hosts get 403 on `/_next` assets and the
+page never hydrates. Without Gateway credentials, `/api/chat` answers in
+quick lookup mode (resume excerpts), which is fine for UI work.
 
 ## Layout
 
-- `bot/instructions.md` is the always-on prompt. Keep it short.
-- `bot/tools/<name>.ts` is one tool per file. The filename is the tool name.
-- `bot/lib/` is shared code. Never discovered.
-- `evals/` is filesystem evals (`evals/evals.config.ts` required).
-  Not `bot/evals/`. That path is ignored.
+- `app/api/chat/route.ts`: guards, then retrieval + AI Gateway stream.
+- `lib/megRetrieve.ts`: BM25 search plus intent rules. Every retrieval
+  change must keep `tests/meg-retrieve.test.ts` passing.
+- `lib/megPrompt.ts`: Meg's only system prompt.
+- `content/*chunks.json`: Meg's knowledge. `lib/siteContent.ts` and
+  `lib/siteProjects.ts`: the page copy. Keep both in sync with the resume.
+- `components/chat/MegCharacter.tsx`: the animated Meg; respect
+  `prefers-reduced-motion` in any new motion.
 
 ## Do not
 
-- Grow host TypeScript for formatting, classification, or reply composition.
-  That stays in instructions/skills. Host code owns auth, idempotency,
-  evidence seeding, and side-effect gates.
-- Add npm deps on a first cut. Stick to what `@grok/agent-sdk` already ships.
-- Point `serve` at a parent folder during bring-up. It mounts every sibling.
-
-## Pointers
-
-- Package loop: `node_modules/@grok/agent-sdk/AGENTS.md`
-- Skills: `node_modules/@grok/agent-sdk/skills/` (`create-agent`, `deploy`, `evals`, `hillclimb`, `debug`)
-- Docs: `npx @grok/agent-sdk docs`
-- LLM docs index: `node_modules/@grok/agent-sdk/dist/docs/llms.txt`
+- Copy wording from the sites that inspired this one.
+- Send the whole resume to the model; retrieval exists to keep tokens down.
+- Add npm dependencies without a clear need.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

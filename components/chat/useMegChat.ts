@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import type { MegMood } from "./MegCharacter";
 
 export type Role = "user" | "assistant" | "system";
 
@@ -26,37 +27,16 @@ type StreamEvent = {
   data?: {
     text?: string;
     delta?: string;
-    result?: string;
-    message?: string;
   };
-  text?: string;
-  sessionId?: string;
-  continuationToken?: string;
+  /** On the "session" event: "gateway" (model reply) or "local" (lexical excerpts). */
   mode?: string;
 };
-
-function extractAssistantDelta(ev: StreamEvent): string | null {
-  if (ev.type === "message.appended") {
-    return ev.data?.delta ?? ev.data?.text ?? ev.text ?? null;
-  }
-  if (ev.type === "message.completed") {
-    return null;
-  }
-  return null;
-}
-
-function isTurnDone(ev: StreamEvent): boolean {
-  return ev.type === "turn.completed" || ev.type === "turn.failed";
-}
 
 export function useMegChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [continuationToken, setContinuationToken] = useState<string | null>(null);
-  const [startIndex, setStartIndex] = useState(0);
   const [localMode, setLocalMode] = useState(false);
   const [streamingId, setStreamingId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -153,6 +133,12 @@ export function useMegChat() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, busy, streamingId]);
 
+  // Thinking until the first words land, then speaking until the reveal ends.
+  const streamingText = streamingId
+    ? messages.find((m) => m.id === streamingId)?.text ?? ""
+    : "";
+  const mood: MegMood = !streamingId ? "idle" : streamingText ? "speaking" : "thinking";
+
   const placeholder = useMemo(
     () => (hasThread ? "Ask a follow-up…" : "Ask Meg…"),
     [hasThread],
@@ -193,9 +179,6 @@ export function useMegChat() {
           message: trimmed,
           history,
           userTurnCount,
-          sessionId: sessionId ?? undefined,
-          continuationToken: continuationToken ?? undefined,
-          startIndex,
         }),
       });
 
@@ -210,7 +193,6 @@ export function useMegChat() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
-      let latestIndex = startIndex;
       let sawAssistant = false;
 
       while (true) {
@@ -229,25 +211,12 @@ export function useMegChat() {
             continue;
           }
 
-          if (ev.type === "session" && ev.sessionId && ev.continuationToken) {
-            setSessionId(ev.sessionId);
-            setContinuationToken(ev.continuationToken);
-            if (
-              ev.mode === "local" ||
-              ev.mode === "gateway" ||
-              ev.sessionId.startsWith("local_") ||
-              ev.sessionId.startsWith("gw_")
-            ) {
-              setLocalMode(ev.mode === "local" || ev.sessionId.startsWith("local_"));
-            }
+          if (ev.type === "session") {
+            setLocalMode(ev.mode === "local");
             continue;
           }
 
-          if (typeof ev.index === "number") {
-            latestIndex = Math.max(latestIndex, ev.index + 1);
-          }
-
-          const delta = extractAssistantDelta(ev);
+          const delta = ev.type === "message.appended" ? ev.data?.delta : undefined;
           if (delta) {
             sawAssistant = true;
             enqueueReveal(assistantId, delta);
@@ -266,22 +235,7 @@ export function useMegChat() {
             );
           }
 
-          if (ev.type === "actions.requested") {
-            pendingRef.current = "";
-            stopRevealLoop();
-            setMessages((prev) =>
-              prev.map((m) => (m.id === assistantId ? { ...m, text: "" } : m)),
-            );
-            continue;
-          }
-
-          if (ev.type === "turn.failed") {
-            throw new Error(
-              ev.data?.message || ev.data?.result || "Meg could not finish that turn.",
-            );
-          }
-
-          if (isTurnDone(ev)) {
+          if (ev.type === "turn.completed") {
             await reader.cancel();
             break;
           }
@@ -289,7 +243,6 @@ export function useMegChat() {
       }
 
       await waitForRevealIdle();
-      setStartIndex(latestIndex);
       if (!sawAssistant) {
         setMessages((prev) =>
           prev.map((m) =>
@@ -304,7 +257,8 @@ export function useMegChat() {
       }
     } catch (err) {
       flushReveal();
-      const message = err instanceof Error ? err.message : "Something went wrong.";
+      const message =
+        err instanceof Error ? err.message : "Couldn't reach Meg. Check your connection and try again.";
       setError(message);
       setMessages((prev) =>
         prev.map((m) =>
@@ -334,6 +288,7 @@ export function useMegChat() {
     localMode,
     hasThread,
     streamingId,
+    mood,
     placeholder,
     bottomRef,
     listRef,
@@ -341,3 +296,5 @@ export function useMegChat() {
     onSubmit,
   };
 }
+
+export type MegChatState = ReturnType<typeof useMegChat>;

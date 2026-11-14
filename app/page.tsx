@@ -1,9 +1,5 @@
-import { MegChat } from "@/components/chat/MegChat";
+import { SiteShell } from "@/components/site/SiteShell";
 
 export default function Home() {
-  return (
-    <div className="meg-atmosphere min-h-[100dvh]">
-      <MegChat />
-    </div>
-  );
+  return <SiteShell />;
 }

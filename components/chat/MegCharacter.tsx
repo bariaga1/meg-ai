@@ -47,7 +47,10 @@ export function MegCharacter({ mood = "idle", className = "", trackPointer = tru
   const [blinking, setBlinking] = useState(false);
   const [poked, setPoked] = useState(false);
 
-  moodRef.current = mood;
+  // The animation loop reads the latest mood without restarting on every change.
+  useEffect(() => {
+    moodRef.current = mood;
+  }, [mood]);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");

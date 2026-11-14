@@ -1,16 +1,11 @@
-import {
-  isAgentConfigured,
-  openSessionStream,
-  startOrContinueSession,
-} from "@/lib/agentClient";
 import { enforceChatGuards, enforceSessionBudget } from "@/lib/chatGuard";
+import { checkUserMessage } from "@/lib/guardrails";
+import { localMegNdjsonStream } from "@/lib/localMeg";
 import {
   isGatewayConfigured,
   megGatewayNdjsonStream,
   normalizeHistory,
 } from "@/lib/megGatewayChat";
-import { checkUserMessage } from "@/lib/guardrails";
-import { localMegNdjsonStream, shouldUseLocalFallback } from "@/lib/localMeg";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,9 +15,6 @@ type Body = {
   message?: unknown;
   history?: unknown;
   userTurnCount?: unknown;
-  sessionId?: unknown;
-  continuationToken?: unknown;
-  startIndex?: unknown;
 };
 
 function ndjsonResponse(stream: ReadableStream<Uint8Array>) {
@@ -34,6 +26,11 @@ function ndjsonResponse(stream: ReadableStream<Uint8Array>) {
   });
 }
 
+/**
+ * One chat turn. Replies stream as NDJSON events (session, message.appended,
+ * message.completed, turn.completed). AI Gateway writes the answer from the
+ * retrieved resume sections; without Gateway, a lexical excerpt reply is used.
+ */
 export async function POST(req: Request) {
   const guard = await enforceChatGuards(req);
   if (!guard.ok) {
@@ -72,131 +69,14 @@ export async function POST(req: Request) {
   }
   const history = normalizeHistory(body.history);
 
-  const sessionId =
-    typeof body.sessionId === "string" && body.sessionId ? body.sessionId : undefined;
-  const continuationToken =
-    typeof body.continuationToken === "string" && body.continuationToken
-      ? body.continuationToken
-      : undefined;
-  const startIndex =
-    typeof body.startIndex === "number" && Number.isFinite(body.startIndex)
-      ? Math.max(0, Math.floor(body.startIndex))
-      : 0;
-
-  if (sessionId && !continuationToken) {
-    return Response.json(
-      { ok: false, error: "missing_continuation", message: "continuationToken is required." },
-      { status: 400 },
-    );
-  }
-
-  const fromLocalOrGw =
-    sessionId?.startsWith("local_") ||
-    sessionId?.startsWith("gw_") ||
-    continuationToken?.startsWith("local:") ||
-    continuationToken?.startsWith("gw:");
-  const agentSessionId = fromLocalOrGw ? undefined : sessionId;
-  const agentToken = fromLocalOrGw ? undefined : continuationToken;
-  const agentStart = fromLocalOrGw ? 0 : startIndex;
-
-  if (shouldUseLocalFallback()) {
+  // MEG_FORCE_LOCAL=1, MEG_DISABLE_GATEWAY=1, or no Gateway credentials.
+  if (!isGatewayConfigured()) {
     return ndjsonResponse(localMegNdjsonStream(checked.text));
   }
-
-  // Prefer AI Gateway when no Cursor agent URL is configured.
-  if (!isAgentConfigured() && isGatewayConfigured()) {
-    try {
-      return ndjsonResponse(megGatewayNdjsonStream(checked.text, history));
-    } catch {
-      return ndjsonResponse(localMegNdjsonStream(checked.text));
-    }
-  }
-
-  if (!isAgentConfigured()) {
-    return ndjsonResponse(localMegNdjsonStream(checked.text));
-  }
-
   try {
-    const session = await startOrContinueSession({
-      message: checked.text,
-      sessionId: agentSessionId,
-      continuationToken: agentToken,
-    });
-
-    const streamRes = await openSessionStream(session.sessionId, agentStart);
-    if (!streamRes.ok || !streamRes.body) {
-      const detail = await streamRes.text().catch(() => "");
-      return Response.json(
-        {
-          ok: false,
-          error: "stream_failed",
-          message: detail || `Agent stream failed (${streamRes.status})`,
-        },
-        { status: 502 },
-      );
-    }
-
-    const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
-    const upstream = streamRes.body.getReader();
-    let pending = "";
-    let turnSettled = false;
-
-    const stream = new ReadableStream<Uint8Array>({
-      start(controller) {
-        controller.enqueue(
-          encoder.encode(
-            `${JSON.stringify({
-              type: "session",
-              sessionId: session.sessionId,
-              continuationToken: session.continuationToken,
-            })}\n`,
-          ),
-        );
-      },
-      async pull(controller) {
-        if (turnSettled) {
-          controller.close();
-          return;
-        }
-        const { done, value } = await upstream.read();
-        if (done) {
-          controller.close();
-          return;
-        }
-        const chunk = decoder.decode(value, { stream: true });
-        controller.enqueue(encoder.encode(chunk));
-        pending += chunk;
-        const lines = pending.split("\n");
-        pending = lines.pop() ?? "";
-        for (const line of lines) {
-          if (!line.includes('"type"')) continue;
-          try {
-            const ev = JSON.parse(line) as { type?: string };
-            if (ev.type === "turn.completed" || ev.type === "turn.failed") {
-              turnSettled = true;
-            }
-          } catch {
-            // Keep forwarding. A split JSON line stays in `pending`.
-          }
-        }
-        if (turnSettled) {
-          await upstream.cancel();
-          controller.close();
-        }
-      },
-      cancel() {
-        void upstream.cancel();
-      },
-    });
-
-    return ndjsonResponse(stream);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Agent proxy failed";
-    const missing = message.includes("AGENT_BASE_URL");
-    return Response.json(
-      { ok: false, error: missing ? "agent_unconfigured" : "agent_error", message },
-      { status: missing ? 503 : 502 },
-    );
+    return ndjsonResponse(megGatewayNdjsonStream(checked.text, history));
+  } catch {
+    // Setup errors (e.g. a bad model id) still get a resume-grounded reply.
+    return ndjsonResponse(localMegNdjsonStream(checked.text));
   }
 }

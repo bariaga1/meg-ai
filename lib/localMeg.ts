@@ -1,4 +1,4 @@
-import type { RankedChunk } from "../bot/lib/bm25";
+import type { RankedChunk } from "./bm25";
 import { retrieveResumeContext } from "./megRetrieve";
 
 const CONTACT_HINT =
@@ -23,7 +23,7 @@ function pickHits(message: string): RankedChunk[] {
   return retrieveResumeContext(message, 4);
 }
 
-/** Deterministic resume-grounded reply when the Cursor agent is unavailable. */
+/** Deterministic resume-grounded reply when AI Gateway is unavailable. */
 export function localMegReply(message: string): string {
   if (OFF_TOPIC.test(message)) {
     return "I stay on Omega’s resume and projects. Ask about roles, skills, or something like Can I Park Here?";
@@ -49,12 +49,10 @@ export function localMegReply(message: string): string {
   return lines.join("\n");
 }
 
-/** NDJSON stream compatible with MegChat’s Agent SDK event expectations. */
+/** Same NDJSON event shape as the Gateway stream, so MegChat handles both. */
 export function localMegNdjsonStream(message: string): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   const text = localMegReply(message);
-  const sessionId = `local_${Date.now().toString(36)}`;
-  const continuationToken = `local:${sessionId}`;
   // Small token-ish chunks so the UI can paint progressively even without client buffering.
   const parts = text.match(/\S+\s*|\s+/g)?.filter(Boolean) ?? [text];
 
@@ -64,8 +62,6 @@ export function localMegNdjsonStream(message: string): ReadableStream<Uint8Array
         encoder.encode(
           `${JSON.stringify({
             type: "session",
-            sessionId,
-            continuationToken,
             mode: "local",
           })}\n`,
         ),
@@ -107,12 +103,4 @@ export function localMegNdjsonStream(message: string): ReadableStream<Uint8Array
       controller.close();
     },
   });
-}
-
-export function shouldUseLocalFallback(): boolean {
-  if (process.env.MEG_FORCE_LOCAL === "1") return true;
-  if (process.env.MEG_DISABLE_LOCAL_FALLBACK === "1") return false;
-  // Lexical-only mode when neither Cursor agent nor AI Gateway is available.
-  // Gateway availability is decided in the chat route via isGatewayConfigured().
-  return false;
 }

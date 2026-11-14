@@ -39,6 +39,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# agent-sdk
+# local session data from the removed Agent SDK backend (safe to delete)
 .agent-serve
 memory

@@ -3,21 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node scripts/dev-with-agent.mjs",
-    "dev:next": "next dev",
-    "dev:agent": "npx --yes @grok/agent-sdk@0.5.0 serve --dir . --mode single --dev --port 3001 --allow-anonymous",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "check:agent": "tsc --noEmit -p tsconfig.agent.json",
-    "validate:agent": "npx --yes @grok/agent-sdk@0.5.0 validate --dir .",
-    "smoke:retrieve": "npx --yes tsx scripts/smoke-retrieve.ts",
-    "smoke:local": "npx --yes tsx scripts/smoke-local-meg.ts",
-    "test": "npx --yes tsx --test tests/**/*.test.ts",
-    "test:grounding": "npx --yes tsx --test tests/meg-retrieve.test.ts"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/**/*.test.ts",
+    "smoke:retrieve": "tsx scripts/smoke-retrieve.ts",
+    "smoke:local": "tsx scripts/smoke-local-meg.ts"
   },
   "dependencies": {
-    "@grok/agent-sdk": "^0.5.0",
     "@vercel/firewall": "^1.2.6",
     "ai": "^7.0.159",
     "botid": "^1.5.12",
@@ -27,7 +22,6 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,6 +1,6 @@
 import type { ResumeChunk } from "./bm25.js";
-import resumeFile from "../../content/chunks.json";
-import projectFile from "../../content/project-chunks.json";
+import resumeFile from "../content/chunks.json";
+import projectFile from "../content/project-chunks.json";
 
 type ChunksFile = { version: number; chunks: ResumeChunk[] };
 

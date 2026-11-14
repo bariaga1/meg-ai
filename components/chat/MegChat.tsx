@@ -161,7 +161,7 @@ export function MegChat({ chat }: { chat: MegChatState }) {
 
         <p className="mt-2 shrink-0 text-center text-[11px] text-[var(--meg-ink-soft)]">
           Answers come from the resume only. Phone is not shared.
-          {localMode ? " · Local resume lookup (agent not connected)." : null}
+          {localMode ? " · Quick lookup mode (AI model not connected)." : null}
         </p>
       </div>
     </div>

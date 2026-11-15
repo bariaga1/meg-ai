@@ -2,11 +2,7 @@ import Image from "next/image";
 import { SITE_ROLE_BLURBS } from "@/lib/siteContent";
 
 /** Life outside work, as little stickers on the off-the-clock card. */
-const STICKERS = [
-  { icon: "🐶", label: "Sosa's dad" },
-  { icon: "🏀", label: "Pickup hoops" },
-  { icon: "🗣️", label: "Speaks 3 languages" },
-];
+const STICKERS = ["Sosa's dad", "Pickup hoops", "Speaks 3 languages"];
 
 export function About() {
   return (
@@ -62,9 +58,10 @@ export function About() {
             </p>
             <ul className="mt-5 flex flex-wrap gap-3" aria-label="Off the clock">
               {STICKERS.map((sticker) => (
-                <li key={sticker.label}>
+                <li key={sticker}>
                   <span className="sticker">
-                    <span aria-hidden>{sticker.icon}</span> {sticker.label}
+                    <span className="sticker__dot" aria-hidden />
+                    {sticker}
                   </span>
                 </li>
               ))}

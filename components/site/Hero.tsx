@@ -32,10 +32,10 @@ export function Hero({ onOpenMeg, megMood, megRef }: HeroProps) {
             {SITE_ROLE}
           </p>
           <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
-            I turn messy requirements and messier data into systems people
-            actually use. Ten years of Fortune 100 projects taught me the tech
-            is only half the job. The other half is listening well and
-            following through.
+            I&apos;ve always wanted to know how things work, which is how I
+            ended up in tech. But the tech is only half the job. The other half
+            is listening: understanding what someone actually needs, and
+            talking it through in their language, not mine.
           </p>
           <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
             Ask Meg anything about my work (or about Sosa), or scroll for the

@@ -343,6 +343,21 @@ li > .sticker:hover {
   box-shadow: 3px 4px 0 var(--ink);
 }
 
+/* A small coloured dot in place of an icon, cycling through the palette. */
+.sticker__dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--orange);
+}
+li:nth-child(2) > .sticker .sticker__dot {
+  background: var(--teal);
+}
+li:nth-child(3) > .sticker .sticker__dot {
+  background: var(--mustard);
+}
+
 /* Sosa's photo as a slightly tilted polaroid. */
 .polaroid {
   margin: 0;

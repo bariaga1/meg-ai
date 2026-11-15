@@ -20,7 +20,8 @@ function excerpt(chunk: RankedChunk, maxLines = 5): string {
 }
 
 function pickHits(message: string): RankedChunk[] {
-  return retrieveResumeContext(message, 4);
+  // The "no direct match" note is guidance for the model, not a section to show.
+  return retrieveResumeContext(message, 4).filter((h) => !h.tags.includes("note"));
 }
 
 /** Deterministic resume-grounded reply when AI Gateway is unavailable. */

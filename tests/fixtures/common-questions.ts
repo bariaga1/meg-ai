@@ -375,6 +375,56 @@ export const GROUNDING_CASES: GroundingCase[] = [
     mustAppearInContext: ["Client-Facing Consulting"],
   },
 
+  // --- Overview phrasings keyword search alone missed ---
+  {
+    id: "accomplishments",
+    question: "What are his accomplishments?",
+    mustRetrieveIds: ["career-highlights"],
+    mustAppearInContext: ["$5M+", "Fortune 100"],
+  },
+  {
+    id: "achievements",
+    question: "What are his achievements?",
+    mustRetrieveIds: ["career-highlights"],
+    mustAppearInContext: ["$5M+"],
+  },
+  {
+    id: "achieved",
+    question: "What has he achieved?",
+    mustRetrieveIds: ["career-highlights"],
+    mustAppearInContext: ["$5M+"],
+  },
+  {
+    id: "proud-of",
+    question: "What is he most proud of?",
+    mustRetrieveIds: ["career-highlights"],
+    mustAppearInContext: ["$5M+"],
+  },
+  {
+    id: "biggest-wins",
+    question: "What are his biggest wins?",
+    mustRetrieveIds: ["career-highlights"],
+    mustAppearInContext: ["$5M+"],
+  },
+  {
+    id: "tell-me-about-yourself",
+    question: "Tell me about yourself",
+    mustRetrieveIds: ["summary", "career-highlights"],
+    mustAppearInContext: ["10+ years"],
+  },
+  {
+    id: "what-does-he-do",
+    question: "What does he do?",
+    mustRetrieveIds: ["summary"],
+    mustAppearInContext: ["10+ years"],
+  },
+  {
+    id: "who-is-omega",
+    question: "Who is Omega?",
+    mustRetrieveIds: ["summary"],
+    mustAppearInContext: ["10+ years"],
+  },
+
   // --- Contact / logistics ---
   {
     id: "contact",

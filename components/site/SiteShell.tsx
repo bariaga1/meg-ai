@@ -79,6 +79,11 @@ export function SiteShell() {
 
   const openMeg = useCallback(() => setMegOpen(true), []);
   const closeMeg = useCallback(() => setMegOpen(false), []);
+  /** Opens Meg and sends a question for her, e.g. from a highlight box. */
+  const askMeg = (question: string) => {
+    setMegOpen(true);
+    void chat.send(question);
+  };
 
   useEffect(() => {
     if (!megOpen) return;
@@ -100,7 +105,7 @@ export function SiteShell() {
       <Hero onOpenMeg={openMeg} megMood={chat.mood} megRef={heroMegRef} />
       <Marquee />
       <About />
-      <Highlights />
+      <Highlights onAskMeg={askMeg} />
       <Experience />
       <MegHighlight onOpen={openMeg} megMood={chat.mood} />
       <ProjectGrid />

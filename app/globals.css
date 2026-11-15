@@ -466,6 +466,99 @@ body::after {
   border-top: 2px dashed currentColor;
 }
 
+/* Open boxes take a whole row; later boxes backfill any gap left behind. */
+.highlight-grid {
+  grid-auto-flow: row dense;
+}
+
+.metric-tile__toggle {
+  cursor: pointer;
+  color: inherit;
+  border-radius: 0.75rem;
+}
+.metric-tile__toggle:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 6px;
+}
+
+.metric-tile__more {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.metric-tile__toggle:hover .metric-tile__more {
+  opacity: 1;
+  transform: translateX(-2px);
+}
+
+.metric-tile.is-open {
+  box-shadow: var(--shadow-hard-lg);
+}
+
+.metric-tile__detail > ol {
+  border-top: 2px dashed currentColor;
+}
+.metric-tile.is-open .metric-tile__detail {
+  animation: tile-detail-in 0.35s ease-out both;
+}
+@keyframes tile-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.metric-tile__step {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.metric-tile__tag {
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  padding: 0.2rem 0.7rem;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.metric-tile__ask {
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--ink);
+  padding: 0.5rem 1rem;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: left;
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.metric-tile__ask:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.metric-tile__ask:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metric-tile.is-open .metric-tile__detail {
+    animation: none;
+  }
+  .metric-tile__more,
+  .metric-tile__ask {
+    transition: none;
+  }
+}
+
 /* Phones: smaller rings tucked further into the corner, clear of the number. */
 @media (max-width: 639px) {
   .metric-tile--feature::after {

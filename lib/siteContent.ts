@@ -149,11 +149,11 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
 export const SITE_ABOUT_CARDS = [
   {
     label: "What I'm building",
-    text: "Since late 2025 I've been building applied AI tools full-time, including CareerOS, Storefront Studio, and Can I Park Here?, to learn what it takes to make AI genuinely useful.",
+    text: "Lately I've been using AI tools to build things like CareerOS, Storefront Studio, and Can I Park Here?, while learning the math and theory behind how the models work, so I can use them better.",
   },
   {
     label: "Where I want to contribute",
-    text: "AI is a powerful tool when it's aimed in the right direction. I want to help teams use it to work more efficiently, with people stepping in where judgment matters and every step staying within policy and the law.",
+    text: "I've spent my career around work with real rules attached: refinery compliance, client SLAs, millions of customer records. That's where I want to bring AI, into work where a wrong answer costs something, built so a person still makes the calls that matter.",
   },
 ] as const;
 

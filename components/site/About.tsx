@@ -44,7 +44,7 @@ export function About() {
               alt="Sosa, a curly goldendoodle in a harness, sitting on the beach and looking back over one shoulder"
               className="block h-auto w-full"
             />
-            <figcaption className="polaroid__caption">Sosa, beach day</figcaption>
+            <figcaption className="polaroid__caption">Sosa</figcaption>
           </figure>
           <div>
             <p className="retro-eyebrow">Off the clock</p>
@@ -52,7 +52,7 @@ export function About() {
               Meet Sosa.
             </p>
             <p className="mt-3 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
-              My goldendoodle and favorite beach-day partner. When I&apos;m not
+              My goldendoodle and best buddy. When I&apos;m not
               untangling data, you&apos;ll find me out with Sosa, in a pickup
               basketball game, or working on my car (German engineering keeps
               me busy). I also speak English, Tigrinya, and Amharic.

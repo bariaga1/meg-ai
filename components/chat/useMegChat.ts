@@ -144,7 +144,8 @@ export function useMegChat() {
     [hasThread],
   );
 
-  async function send(text: string) {
+  /** `topic` names a highlight story, so Meg answers from exactly that story. */
+  async function send(text: string, topic?: string) {
     const trimmed = text.trim();
     if (!trimmed || busy) return;
 
@@ -179,6 +180,7 @@ export function useMegChat() {
           message: trimmed,
           history,
           userTurnCount,
+          topic,
         }),
       });
 

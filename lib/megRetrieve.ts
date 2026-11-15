@@ -95,6 +95,17 @@ function isProjectChunk(h: RankedChunk): boolean {
   return h.tags.includes("project") || /project/i.test(h.id);
 }
 
+function isStoryChunk(h: RankedChunk): boolean {
+  return h.tags.includes("story");
+}
+
+/** The job section a highlight story happened in, matched by its employer line. */
+function jobForStory(story: RankedChunk): RankedChunk[] {
+  const employer = story.text.match(/^Employer:\s*(\S+)/m)?.[1]?.toLowerCase();
+  if (!employer) return [];
+  return orderedJobChunks().filter((job) => job.title.toLowerCase().includes(employer)).slice(0, 1);
+}
+
 function isJobChunk(h: RankedChunk): boolean {
   return h.tags.includes("job") || h.tags.includes("experience") || /^job-/i.test(h.id);
 }
@@ -182,7 +193,14 @@ export function retrieveResumeContext(
   query: string,
   topK = 4,
   history: HistoryTurn[] = [],
+  options: { topic?: string } = {},
 ): RankedChunk[] {
+  // The Ask Meg button on a highlight box names its story: give exactly that.
+  if (options.topic) {
+    const [story] = sections(`story-${options.topic}`);
+    if (story) return [story, ...jobForStory(story)];
+  }
+
   const searchQuery = retrievalQuery(query, history);
   const wantContact = PROFILE_HINT.test(query) || PROFILE_HINT.test(searchQuery);
   const wantSkills = SKILL_HINT.test(query);
@@ -236,14 +254,36 @@ export function retrieveResumeContext(
   const wantIntro = !isSpecific && INTRO_HINT.test(query);
 
   const index = getIndex();
-  const ranked = index
-    .search(searchQuery, 10)
+  // Search a little deeper, then set the stories aside, so they never push a
+  // regular section out of the top ten.
+  const searched = index
+    .search(searchQuery, 16)
     .filter((h) => (wantContact ? true : h.id !== "header"));
+  const ranked = searched.filter((h) => !isStoryChunk(h)).slice(0, 10);
+
+  // A question about one highlight ("how did he run the offshore teams?"):
+  // answer from its story and the job it happened in, nothing else. Broad
+  // questions keep their own sections and leave the stories out.
+  const broad =
+    wantRoles ||
+    wantStatus ||
+    wantAchievements ||
+    wantIntro ||
+    wantStrengths ||
+    wantWeakness ||
+    wantSkills ||
+    wantEducation ||
+    wantContact ||
+    acrossRoles ||
+    NAMED_PROJECT_HINT.test(query);
+  if (!broad && searched[0] && isStoryChunk(searched[0])) {
+    return [searched[0], ...jobForStory(searched[0])];
+  }
 
   const byId = new Map<string, RankedChunk>();
   const prefer = (chunks: RankedChunk[]) => {
     for (const h of chunks) {
-      if (!byId.has(h.id)) byId.set(h.id, h);
+      if (!byId.has(h.id) && !isStoryChunk(h)) byId.set(h.id, h);
     }
   };
 
@@ -365,9 +405,10 @@ export function retrieveResumeContext(
         : topK;
   // Current Status is short and full of names (Medallia, the projects), so it
   // outranks the real section on keywords. Only status questions get it.
-  return [...byId.values()]
+  const hits = [...byId.values()]
     .filter((h) => wantStatus || h.id !== "current-status")
     .slice(0, limit);
+  return hits.length > 0 ? hits : [NO_DIRECT_MATCH, ...sections("summary", "career-highlights")];
 }
 
 export function formatResumeContext(hits: RankedChunk[]): string {

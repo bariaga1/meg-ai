@@ -83,8 +83,14 @@ export function tokenize(text: string): string[] {
  */
 const SECTION_LABELS = /^(Pitch|Top impact|Supporting detail):/gm;
 
+/**
+ * Highlight stories name their employer for the model, but "What did he do at
+ * Medallia?" is a role question, so the employer line stays out of the index.
+ */
+const EMPLOYER_LINE = /^Employer:.*$/gm;
+
 function searchableText(text: string): string {
-  return text.replace(SECTION_LABELS, "");
+  return text.replace(SECTION_LABELS, "").replace(EMPLOYER_LINE, "");
 }
 
 type IndexedDoc = {

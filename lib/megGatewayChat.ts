@@ -45,10 +45,11 @@ export function normalizeHistory(raw: unknown): ChatTurn[] {
 export function megGatewayNdjsonStream(
   message: string,
   history: ChatTurn[] = [],
+  topic?: string,
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   const historyForRetrieve = history.filter((t) => t.text !== message);
-  const hits = retrieveResumeContext(message, 4, historyForRetrieve);
+  const hits = retrieveResumeContext(message, 4, historyForRetrieve, { topic });
   const context = formatResumeContext(hits);
   const model = gatewayModelId();
 

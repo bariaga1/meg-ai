@@ -6,6 +6,7 @@ import {
   retrievalQuery,
 } from "../lib/megRetrieve";
 import { MEG_SYSTEM_PROMPT } from "../lib/megPrompt";
+import { SITE_HIGHLIGHTS } from "../lib/siteContent";
 import { GROUNDING_CASES } from "./fixtures/common-questions";
 
 describe("meg retrieval grounding (no model calls)", () => {
@@ -180,6 +181,64 @@ describe("employment status", () => {
   });
 });
 
+describe("highlight stories", () => {
+  const isProject = (id: string) => id.startsWith("project-");
+
+  it("gives Meg each story with the same words the site shows", () => {
+    for (const item of SITE_HIGHLIGHTS) {
+      const [story] = retrieveResumeContext(item.detail.ask, 4, [], { topic: item.id });
+      assert.equal(story.id, `story-${item.id}`);
+      for (const part of [item.detail.challenge, item.detail.action, item.detail.result]) {
+        assert.ok(story.text.includes(part), `${item.id} story matches the site`);
+      }
+    }
+  });
+
+  it("answers an Ask Meg button with exactly its story and that job", () => {
+    for (const item of SITE_HIGHLIGHTS) {
+      const hits = retrieveResumeContext(item.detail.ask, 4, [], { topic: item.id });
+      assert.equal(hits.length, 2, item.id);
+      assert.match(hits[1].id, /^job-/);
+      assert.match(hits[1].title, new RegExp(item.source.split(" ")[0], "i"), item.id);
+    }
+  });
+
+  it("finds the story for typed questions, without side projects", () => {
+    const cases: [string, string][] = [
+      ...SITE_HIGHLIGHTS.map((item): [string, string] => [item.detail.ask, item.id]),
+      ["How did he save the at-risk accounts?", "renewals"],
+      ["Which Fortune 100 clients did he work with?", "implementations"],
+      ["What data sources did his pipelines use?", "pipelines"],
+      ["How did the overtime tracking app work?", "compliance-app"],
+      ["How was the sentiment classifier built?", "sentiment-model"],
+      ["How did he keep 97% SLA?", "offshore-teams"],
+    ];
+    for (const [question, id] of cases) {
+      const ids = retrieveResumeContext(question).map((h) => h.id);
+      assert.equal(ids[0], `story-${id}`, question);
+      assert.equal(ids.some(isProject), false, question);
+    }
+  });
+
+  it("keeps stories out of broad questions", () => {
+    for (const question of [
+      "What did you do at Medallia?",
+      "What did you do at Marathon Petroleum?",
+      "What are his accomplishments?",
+      "What other roles did you have?",
+      "Is he employed?",
+    ]) {
+      const ids = retrieveResumeContext(question).map((h) => h.id);
+      assert.equal(ids.some((id) => id.startsWith("story-")), false, question);
+    }
+  });
+
+  it("ignores an unknown topic and searches as usual", () => {
+    const ids = retrieveResumeContext("What did you do at Medallia?", 4, [], { topic: "nope" }).map((h) => h.id);
+    assert.match(ids[0], /medallia/);
+  });
+});
+
 describe("retrievalQuery follow-ups", () => {
   it("does not re-anchor other-roles on the prior Medallia question", () => {
     const history = [
@@ -213,6 +272,7 @@ describe("gateway system prompt contract", () => {
     assert.match(MEG_SYSTEM_PROMPT, /character cap/i);
     assert.match(MEG_SYSTEM_PROMPT, /dashboard or report counts/i);
     assert.match(MEG_SYSTEM_PROMPT, /he\/him/i);
+    assert.match(MEG_SYSTEM_PROMPT, /Highlight story/);
     assert.match(MEG_SYSTEM_PROMPT, /Top impact points in the order listed/);
     assert.match(MEG_SYSTEM_PROMPT, /Keep Supporting detail for a follow-up/);
     assert.match(MEG_SYSTEM_PROMPT, /Current Status section/);

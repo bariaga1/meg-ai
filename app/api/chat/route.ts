@@ -15,6 +15,8 @@ type Body = {
   message?: unknown;
   history?: unknown;
   userTurnCount?: unknown;
+  /** Highlight story id sent by a box's Ask Meg button, e.g. "renewals". */
+  topic?: unknown;
 };
 
 function ndjsonResponse(stream: ReadableStream<Uint8Array>) {
@@ -68,15 +70,18 @@ export async function POST(req: Request) {
     );
   }
   const history = normalizeHistory(body.history);
+  // Only a short slug; anything else is ignored and the question is searched as usual.
+  const topic =
+    typeof body.topic === "string" && /^[a-z0-9-]{1,40}$/.test(body.topic) ? body.topic : undefined;
 
   // MEG_FORCE_LOCAL=1, MEG_DISABLE_GATEWAY=1, or no Gateway credentials.
   if (!isGatewayConfigured()) {
-    return ndjsonResponse(localMegNdjsonStream(checked.text));
+    return ndjsonResponse(localMegNdjsonStream(checked.text, topic));
   }
   try {
-    return ndjsonResponse(megGatewayNdjsonStream(checked.text, history));
+    return ndjsonResponse(megGatewayNdjsonStream(checked.text, history, topic));
   } catch {
     // Setup errors (e.g. a bad model id) still get a resume-grounded reply.
-    return ndjsonResponse(localMegNdjsonStream(checked.text));
+    return ndjsonResponse(localMegNdjsonStream(checked.text, topic));
   }
 }

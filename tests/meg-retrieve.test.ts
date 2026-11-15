@@ -129,6 +129,28 @@ describe("recent roles", () => {
   });
 });
 
+describe("overview questions", () => {
+  it("leads accomplishment questions with Career Highlights and leaves side projects out", () => {
+    for (const question of ["What are his accomplishments?", "What is he most proud of?", "What are his biggest wins?"]) {
+      const ids = retrieveResumeContext(question).map((hit) => hit.id);
+      assert.equal(ids[0], "career-highlights", question);
+      assert.equal(ids.some((id) => /careeros|storefront|park/i.test(id)), false, question);
+    }
+  });
+
+  it("keeps a named employer specific even with an achievement word", () => {
+    const ids = retrieveResumeContext("What did he achieve at Medallia?").map((hit) => hit.id);
+    assert.match(ids[0], /medallia/i);
+  });
+
+  it("falls back to labelled background when nothing matches", () => {
+    const hits = retrieveResumeContext("What is his salary expectation?");
+    assert.equal(hits[0].id, "no-direct-match");
+    assert.deepEqual(hits.slice(1).map((hit) => hit.id), ["summary", "career-highlights"]);
+    assert.match(formatResumeContext(hits), /does not cover it/);
+  });
+});
+
 describe("retrievalQuery follow-ups", () => {
   it("does not re-anchor other-roles on the prior Medallia question", () => {
     const history = [

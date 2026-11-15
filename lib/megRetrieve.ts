@@ -51,7 +51,41 @@ const PROFILE_HINT =
 const WEAKNESS_HINT =
   /\b(short\s*comings?|weakness(?:es)?|downsides?|limitations?|failures?|struggles?|not\s+good\s+at|room\s+for\s+improvement)\b/i;
 
+/**
+ * Accomplishment questions. The resume says "Career Highlights" and "delivered",
+ * never "accomplishments" or "achievements", so keyword search alone finds nothing.
+ */
+const ACHIEVEMENT_HINT =
+  /\b(accomplish(?:ed|ments?)|achiev(?:e|ed|ements?)|proud|wins?|successes|successful|biggest\s+impact|track\s+record|best\s+work|stand\s*outs?)\b/i;
+
+/** "Tell me about yourself"-style openers: nothing searchable is left after stop words. */
+const INTRO_HINT =
+  /\b(tell\s+me\s+about\s+(yourself|him|omega)|about\s+yourself|who\s+(is|are)\s+(he|you|omega)|what\s+(does|do)\s+(he|you|omega)\s+do)\b/i;
+
+/** A named employer, project or topic: a precise question, not an overview. */
+const SPECIFIC_HINT =
+  /\b(medallia|marathon|nasdaq|calypso|saama|park\s+here|careeros|storefront|sentiment|power\s*bi|tableau|python|sql)\b/i;
+
 export type HistoryTurn = { role: "user" | "assistant"; text: string };
+
+let sectionMap: Map<string, RankedChunk> | null = null;
+
+/** Fixed sections by id (score 0), for questions that need them regardless of keywords. */
+function sections(...ids: string[]): RankedChunk[] {
+  if (!sectionMap) {
+    sectionMap = new Map(loadResumeChunks().map((c) => [c.id, { ...c, score: 0 }]));
+  }
+  return ids.flatMap((id) => sectionMap?.get(id) ?? []);
+}
+
+/** Tells the model the fallback sections are background, not a direct answer. */
+const NO_DIRECT_MATCH: RankedChunk = {
+  id: "no-direct-match",
+  title: "Note: no section matched this question directly",
+  tags: ["note"],
+  score: 0,
+  text: "No resume section matched this question directly. The sections below are general background. Use them only if they actually answer the question; otherwise say the resume does not cover it.",
+};
 
 function isProjectChunk(h: RankedChunk): boolean {
   return h.tags.includes("project") || /project/i.test(h.id);
@@ -180,6 +214,20 @@ export function retrieveResumeContext(
         !wantContact &&
         (ROLE_HINT.test(query) ||
           (FOLLOW_UP_HINT.test(query) && priorTalkedRoles && !wantProjects))));
+  // Overview questions lead with Career Highlights / Summary, but only when the
+  // question isn't about something specific that keyword search will find.
+  const isSpecific =
+    SPECIFIC_HINT.test(query) ||
+    wantRoles ||
+    wantSkills ||
+    wantEducation ||
+    wantContact ||
+    askedProjects ||
+    wantAiPicture ||
+    wantStrengths ||
+    wantWeakness;
+  const wantAchievements = !isSpecific && ACHIEVEMENT_HINT.test(query);
+  const wantIntro = !isSpecific && INTRO_HINT.test(query);
 
   const index = getIndex();
   const ranked = index
@@ -192,6 +240,12 @@ export function retrieveResumeContext(
       if (!byId.has(h.id)) byId.set(h.id, h);
     }
   };
+
+  if (wantAchievements) {
+    prefer(sections("career-highlights", "summary"));
+  } else if (wantIntro) {
+    prefer(sections("summary", "career-highlights"));
+  }
 
   if (wantStrengths) {
     prefer(
@@ -264,7 +318,8 @@ export function retrieveResumeContext(
   }
 
   const tail =
-    wantRoles || wantWeakness
+    // Side projects aren't career accomplishments; keep stray keyword hits out.
+    wantRoles || wantWeakness || wantAchievements || wantIntro
       ? ranked.filter((hit) => !isProjectChunk(hit))
       : acrossRoles
         ? ranked.filter((hit) => hit.id !== "summary" && !isProjectChunk(hit))
@@ -273,8 +328,10 @@ export function retrieveResumeContext(
           : ranked;
   prefer(tail);
 
+  // Nothing matched (vague or unusual phrasing): give the model general
+  // background with a note, instead of an empty context.
   if (byId.size === 0) {
-    return ranked.slice(0, topK);
+    return [NO_DIRECT_MATCH, ...sections("summary", "career-highlights")];
   }
 
   const limit =

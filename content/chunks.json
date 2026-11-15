@@ -20,6 +20,12 @@
       "text": "## Summary\nTechnical implementation leader with 10+ years across enterprise software delivery, building for Fortune 100 clients from discovery through launch, working directly with customers to turn business needs into data integrations and platform configurations, and partnering with Product and Engineering to resolve technical gaps along the way. Deepening Python and software development skills through hands-on projects, using AI to speed up planning, development, and testing while reviewing and validating everything, and staying hands-on with data, integrations, and automation."
     },
     {
+      "id": "current-status",
+      "title": "Current Status",
+      "tags": ["status", "availability", "employment", "current", "open to work", "available", "layoffs"],
+      "text": "## Current Status\nOmega's role at Medallia ended in October 2025 as part of company-wide layoffs. Since October 2025 he has been building applied AI projects full-time: CareerOS, Storefront Studio, and Can I Park Here?. He is open to new roles in technical implementation, applied AI, and data integration. Availability: immediately."
+    },
+    {
       "id": "technical-skills",
       "title": "Technical Skills",
       "tags": ["skills", "tech"],

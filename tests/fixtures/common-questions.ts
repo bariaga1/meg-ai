@@ -425,6 +425,68 @@ export const GROUNDING_CASES: GroundingCase[] = [
     mustAppearInContext: ["10+ years"],
   },
 
+  // --- Employment status and availability ---
+  {
+    id: "employed",
+    question: "Is he employed?",
+    mustRetrieveIds: ["current-status"],
+    mustAppearInContext: ["October 2025", "open to new roles", "immediately"],
+  },
+  {
+    id: "currently-working",
+    question: "Is he currently working?",
+    mustRetrieveIds: ["current-status"],
+    mustAppearInContext: ["building applied AI projects"],
+  },
+  {
+    id: "open-to-work",
+    question: "Is he open to work?",
+    mustRetrieveIds: ["current-status"],
+    mustAppearInContext: ["open to new roles"],
+  },
+  {
+    id: "available",
+    question: "Is he available?",
+    mustRetrieveIds: ["current-status"],
+    mustAppearInContext: ["immediately"],
+  },
+  {
+    id: "when-start",
+    question: "When can he start?",
+    mustRetrieveIds: ["current-status"],
+    mustAppearInContext: ["immediately"],
+  },
+  {
+    id: "looking-for-job",
+    question: "Is he looking for a job?",
+    mustRetrieveIds: ["current-status"],
+    mustAppearInContext: ["open to new roles"],
+  },
+  {
+    id: "doing-now",
+    question: "What is he doing now?",
+    mustRetrieveIds: ["current-status"],
+    mustAppearInContext: ["building applied AI projects"],
+  },
+  {
+    id: "current-role",
+    question: "What is his current role?",
+    mustRetrieveIds: ["current-status", "medallia"],
+    mustAppearInContext: ["ended in October 2025"],
+  },
+  {
+    id: "why-leave-medallia",
+    question: "Why did he leave Medallia?",
+    mustRetrieveIds: ["current-status", "medallia"],
+    mustAppearInContext: ["company-wide layoffs"],
+  },
+  {
+    id: "laid-off",
+    question: "Was he laid off?",
+    mustRetrieveIds: ["current-status"],
+    mustAppearInContext: ["company-wide layoffs"],
+  },
+
   // --- Contact / logistics ---
   {
     id: "contact",

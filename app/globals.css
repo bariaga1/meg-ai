@@ -357,6 +357,12 @@ li:nth-child(2) > .sticker .sticker__dot {
 li:nth-child(3) > .sticker .sticker__dot {
   background: var(--mustard);
 }
+li:nth-child(4) > .sticker {
+  transform: rotate(1deg);
+}
+li:nth-child(4) > .sticker .sticker__dot {
+  background: var(--teal);
+}
 
 /* Sosa's photo as a slightly tilted polaroid. */
 .polaroid {

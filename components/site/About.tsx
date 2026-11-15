@@ -2,7 +2,7 @@ import Image from "next/image";
 import { SITE_ROLE_BLURBS } from "@/lib/siteContent";
 
 /** Life outside work, as little stickers on the off-the-clock card. */
-const STICKERS = ["Sosa's dad", "Pickup hoops", "Speaks 3 languages"];
+const STICKERS = ["Sosa's dad", "Pickup hoops", "Car tinkerer", "Speaks 3 languages"];
 
 export function About() {
   return (
@@ -53,8 +53,9 @@ export function About() {
             </p>
             <p className="mt-3 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
               My goldendoodle and favorite beach-day partner. When I&apos;m not
-              untangling data, you&apos;ll find me out with Sosa or in a pickup
-              basketball game. I also speak English, Tigrinya, and Amharic.
+              untangling data, you&apos;ll find me out with Sosa, in a pickup
+              basketball game, or working on my car (German engineering keeps
+              me busy). I also speak English, Tigrinya, and Amharic.
             </p>
             <ul className="mt-5 flex flex-wrap gap-3" aria-label="Off the clock">
               {STICKERS.map((sticker) => (

@@ -248,6 +248,7 @@ describe("life outside work", () => {
       "Does he play basketball?",
       "What does he do outside of work?",
       "Tell me about Sosa",
+      "Does he work on cars?",
     ]) {
       const ids = retrieveResumeContext(question).map((h) => h.id);
       assert.equal(ids[0], "outside-work", question);
@@ -261,6 +262,7 @@ describe("life outside work", () => {
       "What did you do at Medallia?",
       "How did he manage weekend deployments?",
       "How can I contact you?",
+      "Where can I park my car with Can I Park Here?",
     ]) {
       const ids = retrieveResumeContext(question).map((h) => h.id);
       assert.equal(ids.includes("outside-work"), false, question);

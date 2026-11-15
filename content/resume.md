@@ -102,4 +102,4 @@ Michigan State University — Bachelor of Science, Media & Communication Technol
 - Amharic (Fluent)
 
 ## Outside Work
-Outside work, he is a dog dad to Sosa, a goldendoodle and his usual beach-day companion. He plays pickup basketball, and he speaks English, Tigrinya, and Amharic.
+Outside work, he is a dog dad to Sosa, a goldendoodle and his usual beach-day companion. He plays pickup basketball, likes working on cars, including his own German car, and speaks English, Tigrinya, and Amharic.

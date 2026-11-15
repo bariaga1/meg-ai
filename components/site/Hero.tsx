@@ -34,8 +34,9 @@ export function Hero({ onOpenMeg, megMood, megRef }: HeroProps) {
           <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
             I&apos;ve always wanted to know how things work, which is how I
             ended up in tech. But the tech is only half the job. The other half
-            is getting to know the people I&apos;m building for, and making
-            sure we&apos;re speaking the same language.
+            is getting to know the people I&apos;m building for, hearing what
+            they&apos;re really asking, and sometimes giving them what they
+            didn&apos;t know they needed.
           </p>
           <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
             Ask Meg anything about my work (or about Sosa), or scroll for the

@@ -1,31 +1,133 @@
 /** Static copy for the personal shell (not used by Meg retrieval). */
 
-export const SITE_HIGHLIGHTS = [
-  {
-    metric: "25+",
-    label: "Fortune 100 implementations delivered end to end at Medallia",
-  },
+export type SiteHighlight = {
+  /** The headline number, e.g. "$5M+". Counted up from zero on screen. */
+  metric: string;
+  /** What the number measures, read right after it. */
+  unit: string;
+  /** One sentence on how it happened. */
+  story: string;
+  /** Where it happened. */
+  source: string;
+  /** Supporting numbers, shown only in the large feature box. */
+  extras?: { metric: string; unit: string }[];
+  /** The full story, shown when the box is opened. */
+  detail: {
+    challenge: string;
+    action: string;
+    result: string;
+    tags: string[];
+    /** Sent to Meg by the box's "Ask Meg" button. */
+    ask: string;
+  };
+};
+
+/** Ordered by impact; the first one is shown as the large feature box. */
+export const SITE_HIGHLIGHTS: SiteHighlight[] = [
   {
     metric: "$5M+",
-    label: "Renewals helped secure by rescuing two at-risk enterprise accounts",
+    unit: "in renewals secured",
+    story:
+      "Turned around at-risk enterprise accounts through reliable delivery and proactive communication.",
+    source: "Medallia",
+    extras: [
+      { metric: "2", unit: "at-risk enterprise accounts turned around" },
+      { metric: "25+", unit: "point lift in client NPS" },
+    ],
+    detail: {
+      challenge:
+        "Two enterprise accounts, a consumer-tech client and a telecom client, were already at risk when Omega joined the team. Earlier quality incidents had cost their trust, and the telecom client also felt ignored.",
+      action:
+        "Made quality non-negotiable on every project and ad hoc request, and kept the telecom client informed before they had to ask.",
+      result:
+        "Trust was rebuilt over time, client NPS rose 25+ points, and both accounts renewed for $5M+.",
+      tags: ["Client recovery", "Quality assurance", "Stakeholder communication"],
+      ask: "How did he turn around the at-risk accounts?",
+    },
+  },
+  {
+    metric: "25+",
+    unit: "Fortune 100 implementations",
+    story:
+      "Delivered end to end, from discovery and data integration through launch, consistently on time or ahead of schedule.",
+    source: "Medallia",
+    detail: {
+      challenge:
+        "Fortune 100 clients across tech, telecom, insurance and automotive, including Apple, Comcast, T-Mobile, Anthem and Ford (North America and Europe). Projects ran from a few weeks to three-month rollouts, and some clients came back for more.",
+      action:
+        "Owned the work from discovery through design, configuration, data integration, testing and launch on lean teams of 4–6, led projects for Comcast and Apple, worked with Product and Engineering to close gaps, and trained client teams.",
+      result: "25+ launches, each delivered on time or early.",
+      tags: ["Implementation", "Discovery", "Data integration", "UAT"],
+      ask: "What did his implementations involve?",
+    },
   },
   {
     metric: "10M+",
-    label: "Customer records turned into real-time CX pipelines and alerts",
-  },
-  {
-    metric: "40%",
-    label: "Less manual feedback review from an AI sentiment model at 84% accuracy",
-  },
-  {
-    metric: "97%",
-    label: "SLA compliance while managing two offshore delivery teams",
+    unit: "customer records in real time",
+    story:
+      "Built CX data pipelines feeding live dashboards, closed-loop alerts, and CRM integrations.",
+    source: "Medallia",
+    detail: {
+      challenge:
+        "Customer data came from many sources: scheduled secure flat-file transfers and SQL databases carrying point-of-sale and commerce data, website analytics, Google reviews and Facebook feedback.",
+      action:
+        "Built pipelines that took in those feeds and shaped them for downstream use: real-time dashboards, closed-loop alerts and CRM integrations.",
+      result:
+        "10M+ records in real time, plus 60+ Power BI dashboards serving 2,000+ users per account.",
+      tags: ["Data pipelines", "SQL", "Power BI", "CRM integration"],
+      ask: "How did he build the 10M-record pipelines?",
+    },
   },
   {
     metric: "$500K+",
-    label: "Compliance penalties avoided with a workforce sign-up application",
+    unit: "in penalties avoided",
+    story:
+      "Built a workforce compliance app for up to 750 union craft workers and contractors that checked skills and hours before job sign-up.",
+    source: "Marathon Petroleum",
+    detail: {
+      challenge:
+        "Each season brought a wave of contractors into the refinery who signed up for extra work based on their skills and certifications. There was no reliable way to track who qualified or how many hours they had worked, which risked overtime violations.",
+      action:
+        "Built a web app on SQL tables. Accounts came from the badge-in system, skills and certifications were documented and kept current as workers earned new ones, extra-work hours were tracked, and sign-ups were blocked once someone hit their limit. Supervisors managed it day to day.",
+      result:
+        "Served up to 750 workers and contractors and avoided about $250K a year in penalties, $500K+ over two years.",
+      tags: ["Web app", "SQL", "Compliance automation"],
+      ask: "Tell me about the workforce compliance app",
+    },
   },
-] as const;
+  {
+    metric: "40%",
+    unit: "less manual feedback review",
+    story:
+      "Helped build an AI-assisted sentiment model with 84% accuracy that also flagged at-risk accounts earlier.",
+    source: "Medallia",
+    detail: {
+      challenge:
+        "Customer Success had more survey comments and feedback than anyone could read, so patterns and unhappy accounts surfaced late.",
+      action:
+        "Partnered with an ML engineer: structured the feedback data, helped compare word-based TF-IDF with text embeddings (embeddings with logistic regression won), and fed the model's results into a reporting dashboard.",
+      result: "84% accuracy, 40% less manual review, and at-risk accounts flagged sooner.",
+      tags: ["NLP", "Python", "Model evaluation", "Dashboards"],
+      ask: "How did the sentiment model work?",
+    },
+  },
+  {
+    metric: "97%",
+    unit: "SLA compliance",
+    story:
+      "Led two offshore teams of 6+ analysts and engineers across concurrent enterprise engagements.",
+    source: "Medallia",
+    detail: {
+      challenge:
+        "A steady stream of ad hoc requests from many clients at once, handled by two offshore teams of analysts and engineers.",
+      action:
+        "Made sure every request was acknowledged and routed, tracked work across the teams on a shared dashboard, and ran daily stand-ups to follow up and bring in subject-matter experts when needed.",
+      result: "97% SLA compliance across concurrent client engagements.",
+      tags: ["Team leadership", "Offshore delivery", "SLA management"],
+      ask: "How did he run the offshore teams?",
+    },
+  },
+];
 
 export const SITE_ROLE_BLURBS = [
   {

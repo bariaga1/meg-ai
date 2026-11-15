@@ -397,19 +397,177 @@ body::after {
 /* ------------------------------------------------------------------
    Highlights tiles rotate through the palette
    ------------------------------------------------------------------ */
-.metric-tile:nth-child(4n + 1) {
-  background: var(--mustard);
+/* Tones are set per box by the component, in impact order. */
+.tone-orange {
+  background: var(--orange);
+  color: var(--cream);
 }
-.metric-tile:nth-child(4n + 2) {
+.tone-teal {
   background: var(--teal);
   color: var(--cream);
 }
-.metric-tile:nth-child(4n + 3) {
-  background: var(--card);
+.tone-mustard {
+  background: var(--mustard);
+  color: var(--ink);
 }
-.metric-tile:nth-child(4n + 4) {
-  background: var(--orange);
-  color: var(--cream);
+.tone-card {
+  background: var(--card);
+  color: var(--ink);
+}
+
+.metric-tile {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Company chip: outlined in the box's own text colour. */
+.metric-tile__source {
+  align-self: flex-start;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* The feature box gets the sunburst rings in its corner. */
+.metric-tile--feature {
+  box-shadow: var(--shadow-hard-lg);
+}
+
+.metric-tile--feature::after {
+  content: "";
+  position: absolute;
+  right: -4.5rem;
+  top: -4.5rem;
+  width: 15rem;
+  height: 15rem;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    transparent 0 30%,
+    var(--mustard) 30% 44%,
+    var(--orange-bright) 44% 58%,
+    var(--cream) 58% 72%,
+    transparent 72%
+  );
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.metric-tile--feature > * {
+  position: relative;
+  z-index: 1;
+}
+
+.metric-tile__extras {
+  border-top: 2px dashed currentColor;
+}
+
+/* Open boxes take a whole row; later boxes backfill any gap left behind. */
+.highlight-grid {
+  grid-auto-flow: row dense;
+}
+
+.metric-tile__toggle {
+  cursor: pointer;
+  color: inherit;
+  border-radius: 0.75rem;
+}
+.metric-tile__toggle:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 6px;
+}
+
+.metric-tile__more {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.metric-tile__toggle:hover .metric-tile__more {
+  opacity: 1;
+  transform: translateX(-2px);
+}
+
+.metric-tile.is-open {
+  box-shadow: var(--shadow-hard-lg);
+}
+
+.metric-tile__detail > ol {
+  border-top: 2px dashed currentColor;
+}
+.metric-tile.is-open .metric-tile__detail {
+  animation: tile-detail-in 0.35s ease-out both;
+}
+@keyframes tile-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.metric-tile__step {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.metric-tile__tag {
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  padding: 0.2rem 0.7rem;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.metric-tile__ask {
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--ink);
+  padding: 0.5rem 1rem;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: left;
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.metric-tile__ask:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.metric-tile__ask:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metric-tile.is-open .metric-tile__detail {
+    animation: none;
+  }
+  .metric-tile__more,
+  .metric-tile__ask {
+    transition: none;
+  }
+}
+
+/* Phones: smaller rings tucked further into the corner, clear of the number. */
+@media (max-width: 639px) {
+  .metric-tile--feature::after {
+    right: -5rem;
+    top: -5rem;
+    width: 10rem;
+    height: 10rem;
+    opacity: 0.7;
+  }
 }
 
 /* ------------------------------------------------------------------

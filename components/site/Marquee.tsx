@@ -5,7 +5,7 @@ import { SITE_HIGHLIGHTS } from "@/lib/siteContent";
  * loop is seamless; the copy is hidden from screen readers.
  */
 export function Marquee() {
-  const items = SITE_HIGHLIGHTS.map((h) => ({ metric: h.metric, label: h.label }));
+  const items = SITE_HIGHLIGHTS.map((h) => ({ metric: h.metric, label: `${h.unit} · ${h.source}` }));
   return (
     <div className="marquee" role="region" aria-label="Career highlights">
       <div className="marquee__track">

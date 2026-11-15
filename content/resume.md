@@ -29,37 +29,48 @@ Omega's role at Medallia ended in October 2025 as part of company-wide layoffs. 
 ## Professional Experience
 
 ### Senior Technical Consultant, Professional Services — Medallia (July 2021 – October 2025, Remote - CA)
-Led enterprise CX platform implementations for Fortune 100 clients, working directly with stakeholders to understand what they needed and building the platform around it.
-- Ran discovery and requirements sessions with enterprise stakeholders and built the Medallia solution from what came out of them
-- Owned full lifecycle implementations, including solution design, platform configuration, data integration, custom workflows, UAT, and launch
-- Customized the platform to fit each customer's operating model and worked with Product and Engineering to close technical gaps
-- Built and maintained 60+ Power BI dashboards with automated daily reporting, supporting 2,000+ users per account across global organizations with real-time visibility into CX performance
-- Trained customers on new platform features and kept supporting them afterward, so they got value sooner
+Pitch: Led Fortune 100 CX platform implementations end to end, delivering 25+ on time or ahead of schedule and helping secure $5M+ in renewals by turning around two at-risk accounts.
+Top impact:
+- Rescued two at-risk enterprise accounts, lifting client NPS by 25+ points through reliable delivery and proactive communication, helping secure $5M+ in renewals
+- Delivered 25+ implementation projects across Fortune 100 accounts, owning the full lifecycle (discovery, solution design, platform configuration, data integration, custom workflows, UAT, and launch), consistently on time or ahead of schedule
+- Built end-to-end CX data pipelines that turned 10M+ raw customer records into real-time dashboards, closed-loop alerts, and CRM integrations
+Supporting detail:
 - Developed an AI-assisted sentiment classification model (84% accuracy) that reduced manual feedback review by 40% and helped Customer Success identify at-risk accounts earlier
 - Managed two offshore teams (6+ analysts and engineers) across concurrent client engagements while maintaining 97% SLA compliance
+- Built and maintained 60+ Power BI dashboards with automated daily reporting, supporting 2,000+ users per account across global organizations with real-time visibility into CX performance
+- Ran discovery and requirements sessions with enterprise stakeholders and built the Medallia solution from what came out of them
+- Customized the platform to fit each customer's operating model and worked with Product and Engineering to close technical gaps
+- Trained customers on new platform features and kept supporting them afterward, so they got value sooner
 
 ### Senior Business Analyst — Marathon Petroleum (September 2017 – December 2020, Remote/Oakland - CA)
-Worked on site at a California refinery, partnering with engineering, compliance, and operations to keep technical solutions and reporting aligned with regulatory priorities.
+Pitch: Embedded at a California refinery, built the analytics and tools that kept operations safe and compliant, from predictive maintenance with multimillion-dollar downtime savings to a workforce compliance app that avoided $500K+ in penalties.
+Top impact:
+- Led predictive maintenance using OSI PI sensor data, improving safety and generating multimillion-dollar savings in reduced downtime, featured in the company-wide quarterly roundtable
+- Delivered web-based compliance tools, including a workforce sign-up application used by up to 750 union craft workers and contractors that checked skill levels and hours before job sign-up, reducing overtime compliance penalties by $250K annually ($500K+ over two years)
+Supporting detail:
 - Designed and deployed Power BI dashboards tracking environmental and operational KPIs across California facilities, improving visibility and streamlining compliance reporting
 - Defined and validated environmental and operational metrics with engineering and operations teams, ensuring reporting accuracy and audit readiness
-- Delivered web-based operational tools that reduced compliance penalties by $250K annually
 - Led migrations off legacy systems, which made reporting more reliable and got more site teams using it
+- Partnered on site with engineering, compliance, and operations to keep technical solutions and reporting aligned with regulatory priorities
 
 ### Infrastructure Quality Engineer — Nasdaq/Calypso (February 2015 – August 2017, San Francisco - CA)
-Validated and maintained enterprise trading platforms, integrating third-party financial systems while ensuring accurate real-time market data flows.
-- Promoted within six months to Infrastructure team responsible for stable integration of external market data into trading platforms
-- Led validation and integration of interfaces with Bloomberg and Reuters, ensuring accurate data flow and consistent platform performance
+Pitch: Kept enterprise trading platforms and real-time market data reliable, earning a promotion from Front Office QA to the Infrastructure team within six months.
+Top impact:
+- Promoted within six months to the Infrastructure team responsible for stable integration of external market data into trading platforms
 - Increased automation coverage using behavior-driven testing (BDD), reducing regression defects by ~30% and improving release quality
+- Led validation and integration of interfaces with Bloomberg and Reuters, ensuring accurate data flow and consistent platform performance
+Supporting detail:
 - Developed automated test strategies and scripts in partnership with Product and Engineering to support reliable releases
-
-#### Front Office QA (July 2014 – January 2015)
-- Validated front office trading workflows across order management, pricing, and risk modules, from trade capture through P&L calculations
+- Front Office QA (July 2014 – January 2015): validated front office trading workflows across order management, pricing, and risk modules, from trade capture through P&L calculations
 - Partnered with traders, product managers, and developers to turn requirements into test scenarios for complex financial instruments, and used SQL to reconcile trade data and validate pricing logic
 - Ran regression, functional, and UAT testing on new releases and caught high-impact defects before they reached production
 
 ### Associate Consultant/Data Analyst (Intern) — Saama (January 2014 – June 2014, San Jose - CA)
-Selected for an international Business Intelligence program in India, where I trained on data architecture, ETL, and visualization tools while building end-to-end reporting solutions.
+Pitch: Selected for an international Business Intelligence program and built end-to-end reporting, from data models through dashboards.
+Top impact:
+- Selected for an international Business Intelligence program in India, training on data architecture, ETL, and visualization tools
 - Designed relational data models and ETL pipelines using Informatica to consolidate structured data sources
+Supporting detail:
 - Built interactive Tableau dashboards and semantic reporting layers in SAP BusinessObjects for self-service reporting
 
 ## Independent Projects (AI & Applied Development) — October 2025 – Present

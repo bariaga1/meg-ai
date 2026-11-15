@@ -76,6 +76,17 @@ export function tokenize(text: string): string[] {
     .filter((t) => t.length > 1 && !STOP.has(t));
 }
 
+/**
+ * Role sections carry structure labels for the model ("Pitch:", "Top impact:",
+ * "Supporting detail:"). They are not content, so they stay out of the index;
+ * otherwise "top" or "impact" in a question would match every role.
+ */
+const SECTION_LABELS = /^(Pitch|Top impact|Supporting detail):/gm;
+
+function searchableText(text: string): string {
+  return text.replace(SECTION_LABELS, "");
+}
+
 type IndexedDoc = {
   chunk: ResumeChunk;
   tf: Map<string, number>;
@@ -93,7 +104,7 @@ export class Bm25Index {
     this.k1 = k1;
     this.b = b;
     for (const chunk of chunks) {
-      const tokens = tokenize(`${chunk.title}\n${chunk.tags.join(" ")}\n${chunk.text}`);
+      const tokens = tokenize(`${chunk.title}\n${chunk.tags.join(" ")}\n${searchableText(chunk.text)}`);
       const tf = new Map<string, number>();
       for (const t of tokens) tf.set(t, (tf.get(t) ?? 0) + 1);
       this.docs.push({ chunk, tf, length: tokens.length || 1 });

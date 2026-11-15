@@ -80,9 +80,9 @@ export function SiteShell() {
   const openMeg = useCallback(() => setMegOpen(true), []);
   const closeMeg = useCallback(() => setMegOpen(false), []);
   /** Opens Meg and sends a question for her, e.g. from a highlight box. */
-  const askMeg = (question: string) => {
+  const askMeg = (question: string, topic: string) => {
     setMegOpen(true);
-    void chat.send(question);
+    void chat.send(question, topic);
   };
 
   useEffect(() => {

@@ -1,6 +1,8 @@
-/** Static copy for the personal shell (not used by Meg retrieval). */
+/** Static copy for the personal shell. The highlight stories also feed Meg (see lib/loadChunks.ts). */
 
 export type SiteHighlight = {
+  /** Stable id. Meg's story section is "story-<id>"; the Ask Meg button sends it. */
+  id: string;
   /** The headline number, e.g. "$5M+". Counted up from zero on screen. */
   metric: string;
   /** What the number measures, read right after it. */
@@ -19,12 +21,15 @@ export type SiteHighlight = {
     tags: string[];
     /** Sent to Meg by the box's "Ask Meg" button. */
     ask: string;
+    /** Extra words people might use for this story, to help Meg's keyword search find it. */
+    keywords: string[];
   };
 };
 
 /** Ordered by impact; the first one is shown as the large feature box. */
 export const SITE_HIGHLIGHTS: SiteHighlight[] = [
   {
+    id: "renewals",
     metric: "$5M+",
     unit: "in renewals secured",
     story:
@@ -36,16 +41,18 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
     ],
     detail: {
       challenge:
-        "Two enterprise accounts, a consumer-tech client and a telecom client, were already at risk when Omega joined the team. Earlier quality incidents had cost their trust, and the telecom client also felt ignored.",
+        "Two enterprise accounts, a consumer-tech client and a telecom client, were already at risk when he joined the team. Earlier quality incidents had cost their trust, and the telecom client also felt ignored.",
       action:
         "Made quality non-negotiable on every project and ad hoc request, and kept the telecom client informed before they had to ask.",
       result:
         "Trust was rebuilt over time, client NPS rose 25+ points, and both accounts renewed for $5M+.",
       tags: ["Client recovery", "Quality assurance", "Stakeholder communication"],
       ask: "How did he turn around the at-risk accounts?",
+      keywords: ["renewals", "renewed", "at-risk", "accounts", "turnaround", "turn around", "rescue", "saved", "trust", "NPS", "quality", "client recovery", "churn"],
     },
   },
   {
+    id: "implementations",
     metric: "25+",
     unit: "Fortune 100 implementations",
     story:
@@ -59,9 +66,11 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
       result: "25+ launches, each delivered on time or early.",
       tags: ["Implementation", "Discovery", "Data integration", "UAT"],
       ask: "What did his implementations involve?",
+      keywords: ["implementations", "implementation", "Fortune 100", "clients", "Apple", "Comcast", "T-Mobile", "Anthem", "Ford", "industries", "rollouts", "launches", "project size", "team size"],
     },
   },
   {
+    id: "pipelines",
     metric: "10M+",
     unit: "customer records in real time",
     story:
@@ -76,9 +85,11 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
         "10M+ records in real time, plus 60+ Power BI dashboards serving 2,000+ users per account.",
       tags: ["Data pipelines", "SQL", "Power BI", "CRM integration"],
       ask: "How did he build the 10M-record pipelines?",
+      keywords: ["pipelines", "pipeline", "data sources", "10M", "records", "record", "flat files", "SQL", "ETL", "ingestion", "point of sale", "commerce", "reviews", "CRM", "real time"],
     },
   },
   {
+    id: "compliance-app",
     metric: "$500K+",
     unit: "in penalties avoided",
     story:
@@ -93,9 +104,11 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
         "Served up to 750 workers and contractors and avoided about $250K a year in penalties, $500K+ over two years.",
       tags: ["Web app", "SQL", "Compliance automation"],
       ask: "Tell me about the workforce compliance app",
+      keywords: ["workforce compliance app", "compliance", "overtime", "contractors", "union", "craft workers", "badge", "certifications", "hours", "refinery", "sign-up", "penalties", "tracking"],
     },
   },
   {
+    id: "sentiment-model",
     metric: "40%",
     unit: "less manual feedback review",
     story:
@@ -109,9 +122,11 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
       result: "84% accuracy, 40% less manual review, and at-risk accounts flagged sooner.",
       tags: ["NLP", "Python", "Model evaluation", "Dashboards"],
       ask: "How did the sentiment model work?",
+      keywords: ["sentiment model", "sentiment", "classifier", "classification", "NLP", "TF-IDF", "embeddings", "logistic regression", "machine learning", "ML engineer", "feedback", "survey comments"],
     },
   },
   {
+    id: "offshore-teams",
     metric: "97%",
     unit: "SLA compliance",
     story:
@@ -125,6 +140,7 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
       result: "97% SLA compliance across concurrent client engagements.",
       tags: ["Team leadership", "Offshore delivery", "SLA management"],
       ask: "How did he run the offshore teams?",
+      keywords: ["offshore teams", "offshore", "SLA", "97%", "stand-ups", "standups", "ad hoc requests", "team leadership", "managed", "teams", "requests"],
     },
   },
 ];

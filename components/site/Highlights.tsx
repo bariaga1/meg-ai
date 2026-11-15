@@ -17,7 +17,7 @@ const STEPS = [
  * Career highlight boxes. Each opens in place to tell the full story; on
  * wider screens the open box takes a whole row. One box is open at a time.
  */
-export function Highlights({ onAskMeg }: { onAskMeg: (question: string) => void }) {
+export function Highlights({ onAskMeg }: { onAskMeg: (question: string, topic: string) => void }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const toggleRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const tileRefs = useRef<(HTMLElement | null)[]>([]);
@@ -59,7 +59,7 @@ export function Highlights({ onAskMeg }: { onAskMeg: (question: string) => void 
             const detailId = `highlight-detail-${i}`;
             return (
               <article
-                key={item.metric + item.unit}
+                key={item.id}
                 ref={(el) => {
                   tileRefs.current[i] = el;
                 }}
@@ -150,7 +150,7 @@ export function Highlights({ onAskMeg }: { onAskMeg: (question: string) => void 
                         <button
                           type="button"
                           className="metric-tile__ask"
-                          onClick={() => onAskMeg(item.detail.ask)}
+                          onClick={() => onAskMeg(item.detail.ask, item.id)}
                         >
                           Ask Meg: “{item.detail.ask}” →
                         </button>

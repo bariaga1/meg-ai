@@ -19,13 +19,13 @@ function excerpt(chunk: RankedChunk, maxLines = 5): string {
   return lines.slice(0, maxLines).join("\n");
 }
 
-function pickHits(message: string): RankedChunk[] {
+function pickHits(message: string, topic?: string): RankedChunk[] {
   // The "no direct match" note is guidance for the model, not a section to show.
-  return retrieveResumeContext(message, 4).filter((h) => !h.tags.includes("note"));
+  return retrieveResumeContext(message, 4, [], { topic }).filter((h) => !h.tags.includes("note"));
 }
 
 /** Deterministic resume-grounded reply when AI Gateway is unavailable. */
-export function localMegReply(message: string): string {
+export function localMegReply(message: string, topic?: string): string {
   if (OFF_TOPIC.test(message)) {
     return "I stay on Omega’s resume and projects. Ask about roles, skills, or something like Can I Park Here?";
   }
@@ -37,7 +37,7 @@ export function localMegReply(message: string): string {
     ].join("\n");
   }
 
-  const hits = pickHits(message);
+  const hits = pickHits(message, topic);
   if (hits.length === 0) {
     return "I don’t see that on Omega’s resume. Try asking about Medallia, Marathon, Nasdaq/Calypso, skills, or the independent projects.";
   }
@@ -51,9 +51,9 @@ export function localMegReply(message: string): string {
 }
 
 /** Same NDJSON event shape as the Gateway stream, so MegChat handles both. */
-export function localMegNdjsonStream(message: string): ReadableStream<Uint8Array> {
+export function localMegNdjsonStream(message: string, topic?: string): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
-  const text = localMegReply(message);
+  const text = localMegReply(message, topic);
   // Small token-ish chunks so the UI can paint progressively even without client buffering.
   const parts = text.match(/\S+\s*|\s+/g)?.filter(Boolean) ?? [text];
 

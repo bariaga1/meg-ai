@@ -1,31 +1,67 @@
 /** Static copy for the personal shell (not used by Meg retrieval). */
 
-export const SITE_HIGHLIGHTS = [
-  {
-    metric: "25+",
-    label: "Fortune 100 implementations delivered end to end at Medallia",
-  },
+export type SiteHighlight = {
+  /** The headline number, e.g. "$5M+". Counted up from zero on screen. */
+  metric: string;
+  /** What the number measures, read right after it. */
+  unit: string;
+  /** One sentence on how it happened. */
+  story: string;
+  /** Where it happened. */
+  source: string;
+  /** Supporting numbers, shown only in the large feature box. */
+  extras?: { metric: string; unit: string }[];
+};
+
+/** Ordered by impact; the first one is shown as the large feature box. */
+export const SITE_HIGHLIGHTS: SiteHighlight[] = [
   {
     metric: "$5M+",
-    label: "Renewals helped secure by rescuing two at-risk enterprise accounts",
+    unit: "in renewals secured",
+    story:
+      "Turned around at-risk enterprise accounts through reliable delivery and proactive communication.",
+    source: "Medallia",
+    extras: [
+      { metric: "2", unit: "at-risk enterprise accounts turned around" },
+      { metric: "25+", unit: "point lift in client NPS" },
+    ],
+  },
+  {
+    metric: "25+",
+    unit: "Fortune 100 implementations",
+    story:
+      "Delivered end to end, from discovery and data integration through launch, consistently on time or ahead of schedule.",
+    source: "Medallia",
   },
   {
     metric: "10M+",
-    label: "Customer records turned into real-time CX pipelines and alerts",
-  },
-  {
-    metric: "40%",
-    label: "Less manual feedback review from an AI sentiment model at 84% accuracy",
-  },
-  {
-    metric: "97%",
-    label: "SLA compliance while managing two offshore delivery teams",
+    unit: "customer records in real time",
+    story:
+      "Built CX data pipelines feeding live dashboards, closed-loop alerts, and CRM integrations.",
+    source: "Medallia",
   },
   {
     metric: "$500K+",
-    label: "Compliance penalties avoided with a workforce sign-up application",
+    unit: "in penalties avoided",
+    story:
+      "Built a workforce compliance app for up to 750 union craft workers and contractors that checked skills and hours before job sign-up.",
+    source: "Marathon Petroleum",
   },
-] as const;
+  {
+    metric: "40%",
+    unit: "less manual feedback review",
+    story:
+      "Built an AI-assisted sentiment model with 84% accuracy that also flagged at-risk accounts earlier.",
+    source: "Medallia",
+  },
+  {
+    metric: "97%",
+    unit: "SLA compliance",
+    story:
+      "Led two offshore teams of 6+ analysts and engineers across concurrent enterprise engagements.",
+    source: "Medallia",
+  },
+];
 
 export const SITE_ROLE_BLURBS = [
   {

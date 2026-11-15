@@ -151,6 +151,35 @@ describe("overview questions", () => {
   });
 });
 
+describe("role sections lead with impact", () => {
+  it("gives Meg each role as pitch, ranked top impact, then supporting detail", () => {
+    const medallia = retrieveResumeContext("What did you do at Medallia?").find((hit) => /medallia/i.test(hit.id));
+    assert.ok(medallia);
+    const text = medallia.text;
+    const pitch = text.indexOf("Pitch:");
+    const top = text.indexOf("Top impact:");
+    const support = text.indexOf("Supporting detail:");
+    assert.ok(pitch >= 0 && pitch < top && top < support, "sections in order");
+    const headline = text.slice(top, support);
+    assert.ok(headline.indexOf("$5M+") < headline.indexOf("25+ implementation") && headline.indexOf("25+ implementation") < headline.indexOf("10M+"), "ranked headline");
+    assert.ok(text.indexOf("84% accuracy") > support, "sentiment model is supporting detail");
+  });
+});
+
+describe("employment status", () => {
+  it("puts Current Status ahead of any role list", () => {
+    for (const question of ["Is he employed?", "What is his current role?", "Why did he leave Medallia?"]) {
+      assert.equal(retrieveResumeContext(question)[0].id, "current-status", question);
+    }
+  });
+
+  it("treats a project's availability as a project question", () => {
+    const ids = retrieveResumeContext("Is CareerOS available to try?").map((hit) => hit.id);
+    assert.equal(ids.includes("current-status"), false);
+    assert.match(ids.join(" "), /careeros/);
+  });
+});
+
 describe("retrievalQuery follow-ups", () => {
   it("does not re-anchor other-roles on the prior Medallia question", () => {
     const history = [
@@ -184,5 +213,10 @@ describe("gateway system prompt contract", () => {
     assert.match(MEG_SYSTEM_PROMPT, /character cap/i);
     assert.match(MEG_SYSTEM_PROMPT, /dashboard or report counts/i);
     assert.match(MEG_SYSTEM_PROMPT, /he\/him/i);
+    assert.match(MEG_SYSTEM_PROMPT, /Top impact points in the order listed/);
+    assert.match(MEG_SYSTEM_PROMPT, /Keep Supporting detail for a follow-up/);
+    assert.match(MEG_SYSTEM_PROMPT, /Current Status section/);
+    assert.match(MEG_SYSTEM_PROMPT, /Do not describe any employer role as current/);
+    assert.match(MEG_SYSTEM_PROMPT, /why a role ended/);
   });
 });

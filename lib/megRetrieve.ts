@@ -62,6 +62,10 @@ const ACHIEVEMENT_HINT =
 const INTRO_HINT =
   /\b(tell\s+me\s+about\s+(yourself|him|omega)|about\s+yourself|who\s+(is|are)\s+(he|you|omega)|what\s+(does|do)\s+(he|you|omega)\s+do)\b/i;
 
+/** Employment status, availability, and why the last role ended. Answered by Current Status. */
+const STATUS_HINT =
+  /\b(employed|employment|unemployed|(currently|now)\s+(working|employed)|working\s+(now|currently|right\s+now)|current(?:ly)?\s+(role|job|position|employer|status|situation)|available|availability|open\s+to\s+(work|new|roles?|opportunit\w*)|looking\s+for\s+(a\s+)?(job|role|work|position|opportunit\w*)|job\s+(search|hunting)|start\s+date|when\s+can\s+(he|you)\s+start|notice\s+period|doing\s+(now|these\s+days|right\s+now)|laid\s+off|lay\s*offs?|why\s+did\s+(he|you)\s+leave|(leave|left)\s+medallia|career\s+gap|gap\s+in)\b/i;
+
 /** A named employer, project or topic: a precise question, not an overview. */
 const SPECIFIC_HINT =
   /\b(medallia|marathon|nasdaq|calypso|saama|park\s+here|careeros|storefront|sentiment|power\s*bi|tableau|python|sql)\b/i;
@@ -226,6 +230,8 @@ export function retrieveResumeContext(
     wantAiPicture ||
     wantStrengths ||
     wantWeakness;
+  // "Is CareerOS available?" is about a project, not about Omega's availability.
+  const wantStatus = STATUS_HINT.test(query) && !NAMED_PROJECT_HINT.test(query);
   const wantAchievements = !isSpecific && ACHIEVEMENT_HINT.test(query);
   const wantIntro = !isSpecific && INTRO_HINT.test(query);
 
@@ -240,6 +246,13 @@ export function retrieveResumeContext(
       if (!byId.has(h.id)) byId.set(h.id, h);
     }
   };
+
+  // Status first, with the role that ended for context. Before any role list,
+  // so the model never reads the most recent job as the current one.
+  if (wantStatus) {
+    prefer(sections("current-status"));
+    prefer(orderedJobChunks().slice(0, 1));
+  }
 
   if (wantAchievements) {
     prefer(sections("career-highlights", "summary"));
@@ -319,7 +332,7 @@ export function retrieveResumeContext(
 
   const tail =
     // Side projects aren't career accomplishments; keep stray keyword hits out.
-    wantRoles || wantWeakness || wantAchievements || wantIntro
+    wantRoles || wantWeakness || wantAchievements || wantIntro || wantStatus
       ? ranked.filter((hit) => !isProjectChunk(hit))
       : acrossRoles
         ? ranked.filter((hit) => hit.id !== "summary" && !isProjectChunk(hit))
@@ -350,7 +363,11 @@ export function retrieveResumeContext(
       : wantSkills || wantEducation || wantContact
         ? Math.max(topK, 5)
         : topK;
-  return [...byId.values()].slice(0, limit);
+  // Current Status is short and full of names (Medallia, the projects), so it
+  // outranks the real section on keywords. Only status questions get it.
+  return [...byId.values()]
+    .filter((h) => wantStatus || h.id !== "current-status")
+    .slice(0, limit);
 }
 
 export function formatResumeContext(hits: RankedChunk[]): string {

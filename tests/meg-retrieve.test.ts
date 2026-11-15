@@ -151,6 +151,20 @@ describe("overview questions", () => {
   });
 });
 
+describe("employment status", () => {
+  it("puts Current Status ahead of any role list", () => {
+    for (const question of ["Is he employed?", "What is his current role?", "Why did he leave Medallia?"]) {
+      assert.equal(retrieveResumeContext(question)[0].id, "current-status", question);
+    }
+  });
+
+  it("treats a project's availability as a project question", () => {
+    const ids = retrieveResumeContext("Is CareerOS available to try?").map((hit) => hit.id);
+    assert.equal(ids.includes("current-status"), false);
+    assert.match(ids.join(" "), /careeros/);
+  });
+});
+
 describe("retrievalQuery follow-ups", () => {
   it("does not re-anchor other-roles on the prior Medallia question", () => {
     const history = [
@@ -184,5 +198,8 @@ describe("gateway system prompt contract", () => {
     assert.match(MEG_SYSTEM_PROMPT, /character cap/i);
     assert.match(MEG_SYSTEM_PROMPT, /dashboard or report counts/i);
     assert.match(MEG_SYSTEM_PROMPT, /he\/him/i);
+    assert.match(MEG_SYSTEM_PROMPT, /Current Status section/);
+    assert.match(MEG_SYSTEM_PROMPT, /Do not describe any employer role as current/);
+    assert.match(MEG_SYSTEM_PROMPT, /why a role ended/);
   });
 });

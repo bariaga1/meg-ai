@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { SpartanSticker } from "@/components/site/SpartanSticker";
 import { SITE_ROLE_BLURBS } from "@/lib/siteContent";
 
 /** Life outside work, as little stickers on the off-the-clock card. */
@@ -66,6 +67,9 @@ export function About() {
                   </span>
                 </li>
               ))}
+              <li>
+                <SpartanSticker />
+              </li>
             </ul>
           </div>
         </div>

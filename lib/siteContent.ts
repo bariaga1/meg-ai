@@ -145,18 +145,15 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
   },
 ];
 
-export const SITE_ROLE_BLURBS = [
+/** The About section's two forward-looking cards. */
+export const SITE_ABOUT_CARDS = [
   {
-    label: "Medallia · Senior Technical Consultant",
-    text: "I led enterprise CX platform implementations for Fortune 100 clients — discovery through data integration, custom workflows, UAT, and launch — and partnered with Product and Engineering when the platform needed to stretch.",
+    label: "What I'm building",
+    text: "Since late 2025 I've been building applied AI tools full-time, including CareerOS, Storefront Studio, and Can I Park Here?, to learn what it takes to make AI genuinely useful.",
   },
   {
-    label: "Marathon Petroleum · Senior Business Analyst",
-    text: "On site at a California refinery, I built operational tools and reporting that kept engineering, compliance, and operations aligned, including work that cut compliance penalties by $250K a year.",
-  },
-  {
-    label: "Nasdaq / Calypso · Infrastructure Quality Engineer",
-    text: "I validated trading-platform integrations and market-data flows, grew automation with BDD, and used SQL heavily in front-office QA before moving onto the infrastructure team.",
+    label: "Where I want to contribute",
+    text: "AI is a powerful tool when it's aimed in the right direction. I want to help teams use it to work more efficiently, with people stepping in where judgment matters and every step staying within policy and the law.",
   },
 ] as const;
 

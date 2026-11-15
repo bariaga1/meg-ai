@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { SpartanSticker } from "@/components/site/SpartanSticker";
-import { SITE_ROLE_BLURBS } from "@/lib/siteContent";
+import { SITE_ABOUT_CARDS } from "@/lib/siteContent";
 
 /** Life outside work, as little stickers on the off-the-clock card. */
 const STICKERS = ["Sosa's dad", "Pickup hoops", "Car tinkerer", "Speaks 3 languages"];
@@ -11,22 +11,22 @@ export function About() {
       <div className="reveal mx-auto max-w-5xl">
         <p className="retro-eyebrow">About</p>
         <p className="display mt-5 max-w-3xl text-[1.6rem] font-semibold leading-snug text-[var(--ink)] sm:text-[2.1rem]">
-          I&apos;ve spent 10+ years building enterprise software people rely on
-          every day: CX platforms, data integrations, compliance tools, and
-          trading-system quality.
+          Most of my work has lived in the gap between what a business needs
+          and what its software actually does.
         </p>
         <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
-          Along the way I&apos;ve been a consultant, analyst, and infrastructure
-          QA lead.
+          I&apos;ve done it as a consultant, an analyst, and a QA engineer. The
+          titles changed but the job stayed the same: listen closely, get the
+          data where it needs to go, and build tools people keep using.
         </p>
-        <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {SITE_ROLE_BLURBS.map((role) => (
-            <div key={role.label} className="retro-card retro-lift p-5">
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
+          {SITE_ABOUT_CARDS.map((card) => (
+            <div key={card.label} className="retro-card retro-lift p-5">
               <p className="text-[12px] font-extrabold uppercase tracking-[0.12em] text-[var(--orange)]">
-                {role.label}
+                {card.label}
               </p>
               <p className="mt-3 text-[15px] leading-relaxed text-[var(--ink-soft)]">
-                {role.text}
+                {card.text}
               </p>
             </div>
           ))}

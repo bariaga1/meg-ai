@@ -314,7 +314,7 @@ body::after {
   border-radius: 999px;
 }
 
-/* Off-the-clock stickers under the hero intro, each tipped a little. */
+/* Off-the-clock stickers on the About card, each tipped a little. */
 .sticker {
   display: inline-flex;
   align-items: center;

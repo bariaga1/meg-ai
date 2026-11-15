@@ -1,6 +1,13 @@
 import Image from "next/image";
 import { SITE_ROLE_BLURBS } from "@/lib/siteContent";
 
+/** Life outside work, as little stickers on the off-the-clock card. */
+const STICKERS = [
+  { icon: "🐶", label: "Sosa's dad" },
+  { icon: "🏀", label: "Pickup hoops" },
+  { icon: "🗣️", label: "Speaks 3 languages" },
+];
+
 export function About() {
   return (
     <section id="about" className="site-section scroll-mt-20">
@@ -50,9 +57,18 @@ export function About() {
             </p>
             <p className="mt-3 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
               My goldendoodle and favorite beach-day partner. When I&apos;m not
-              untangling data, you&apos;ll find me out with Sosa, in a pickup
-              basketball game, or on the PlayStation.
+              untangling data, you&apos;ll find me out with Sosa or in a pickup
+              basketball game. I also speak English, Tigrinya, and Amharic.
             </p>
+            <ul className="mt-5 flex flex-wrap gap-3" aria-label="Off the clock">
+              {STICKERS.map((sticker) => (
+                <li key={sticker.label}>
+                  <span className="sticker">
+                    <span aria-hidden>{sticker.icon}</span> {sticker.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

@@ -66,9 +66,9 @@ const INTRO_HINT =
 const STATUS_HINT =
   /\b(employed|employment|unemployed|(currently|now)\s+(working|employed)|working\s+(now|currently|right\s+now)|current(?:ly)?\s+(role|job|position|employer|status|situation)|available|availability|open\s+to\s+(work|new|roles?|opportunit\w*)|looking\s+for\s+(a\s+)?(job|role|work|position|opportunit\w*)|job\s+(search|hunting)|start\s+date|when\s+can\s+(he|you)\s+start|notice\s+period|doing\s+(now|these\s+days|right\s+now)|laid\s+off|lay\s*offs?|why\s+did\s+(he|you)\s+leave|(leave|left)\s+medallia|career\s+gap|gap\s+in)\b/i;
 
-/** Life outside work: hobbies, Sosa, basketball, gaming. Answered by Outside Work. */
+/** Life outside work: hobbies, Sosa, basketball. Answered by Outside Work. */
 const PERSONAL_HINT =
-  /\b(hobby|hobbies|for\s+fun|outside\s+(of\s+)?work|off\s+the\s+clock|free\s+time|spare\s+time|interests|personal\s+life|pets?|dogs?|sosa|goldendoodle|basketball|hoops?|pickup|gam(?:e|es|er|ing)|playstation|ps5|video\s+games?)\b/i;
+  /\b(hobby|hobbies|for\s+fun|outside\s+(of\s+)?work|off\s+the\s+clock|free\s+time|spare\s+time|interests|personal\s+life|pets?|dogs?|sosa|goldendoodle|basketball|hoops?|pickup)\b/i;
 
 /** A named employer, project or topic: a precise question, not an overview. */
 const SPECIFIC_HINT =

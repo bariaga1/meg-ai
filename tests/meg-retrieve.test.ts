@@ -246,7 +246,6 @@ describe("life outside work", () => {
       "Does he have a dog?",
       "What are his hobbies?",
       "Does he play basketball?",
-      "Is he a gamer?",
       "What does he do outside of work?",
       "Tell me about Sosa",
     ]) {

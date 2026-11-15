@@ -19,13 +19,6 @@ const ARCH_BANDS = [
   { r: 58, color: "var(--teal)" },
 ];
 
-/** Life outside work, as little stickers under the intro. */
-const STICKERS = [
-  { icon: "🐶", label: "Sosa's dad" },
-  { icon: "🏀", label: "Pickup hoops" },
-  { icon: "🎮", label: "PlayStation" },
-];
-
 export function Hero({ onOpenMeg, megMood, megRef }: HeroProps) {
   return (
     <section id="top" className="site-section scroll-mt-20 pb-14 pt-12 sm:pt-16">
@@ -45,19 +38,6 @@ export function Hero({ onOpenMeg, megMood, megRef }: HeroProps) {
             following through.
           </p>
           <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
-            Off the clock, I&apos;m dog dad to Sosa the goldendoodle, a regular
-            at pickup games, and usually on the PlayStation.
-          </p>
-          <ul className="mt-5 flex flex-wrap gap-3" aria-label="Off the clock">
-            {STICKERS.map((sticker) => (
-              <li key={sticker.label}>
-                <a href="#off-the-clock" className="sticker">
-                  <span aria-hidden>{sticker.icon}</span> {sticker.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
             Ask Meg anything about my work (or about Sosa), or scroll for the
             projects.
           </p>

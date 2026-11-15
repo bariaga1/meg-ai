@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { SITE_ROLE_BLURBS } from "@/lib/siteContent";
 
 export function About() {
@@ -25,6 +26,34 @@ export function About() {
               </p>
             </div>
           ))}
+        </div>
+
+        <div
+          id="off-the-clock"
+          className="retro-card mt-8 grid scroll-mt-24 items-center gap-7 p-6 sm:grid-cols-[auto_1fr] sm:p-8"
+        >
+          <figure className="polaroid mx-auto w-52 sm:w-56">
+            <Image
+              src="/images/sosa.jpg"
+              width={900}
+              height={1200}
+              sizes="(min-width: 640px) 224px, 208px"
+              alt="Sosa, a curly goldendoodle in a harness, sitting on the beach and looking back over one shoulder"
+              className="block h-auto w-full"
+            />
+            <figcaption className="polaroid__caption">Sosa, beach day</figcaption>
+          </figure>
+          <div>
+            <p className="retro-eyebrow">Off the clock</p>
+            <p className="display mt-4 text-[1.9rem] font-semibold leading-tight text-[var(--ink)] sm:text-[2.4rem]">
+              Meet Sosa.
+            </p>
+            <p className="mt-3 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
+              My goldendoodle and favorite beach-day partner. When I&apos;m not
+              untangling data, you&apos;ll find me out with Sosa, in a pickup
+              basketball game, or on the PlayStation.
+            </p>
+          </div>
         </div>
       </div>
     </section>

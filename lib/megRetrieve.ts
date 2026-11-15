@@ -66,6 +66,10 @@ const INTRO_HINT =
 const STATUS_HINT =
   /\b(employed|employment|unemployed|(currently|now)\s+(working|employed)|working\s+(now|currently|right\s+now)|current(?:ly)?\s+(role|job|position|employer|status|situation)|available|availability|open\s+to\s+(work|new|roles?|opportunit\w*)|looking\s+for\s+(a\s+)?(job|role|work|position|opportunit\w*)|job\s+(search|hunting)|start\s+date|when\s+can\s+(he|you)\s+start|notice\s+period|doing\s+(now|these\s+days|right\s+now)|laid\s+off|lay\s*offs?|why\s+did\s+(he|you)\s+leave|(leave|left)\s+medallia|career\s+gap|gap\s+in)\b/i;
 
+/** Life outside work: hobbies, Sosa, basketball, gaming. Answered by Outside Work. */
+const PERSONAL_HINT =
+  /\b(hobby|hobbies|for\s+fun|outside\s+(of\s+)?work|off\s+the\s+clock|free\s+time|spare\s+time|interests|personal\s+life|pets?|dogs?|sosa|goldendoodle|basketball|hoops?|pickup|gam(?:e|es|er|ing)|playstation|ps5|video\s+games?)\b/i;
+
 /** A named employer, project or topic: a precise question, not an overview. */
 const SPECIFIC_HINT =
   /\b(medallia|marathon|nasdaq|calypso|saama|park\s+here|careeros|storefront|sentiment|power\s*bi|tableau|python|sql)\b/i;
@@ -250,8 +254,9 @@ export function retrieveResumeContext(
     wantWeakness;
   // "Is CareerOS available?" is about a project, not about Omega's availability.
   const wantStatus = STATUS_HINT.test(query) && !NAMED_PROJECT_HINT.test(query);
+  const wantPersonal = PERSONAL_HINT.test(query);
   const wantAchievements = !isSpecific && ACHIEVEMENT_HINT.test(query);
-  const wantIntro = !isSpecific && INTRO_HINT.test(query);
+  const wantIntro = !isSpecific && !wantPersonal && INTRO_HINT.test(query);
 
   const index = getIndex();
   // Search a little deeper, then set the stories aside, so they never push a
@@ -274,6 +279,7 @@ export function retrieveResumeContext(
     wantSkills ||
     wantEducation ||
     wantContact ||
+    wantPersonal ||
     acrossRoles ||
     NAMED_PROJECT_HINT.test(query);
   if (!broad && searched[0] && isStoryChunk(searched[0])) {
@@ -292,6 +298,10 @@ export function retrieveResumeContext(
   if (wantStatus) {
     prefer(sections("current-status"));
     prefer(orderedJobChunks().slice(0, 1));
+  }
+
+  if (wantPersonal) {
+    prefer(sections("outside-work"));
   }
 
   if (wantAchievements) {
@@ -372,7 +382,7 @@ export function retrieveResumeContext(
 
   const tail =
     // Side projects aren't career accomplishments; keep stray keyword hits out.
-    wantRoles || wantWeakness || wantAchievements || wantIntro || wantStatus
+    wantRoles || wantWeakness || wantAchievements || wantIntro || wantStatus || wantPersonal
       ? ranked.filter((hit) => !isProjectChunk(hit))
       : acrossRoles
         ? ranked.filter((hit) => hit.id !== "summary" && !isProjectChunk(hit))
@@ -407,6 +417,8 @@ export function retrieveResumeContext(
   // outranks the real section on keywords. Only status questions get it.
   const hits = [...byId.values()]
     .filter((h) => wantStatus || h.id !== "current-status")
+    // Hobbies only when asked; they are not part of a work answer.
+    .filter((h) => wantPersonal || h.id !== "outside-work")
     .slice(0, limit);
   return hits.length > 0 ? hits : [NO_DIRECT_MATCH, ...sections("summary", "career-highlights")];
 }

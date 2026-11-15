@@ -314,6 +314,58 @@ body::after {
   border-radius: 999px;
 }
 
+/* Off-the-clock stickers under the hero intro, each tipped a little. */
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--card);
+  padding: 0.35rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  transform: rotate(-2deg);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+li:nth-child(2) > .sticker {
+  background: var(--mustard-soft);
+  transform: rotate(1.5deg);
+}
+li:nth-child(3) > .sticker {
+  transform: rotate(-1deg);
+}
+.sticker:hover,
+li > .sticker:hover {
+  transform: rotate(0) translate(-1px, -2px);
+  box-shadow: 3px 4px 0 var(--ink);
+}
+
+/* Sosa's photo as a slightly tilted polaroid. */
+.polaroid {
+  margin: 0;
+  border: 2px solid var(--ink);
+  background: #fffaf0;
+  padding: 0.6rem 0.6rem 0;
+  box-shadow: var(--shadow-hard);
+  transform: rotate(-2.5deg);
+}
+.polaroid__caption {
+  padding: 0.55rem 0 0.65rem;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticker {
+    transition: none;
+  }
+}
+
 .hero-bubble {
   position: absolute;
   z-index: 2;

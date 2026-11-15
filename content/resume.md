@@ -14,6 +14,9 @@ San Jose, CA | omegabariagaber@gmail.com | LinkedIn: https://www.linkedin.com/in
 ## Summary
 Technical implementation leader with 10+ years across enterprise software delivery, building for Fortune 100 clients from discovery through launch, working directly with customers to turn business needs into data integrations and platform configurations, and partnering with Product and Engineering to resolve technical gaps along the way. Deepening Python and software development skills through hands-on projects, using AI to speed up planning, development, and testing while reviewing and validating everything, and staying hands-on with data, integrations, and automation.
 
+## Current Status
+Omega's role at Medallia ended in October 2025 as part of company-wide layoffs. Since October 2025 he has been building applied AI projects full-time: CareerOS, Storefront Studio, and Can I Park Here?. He is open to new roles in technical implementation, applied AI, and data integration. Availability: immediately.
+
 ## Technical Skills
 - Programming & Development: Python, SQL, JavaScript, TypeScript, Node.js, HTML/CSS
 - Data Engineering & Integration: REST APIs, JSON, Data Mapping & Transformation, ETL, Data Validation, Postman, Informatica

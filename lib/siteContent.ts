@@ -148,12 +148,12 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
 /** The About section's two forward-looking cards. */
 export const SITE_ABOUT_CARDS = [
   {
-    label: "What I'm building",
-    text: "Lately I've been using AI tools to build things like CareerOS, Storefront Studio, and Can I Park Here?, while learning the math and theory behind how the models work, so I can use them better.",
+    label: "Lately",
+    text: "I've been building with AI lately, mostly to see how far I could take it. Storefront Studio and Can I Park Here? came out of that. Somewhere along the way I got curious about what's going on under the hood. Now I'm learning how the pieces fit together: how LLMs work and how the models differ, why vectors matter, what makes an agent an agent, and where guardrails and a human in the loop belong.",
   },
   {
-    label: "Where I want to contribute",
-    text: "I've spent my career around work with real rules attached: refinery compliance, client SLAs, millions of customer records. That's where I want to bring AI, into work where a wrong answer costs something, built so a person still makes the calls that matter.",
+    label: "What's next for me",
+    text: "I've sat in a lot of rooms where people knew exactly what they needed but couldn't get the tech to do it. That's still where I want to be, just with AI in the toolbox now, and a person still making the final call.",
   },
 ] as const;
 

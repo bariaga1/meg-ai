@@ -32,12 +32,15 @@ export function Hero({ onOpenMeg, megMood, megRef }: HeroProps) {
             {SITE_ROLE}
           </p>
           <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
-            I lead enterprise implementations end to end — discovery, data
-            integration, and launch — for Fortune 100 clients. On the side I
-            build with AI to stay sharp on newer stacks.
+            I&apos;ve always wanted to know how things work, which is how I
+            ended up in tech. But the tech is only half the job. The other half
+            is getting to know the people I&apos;m building for, hearing what
+            they&apos;re really asking, and sometimes giving them what they
+            didn&apos;t know they needed.
           </p>
           <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
-            Ask Meg about the work, or scroll for the projects.
+            Ask Meg anything about my work (or about Sosa), or scroll for the
+            projects.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <button type="button" onClick={onOpenMeg} className="retro-btn retro-btn--primary">

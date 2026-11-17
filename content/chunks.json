@@ -78,6 +78,12 @@
       "title": "Languages",
       "tags": ["languages"],
       "text": "## Languages\n- English (Native)\n- Tigrinya (Fluent)\n- Amharic (Fluent)"
+    },
+    {
+      "id": "outside-work",
+      "title": "Outside Work",
+      "tags": ["personal", "hobbies", "interests", "fun", "outside work"],
+      "text": "## Outside Work\nOutside work, he is a dog dad to Sosa, a goldendoodle and his best buddy. He plays pickup basketball, likes working on cars, including his own German car, and speaks English, Tigrinya, and Amharic."
     }
   ]
 }

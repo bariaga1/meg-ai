@@ -239,6 +239,37 @@ describe("highlight stories", () => {
   });
 });
 
+describe("life outside work", () => {
+  it("answers hobby questions from Outside Work, without side projects", () => {
+    for (const question of [
+      "What does he do for fun?",
+      "Does he have a dog?",
+      "What are his hobbies?",
+      "Does he play basketball?",
+      "What does he do outside of work?",
+      "Tell me about Sosa",
+      "Does he work on cars?",
+    ]) {
+      const ids = retrieveResumeContext(question).map((h) => h.id);
+      assert.equal(ids[0], "outside-work", question);
+      assert.equal(ids.some((id) => id.startsWith("project-")), false, question);
+    }
+  });
+
+  it("keeps hobbies out of work answers", () => {
+    for (const question of [
+      "Tell me about yourself",
+      "What did you do at Medallia?",
+      "How did he manage weekend deployments?",
+      "How can I contact you?",
+      "Where can I park my car with Can I Park Here?",
+    ]) {
+      const ids = retrieveResumeContext(question).map((h) => h.id);
+      assert.equal(ids.includes("outside-work"), false, question);
+    }
+  });
+});
+
 describe("retrievalQuery follow-ups", () => {
   it("does not re-anchor other-roles on the prior Medallia question", () => {
     const history = [
@@ -273,6 +304,7 @@ describe("gateway system prompt contract", () => {
     assert.match(MEG_SYSTEM_PROMPT, /dashboard or report counts/i);
     assert.match(MEG_SYSTEM_PROMPT, /he\/him/i);
     assert.match(MEG_SYSTEM_PROMPT, /Highlight story/);
+    assert.match(MEG_SYSTEM_PROMPT, /Outside Work section/);
     assert.match(MEG_SYSTEM_PROMPT, /Top impact points in the order listed/);
     assert.match(MEG_SYSTEM_PROMPT, /Keep Supporting detail for a follow-up/);
     assert.match(MEG_SYSTEM_PROMPT, /Current Status section/);

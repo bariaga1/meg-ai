@@ -109,7 +109,7 @@ export function SiteShell() {
       <Experience />
       <MegHighlight onOpen={openMeg} megMood={chat.mood} />
       <ProjectGrid />
-      <Contact onOpenMeg={openMeg} />
+      <Contact />
       <MegPanel
         open={megOpen}
         // One Meg on screen at a time: the corner Meg takes over once the hero Meg is gone.

@@ -12,9 +12,9 @@ export function siteUrl(): string {
 }
 
 export const SITE_NAME = "Omega Bariagaber";
-export const SITE_TITLE = "Omega Bariagaber — work, projects, and Meg";
+export const SITE_TITLE = "Omega Bariagaber · Work, projects, and my personal AI agent";
 export const SITE_DESCRIPTION =
-  "Technical implementation leader building applied AI and data integrations. Meet Meg, a resume chat grounded in public work history, plus side projects.";
+  "Technical implementation leader in applied AI and data integration. Browse the work and side projects, or ask Meg, the AI that knows my resume inside out.";
 
 export const SITE_EMAIL = "omegabariagaber@gmail.com";
 export const SITE_LINKEDIN = "https://www.linkedin.com/in/obariagaber/";

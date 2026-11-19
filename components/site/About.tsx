@@ -9,16 +9,31 @@ export function About() {
   return (
     <section id="about" className="site-section scroll-mt-20">
       <div className="reveal mx-auto max-w-5xl">
-        <p className="retro-eyebrow">About</p>
-        <p className="display mt-5 max-w-3xl text-[1.6rem] font-semibold leading-snug text-[var(--ink)] sm:text-[2.1rem]">
-          Most of my work has lived in the gap between what a business needs
-          and what its software actually does.
-        </p>
-        <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
-          I&apos;ve done it as a consultant, an analyst, and a QA engineer. The
-          titles changed but the job stayed the same: listen closely, get the
-          data where it needs to go, and build tools people keep using.
-        </p>
+        <div className="grid items-center gap-8 md:grid-cols-[1fr_auto] md:gap-12">
+          <div>
+            <p className="retro-eyebrow">About</p>
+            <p className="display mt-5 max-w-3xl text-[1.6rem] font-semibold leading-snug text-[var(--ink)] sm:text-[2.1rem]">
+              Most of my work has lived in the gap between what a business needs
+              and what its software actually does.
+            </p>
+            <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
+              I&apos;ve done it as a consultant, an analyst, and a QA engineer. The
+              titles changed but the job stayed the same: listen closely, get the
+              data where it needs to go, and build tools people keep using.
+            </p>
+          </div>
+          <figure className="polaroid polaroid--tilt-right mx-auto w-48 sm:w-56 md:mr-12 lg:mr-16">
+            <Image
+              src="/images/omega.jpg"
+              width={899}
+              height={1200}
+              sizes="(min-width: 640px) 224px, 192px"
+              alt="Omega smiling in a navy suit, white shirt and red tie"
+              className="block h-auto w-full"
+            />
+            <figcaption className="polaroid__caption">Omega</figcaption>
+          </figure>
+        </div>
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {SITE_ABOUT_CARDS.map((card) => (
             <div key={card.label} className="retro-card retro-lift p-5">

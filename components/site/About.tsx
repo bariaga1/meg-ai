@@ -3,7 +3,7 @@ import { SpartanSticker } from "@/components/site/SpartanSticker";
 import { SITE_ABOUT_CARDS } from "@/lib/siteContent";
 
 /** Life outside work, as little stickers on the off-the-clock card. */
-const STICKERS = ["Sosa's dad", "Pickup hoops", "Car tinkerer", "Speaks 3 languages"];
+const STICKERS = ["Sosa's dad", "Car tinkerer", "Speaks 3 languages"];
 
 export function About() {
   return (
@@ -53,10 +53,10 @@ export function About() {
               Meet Sosa.
             </p>
             <p className="mt-3 max-w-xl text-[16px] leading-relaxed text-[var(--ink-soft)]">
-              My goldendoodle and best buddy. When I&apos;m not
-              untangling data, you&apos;ll find me out with Sosa, in a pickup
-              basketball game, or working on my car (German engineering keeps
-              me busy). I also speak English, Tigrinya, and Amharic.
+              My goldendoodle and best buddy. When I&apos;m not deep in some
+              rabbit hole, you&apos;ll find me out with Sosa or working on my
+              car (German engineering keeps me busy). I also speak English,
+              Tigrinya, and Amharic.
             </p>
             <ul className="mt-5 flex flex-wrap gap-3" aria-label="Off the clock">
               {STICKERS.map((sticker) => (

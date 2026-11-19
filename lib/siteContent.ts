@@ -149,11 +149,11 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
 export const SITE_ABOUT_CARDS = [
   {
     label: "Lately",
-    text: "I've been building with AI lately, mostly to see how far I could take it. Storefront Studio and Can I Park Here? came out of that. Somewhere along the way I got curious about what's going on under the hood. Now I'm learning how the pieces fit together: how LLMs work and how the models differ, why vectors matter, what makes an agent an agent, and where guardrails and a human in the loop belong.",
+    text: "It started with wanting stronger software engineering fundamentals. That grew into curiosity about what's really happening under the hood of applied AI. So I took what I learned from programming coursework and turned it into my own projects. AI helps me move faster, but I test everything, make sure I understand what it's doing, and keep the judgment calls my own. Now I keep learning the same way, by building.",
   },
   {
     label: "What's next for me",
-    text: "I've sat in a lot of rooms where people knew exactly what they needed but couldn't get the tech to do it. That's still where I want to be, just with AI in the toolbox now, and a person still making the final call.",
+    text: "Putting what I've been learning to work on real problems. Understanding what people need is still where I start. What's new is how much more I can do from there myself: prototype an idea quickly, test it until it holds up, and explain clearly how it works. I'm excited to keep growing that.",
   },
 ] as const;
 

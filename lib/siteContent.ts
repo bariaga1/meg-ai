@@ -74,18 +74,18 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
     metric: "10M+",
     unit: "customer records in real time",
     story:
-      "Built CX data pipelines feeding live dashboards, closed-loop alerts, and CRM integrations.",
+      "Built CX data pipelines tailored to how each client's data arrived, feeding live dashboards, closed-loop alerts, and CRM integrations.",
     source: "Medallia",
     detail: {
       challenge:
         "Customer data came from many sources: scheduled secure flat-file transfers and SQL databases carrying point-of-sale and commerce data, website analytics, Google reviews and Facebook feedback.",
       action:
-        "Built pipelines that took in those feeds and shaped them for downstream use: real-time dashboards, closed-loop alerts and CRM integrations.",
+        "Built a different set of pipelines for each client, designed around how their upstream data was delivered, and shaped it for downstream use: real-time dashboards, closed-loop alerts and CRM integrations.",
       result:
-        "10M+ records in real time, plus 60+ Power BI dashboards serving 2,000+ users per account.",
+        "10M+ records powering real-time analytics across native web dashboards and 60+ Power BI dashboards, giving 2,000+ users per account live data to base their decisions on.",
       tags: ["Data pipelines", "SQL", "Power BI", "CRM integration"],
       ask: "How did he build the 10M-record pipelines?",
-      keywords: ["pipelines", "pipeline", "data sources", "10M", "records", "record", "flat files", "SQL", "ETL", "ingestion", "point of sale", "commerce", "reviews", "CRM", "real time"],
+      keywords: ["pipelines", "pipeline", "data sources", "10M", "records", "record", "flat files", "SQL", "ETL", "ingestion", "point of sale", "commerce", "reviews", "CRM", "real time", "dashboards", "web dashboards", "analytics", "Power BI"],
     },
   },
   {

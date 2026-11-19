@@ -33,7 +33,7 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
     metric: "$5M+",
     unit: "in renewals secured",
     story:
-      "Turned around at-risk enterprise accounts through reliable delivery and proactive communication.",
+      "Led technical delivery for two at-risk enterprise accounts, resolving delivery issues, getting ahead of risk, and keeping client stakeholders in the loop before they had to ask.",
     source: "Medallia",
     extras: [
       { metric: "2", unit: "at-risk enterprise accounts turned around" },
@@ -43,7 +43,7 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
       challenge:
         "Two enterprise accounts, a consumer-tech client and a telecom client, were already at risk when he joined the team. Earlier quality incidents had cost their trust, and the telecom client also felt ignored.",
       action:
-        "Made quality non-negotiable on every project and ad hoc request, and kept the telecom client informed before they had to ask.",
+        "Made quality non-negotiable, delivering a continuous run of projects and ad hoc requests with no rework, and kept the telecom client informed before they had to ask.",
       result:
         "Trust was rebuilt over time, client NPS rose 25+ points, and both accounts renewed for $5M+.",
       tags: ["Client recovery", "Quality assurance", "Stakeholder communication"],

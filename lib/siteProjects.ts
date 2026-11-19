@@ -7,6 +7,8 @@ export type SiteProject = {
   stack: string[];
   liveUrl?: string;
   githubUrl?: string;
+  /** Shown instead of a link when there's nothing public yet. */
+  status?: string;
 };
 
 export const SITE_PROJECTS: SiteProject[] = [
@@ -24,6 +26,7 @@ export const SITE_PROJECTS: SiteProject[] = [
     blurb:
       "Job-search tool that pulls listings, scores fit with rules plus GPT-4o-mini, and keeps the judgment call behind an approval gate.",
     stack: ["Next.js", "TypeScript", "OpenAI", "SQLite"],
+    status: "Personal use for now",
   },
   {
     id: "storefront-studio",
@@ -31,6 +34,6 @@ export const SITE_PROJECTS: SiteProject[] = [
     blurb:
       "Client intake that turns small-business inquiries into structured markdown context for an AI workflow you approve before anything moves.",
     stack: ["Next.js", "TypeScript", "n8n", "Docker"],
-    githubUrl: "https://github.com/bariaga1/storefront-studio-site",
+    status: "In testing · out soon!",
   },
 ];

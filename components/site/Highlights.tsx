@@ -50,7 +50,7 @@ export function Highlights({ onAskMeg }: { onAskMeg: (question: string, topic: s
       <div className="reveal mx-auto max-w-5xl">
         <p className="retro-eyebrow">Career highlights</p>
         <p className="mt-2 text-[14px] font-semibold text-[var(--ink-soft)]">
-          Tap any box for the story behind the number.
+          Open any box for the full story behind the number.
         </p>
         <div className="highlight-grid mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {SITE_HIGHLIGHTS.map((item, i) => {
@@ -82,7 +82,8 @@ export function Highlights({ onAskMeg }: { onAskMeg: (question: string, topic: s
                   <span className="flex w-full items-start justify-between gap-3">
                     <span className="metric-tile__source">{item.source}</span>
                     <span className="metric-tile__more" aria-hidden>
-                      {open ? "Close ×" : "Story +"}
+                      {open ? "Close" : "Full story"}
+                      <span className="metric-tile__more-icon">{open ? "×" : "+"}</span>
                     </span>
                   </span>
                   <span

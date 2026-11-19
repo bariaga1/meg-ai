@@ -33,7 +33,7 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
     metric: "$5M+",
     unit: "in renewals secured",
     story:
-      "Turned around at-risk enterprise accounts through reliable delivery and proactive communication.",
+      "Led technical delivery for two at-risk enterprise accounts, resolving delivery issues, getting ahead of risk, and keeping client stakeholders in the loop before they had to ask.",
     source: "Medallia",
     extras: [
       { metric: "2", unit: "at-risk enterprise accounts turned around" },
@@ -43,7 +43,7 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
       challenge:
         "Two enterprise accounts, a consumer-tech client and a telecom client, were already at risk when he joined the team. Earlier quality incidents had cost their trust, and the telecom client also felt ignored.",
       action:
-        "Made quality non-negotiable on every project and ad hoc request, and kept the telecom client informed before they had to ask.",
+        "Made quality non-negotiable, delivering a continuous run of projects and ad hoc requests with no rework, and kept the telecom client informed before they had to ask.",
       result:
         "Trust was rebuilt over time, client NPS rose 25+ points, and both accounts renewed for $5M+.",
       tags: ["Client recovery", "Quality assurance", "Stakeholder communication"],
@@ -60,13 +60,13 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
     source: "Medallia",
     detail: {
       challenge:
-        "Fortune 100 clients across tech, telecom, insurance and automotive, including Apple, Comcast, T-Mobile, Anthem and Ford (North America and Europe). Projects ran from a few weeks to three-month rollouts, and some clients came back for more.",
+        "Fortune 100 clients across tech, telecom, insurance and automotive, including Apple, Comcast, T-Mobile, Anthem and Ford (North America and Europe). Projects ran from a few weeks to three-month rollouts, often several in parallel.",
       action:
         "Owned the work from discovery through design, configuration, data integration, testing and launch on lean teams of 4–6, led projects for Comcast and Apple, worked with Product and Engineering to close gaps, and trained client teams.",
       result: "25+ launches, each delivered on time or early.",
       tags: ["Implementation", "Discovery", "Data integration", "UAT"],
       ask: "What did his implementations involve?",
-      keywords: ["implementations", "implementation", "Fortune 100", "clients", "Apple", "Comcast", "T-Mobile", "Anthem", "Ford", "industries", "rollouts", "launches", "project size", "team size"],
+      keywords: ["implementations", "implementation", "Fortune 100", "clients", "Apple", "Comcast", "T-Mobile", "Anthem", "Ford", "industries", "rollouts", "launches", "project size", "team size", "parallel", "concurrent", "multiple projects"],
     },
   },
   {
@@ -74,18 +74,18 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
     metric: "10M+",
     unit: "customer records in real time",
     story:
-      "Built CX data pipelines feeding live dashboards, closed-loop alerts, and CRM integrations.",
+      "Built CX data pipelines tailored to how each client's data arrived, feeding live dashboards, closed-loop alerts, and CRM integrations.",
     source: "Medallia",
     detail: {
       challenge:
         "Customer data came from many sources: scheduled secure flat-file transfers and SQL databases carrying point-of-sale and commerce data, website analytics, Google reviews and Facebook feedback.",
       action:
-        "Built pipelines that took in those feeds and shaped them for downstream use: real-time dashboards, closed-loop alerts and CRM integrations.",
+        "Built a different set of pipelines for each client, designed around how their upstream data was delivered, and shaped it for downstream use: real-time dashboards, closed-loop alerts and CRM integrations.",
       result:
-        "10M+ records in real time, plus 60+ Power BI dashboards serving 2,000+ users per account.",
+        "10M+ records powering real-time analytics across native web dashboards and 60+ Power BI dashboards, giving 2,000+ users per account live data to base their decisions on.",
       tags: ["Data pipelines", "SQL", "Power BI", "CRM integration"],
       ask: "How did he build the 10M-record pipelines?",
-      keywords: ["pipelines", "pipeline", "data sources", "10M", "records", "record", "flat files", "SQL", "ETL", "ingestion", "point of sale", "commerce", "reviews", "CRM", "real time"],
+      keywords: ["pipelines", "pipeline", "data sources", "10M", "records", "record", "flat files", "SQL", "ETL", "ingestion", "point of sale", "commerce", "reviews", "CRM", "real time", "dashboards", "web dashboards", "analytics", "Power BI"],
     },
   },
   {
@@ -99,7 +99,7 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
       challenge:
         "Each season brought a wave of contractors into the refinery who signed up for extra work based on their skills and certifications. There was no reliable way to track who qualified or how many hours they had worked, which risked overtime violations.",
       action:
-        "Built a web app on SQL tables. Accounts came from the badge-in system, skills and certifications were documented and kept current as workers earned new ones, extra-work hours were tracked, and sign-ups were blocked once someone hit their limit. Supervisors managed it day to day.",
+        "Built a web app that checked each worker and their skills against SQL tables before they could sign up. Worker names came in automatically from the badge-in system. When someone wanted to sign up for a skill, it was added only after it was validated against proof from their agency or certification, then documented in those tables. Extra-work hours were tracked there too, so sign-ups were blocked once someone hit their limit. Supervisors managed it day to day.",
       result:
         "Served up to 750 workers and contractors and avoided about $250K a year in penalties, $500K+ over two years.",
       tags: ["Web app", "SQL", "Compliance automation"],
@@ -110,25 +110,26 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
   {
     id: "sentiment-model",
     metric: "40%",
-    unit: "less manual feedback review",
+    unit: "less manual review, risks caught sooner",
     story:
-      "Helped build an AI-assisted sentiment model with 84% accuracy that also flagged at-risk accounts earlier.",
+      "Helped build a sentiment model that sorted customer feedback with 84% accuracy, so Customer Success could spot shifts without reading every comment.",
     source: "Medallia",
     detail: {
       challenge:
-        "Customer Success had more survey comments and feedback than anyone could read, so patterns and unhappy accounts surfaced late.",
+        "Customer Success had more feedback than anyone could read, coming from surveys, social media and other sources, so shifts in sentiment and unhappy accounts surfaced late.",
       action:
-        "Partnered with an ML engineer: structured the feedback data, helped compare word-based TF-IDF with text embeddings (embeddings with logistic regression won), and fed the model's results into a reporting dashboard.",
-      result: "84% accuracy, 40% less manual review, and at-risk accounts flagged sooner.",
-      tags: ["NLP", "Python", "Model evaluation", "Dashboards"],
+        "Brought the feedback together, cleaned and structured the text, and partnered with an ML engineer to compare two approaches: TF-IDF, which weights individual words, and pretrained text embeddings, which capture what a whole comment means. Embeddings read tone, slang and context better, so they fed a logistic regression model that labeled feedback positive, negative or neutral. He also built a self-service dashboard where teams could track sentiment over time, drill into recurring themes and read the comments behind a trend.",
+      result:
+        "84% classification accuracy, 40% less manual feedback review, and at-risk accounts identified earlier.",
+      tags: ["NLP", "Text embeddings", "Model evaluation", "Self-service dashboards"],
       ask: "How did the sentiment model work?",
-      keywords: ["sentiment model", "sentiment", "classifier", "classification", "NLP", "TF-IDF", "embeddings", "logistic regression", "machine learning", "ML engineer", "feedback", "survey comments"],
+      keywords: ["sentiment model", "sentiment analysis", "sentiment", "classifier", "classification", "NLP", "TF-IDF", "embeddings", "logistic regression", "machine learning", "ML engineer", "feedback", "survey comments", "social media", "positive", "negative", "neutral", "tone", "slang", "themes", "trends", "self-service dashboard"],
     },
   },
   {
     id: "offshore-teams",
     metric: "97%",
-    unit: "SLA compliance",
+    unit: "of client requests delivered on time (SLA)",
     story:
       "Led two offshore teams of 6+ analysts and engineers across concurrent enterprise engagements.",
     source: "Medallia",
@@ -149,11 +150,11 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
 export const SITE_ABOUT_CARDS = [
   {
     label: "Lately",
-    text: "I've been building with AI lately, mostly to see how far I could take it. Storefront Studio and Can I Park Here? came out of that. Somewhere along the way I got curious about what's going on under the hood. Now I'm learning how the pieces fit together: how LLMs work and how the models differ, why vectors matter, what makes an agent an agent, and where guardrails and a human in the loop belong.",
+    text: "It started with wanting stronger software engineering fundamentals. That grew into curiosity about what's really happening under the hood of applied AI. So I took what I learned from programming coursework and turned it into my own projects. AI helps me move faster, but I test everything, make sure I understand what it's doing, and keep the judgment calls my own. Now I keep learning the same way, by building.",
   },
   {
     label: "What's next for me",
-    text: "I've sat in a lot of rooms where people knew exactly what they needed but couldn't get the tech to do it. That's still where I want to be, just with AI in the toolbox now, and a person still making the final call.",
+    text: "Putting what I've been learning to work on real problems. Understanding what people need is still where I start. What's new is how much more I can do from there myself: prototype an idea quickly, test it until it holds up, and explain clearly how it works. I'm excited to keep growing that.",
   },
 ] as const;
 

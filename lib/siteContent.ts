@@ -99,7 +99,7 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
       challenge:
         "Each season brought a wave of contractors into the refinery who signed up for extra work based on their skills and certifications. There was no reliable way to track who qualified or how many hours they had worked, which risked overtime violations.",
       action:
-        "Built a web app on SQL tables. Accounts came from the badge-in system, skills and certifications were documented and kept current as workers earned new ones, extra-work hours were tracked, and sign-ups were blocked once someone hit their limit. Supervisors managed it day to day.",
+        "Built a web app that checked each worker and their skills against SQL tables before they could sign up. Worker names came in automatically from the badge-in system. When someone wanted to sign up for a skill, it was added only after it was validated against proof from their agency or certification, then documented in those tables. Extra-work hours were tracked there too, so sign-ups were blocked once someone hit their limit. Supervisors managed it day to day.",
       result:
         "Served up to 750 workers and contractors and avoided about $250K a year in penalties, $500K+ over two years.",
       tags: ["Web app", "SQL", "Compliance automation"],

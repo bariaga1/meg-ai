@@ -429,6 +429,9 @@ li:nth-child(4) > .sticker .sticker__dot {
   box-shadow: var(--shadow-hard);
   transform: rotate(-2.5deg);
 }
+.polaroid--tilt-right {
+  transform: rotate(2deg);
+}
 .polaroid__caption {
   padding: 0.55rem 0 0.65rem;
   text-align: center;

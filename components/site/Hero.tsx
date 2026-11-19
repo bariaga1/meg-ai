@@ -67,7 +67,7 @@ export function Hero({ onOpenMeg, megMood, megRef }: HeroProps) {
             ))}
           </svg>
           <p className="hero-bubble" aria-hidden>
-            Psst — I know Omega&apos;s whole resume. Ask me!
+            Psst — I know Omega&apos;s resume and projects. Ask me!
           </p>
           <button
             type="button"

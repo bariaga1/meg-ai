@@ -60,13 +60,13 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
     source: "Medallia",
     detail: {
       challenge:
-        "Fortune 100 clients across tech, telecom, insurance and automotive, including Apple, Comcast, T-Mobile, Anthem and Ford (North America and Europe). Projects ran from a few weeks to three-month rollouts, and some clients came back for more.",
+        "Fortune 100 clients across tech, telecom, insurance and automotive, including Apple, Comcast, T-Mobile, Anthem and Ford (North America and Europe). Projects ran from a few weeks to three-month rollouts, often several in parallel.",
       action:
         "Owned the work from discovery through design, configuration, data integration, testing and launch on lean teams of 4–6, led projects for Comcast and Apple, worked with Product and Engineering to close gaps, and trained client teams.",
       result: "25+ launches, each delivered on time or early.",
       tags: ["Implementation", "Discovery", "Data integration", "UAT"],
       ask: "What did his implementations involve?",
-      keywords: ["implementations", "implementation", "Fortune 100", "clients", "Apple", "Comcast", "T-Mobile", "Anthem", "Ford", "industries", "rollouts", "launches", "project size", "team size"],
+      keywords: ["implementations", "implementation", "Fortune 100", "clients", "Apple", "Comcast", "T-Mobile", "Anthem", "Ford", "industries", "rollouts", "launches", "project size", "team size", "parallel", "concurrent", "multiple projects"],
     },
   },
   {

@@ -110,25 +110,26 @@ export const SITE_HIGHLIGHTS: SiteHighlight[] = [
   {
     id: "sentiment-model",
     metric: "40%",
-    unit: "less manual feedback review",
+    unit: "less manual review, risks caught sooner",
     story:
-      "Helped build an AI-assisted sentiment model with 84% accuracy that also flagged at-risk accounts earlier.",
+      "Helped build a sentiment model that sorted customer feedback with 84% accuracy, so Customer Success could spot shifts without reading every comment.",
     source: "Medallia",
     detail: {
       challenge:
-        "Customer Success had more survey comments and feedback than anyone could read, so patterns and unhappy accounts surfaced late.",
+        "Customer Success had more feedback than anyone could read, coming from surveys, social media and other sources, so shifts in sentiment and unhappy accounts surfaced late.",
       action:
-        "Partnered with an ML engineer: structured the feedback data, helped compare word-based TF-IDF with text embeddings (embeddings with logistic regression won), and fed the model's results into a reporting dashboard.",
-      result: "84% accuracy, 40% less manual review, and at-risk accounts flagged sooner.",
-      tags: ["NLP", "Python", "Model evaluation", "Dashboards"],
+        "Brought the feedback together, cleaned and structured the text, and partnered with an ML engineer to compare two approaches: TF-IDF, which weights individual words, and pretrained text embeddings, which capture what a whole comment means. Embeddings read tone, slang and context better, so they fed a logistic regression model that labeled feedback positive, negative or neutral. He also built a self-service dashboard where teams could track sentiment over time, drill into recurring themes and read the comments behind a trend.",
+      result:
+        "84% classification accuracy, 40% less manual feedback review, and at-risk accounts identified earlier.",
+      tags: ["NLP", "Text embeddings", "Model evaluation", "Self-service dashboards"],
       ask: "How did the sentiment model work?",
-      keywords: ["sentiment model", "sentiment", "classifier", "classification", "NLP", "TF-IDF", "embeddings", "logistic regression", "machine learning", "ML engineer", "feedback", "survey comments"],
+      keywords: ["sentiment model", "sentiment analysis", "sentiment", "classifier", "classification", "NLP", "TF-IDF", "embeddings", "logistic regression", "machine learning", "ML engineer", "feedback", "survey comments", "social media", "positive", "negative", "neutral", "tone", "slang", "themes", "trends", "self-service dashboard"],
     },
   },
   {
     id: "offshore-teams",
     metric: "97%",
-    unit: "SLA compliance",
+    unit: "of client requests delivered on time (SLA)",
     story:
       "Led two offshore teams of 6+ analysts and engineers across concurrent enterprise engagements.",
     source: "Medallia",

@@ -610,18 +610,30 @@ li:nth-child(4) > .sticker .sticker__dot {
   outline-offset: 6px;
 }
 
+/* A pill that reads as a button, so the box looks clickable. */
 .metric-tile__more {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.8;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
-.metric-tile__toggle:hover .metric-tile__more {
-  opacity: 1;
-  transform: translateX(-2px);
+.metric-tile__more-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+.metric-tile__toggle:hover .metric-tile__more,
+.metric-tile__toggle:focus-visible .metric-tile__more {
+  background-color: color-mix(in srgb, currentColor 14%, transparent);
+  transform: translateY(-1px);
 }
 
 .metric-tile.is-open {

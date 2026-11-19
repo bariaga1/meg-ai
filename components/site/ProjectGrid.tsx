@@ -10,7 +10,9 @@ function ProjectAction({ project }: { project: SiteProject }) {
     );
   }
   return (
-    <span className="text-sm font-bold italic text-[var(--ink-soft)]">Live demo soon</span>
+    <span className="text-sm font-bold italic text-[var(--ink-soft)]">
+      {project.status ?? "Live demo soon"}
+    </span>
   );
 }
 
